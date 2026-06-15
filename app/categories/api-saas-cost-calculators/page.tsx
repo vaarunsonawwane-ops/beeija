@@ -1,62 +1,29 @@
 import Link from "next/link";
 import { tools } from "@/app/data/tools";
-import InfoCard from "@/app/components/InfoCard";
-import SectionCard from "@/app/components/SectionCard";
 
-const apiSaasCostTools = tools.filter(
+const categoryTools = tools.filter(
   (tool) => tool.category === "API & SaaS Cost Calculators",
 );
 
-const featuredTools = apiSaasCostTools.slice(0, 6);
+const featuredTools = categoryTools.slice(0, 6);
 
 export const metadata = {
   title: "API & SaaS Cost Calculators | Beeija",
 
   description:
-    "Estimate API request costs, SaaS subscriptions, per-seat plans, usage pricing, and recurring software expenses.",
-
-  keywords: [
-    "API cost calculator",
-    "SaaS cost calculator",
-    "API pricing calculator",
-    "per seat cost calculator",
-    "usage based pricing calculator",
-    "software subscription calculator"
-  ],
+    "Use practical API and SaaS cost calculators to estimate requests, subscriptions, seats, usage tiers, overages, and recurring software expenses.",
 
   alternates: {
     canonical: "https://beeija.com/categories/api-saas-cost-calculators",
   },
-
-  openGraph: {
-    title: "API & SaaS Cost Calculators | Beeija",
-
-    description:
-      "Estimate API request costs, SaaS subscriptions, per-seat plans, usage pricing, and recurring software expenses.",
-
-    url: "https://beeija.com/categories/api-saas-cost-calculators",
-
-    siteName: "Beeija",
-
-    type: "website",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-
-    title: "API & SaaS Cost Calculators | Beeija",
-
-    description:
-      "Estimate API request costs, SaaS subscriptions, per-seat plans, usage pricing, and recurring software expenses.",
-  },
 };
 
-export default function Page() {
+export default function CategoryPage() {
   return (
     <main className="min-h-screen bg-white">
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-12">
         {/* BREADCRUMB */}
-        <div className="mb-8 flex items-center text-sm text-gray-500">
+        <div className="mb-10 flex items-center text-sm text-gray-500">
           <Link
             href="/"
             className="transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
@@ -80,51 +47,67 @@ export default function Page() {
 
         {/* HERO */}
         <div className="max-w-3xl">
-          <h1 className="mt-3 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
-            API and SaaS Cost Calculators for Requests, Seats, and Usage Pricing
+          <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
+            API and SaaS Cost Calculators for Requests and Subscriptions
           </h1>
 
-          <p className="mt-5 text-lg leading-relaxed text-gray-600">
-            Estimate API request costs, SaaS subscriptions, per-seat pricing, usage-based billing, and recurring software expenses before choosing a service.
+          <p className="mt-5 text-base leading-relaxed text-gray-600 md:text-lg">
+            Use practical API and SaaS cost calculators to estimate requests, subscriptions, seats, usage tiers, overages, and recurring software expenses.
           </p>
         </div>
 
-        {/* INTRO */}
+        {/* INTRO CARDS */}
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          <InfoCard title="Understand Usage-Based Pricing">
-            <p>Convert requests, events, seats, or billable units into a clearer monthly estimate.</p>
-          </InfoCard>
-
-          <InfoCard title="Compare Plans and Providers">
-            <p>Use consistent assumptions to compare subscription tiers, included usage, and overage costs.</p>
-          </InfoCard>
-
-          <InfoCard title="Forecast Recurring Software Spend">
-            <p>Estimate how team size, customer growth, or API volume may change future SaaS expenses.</p>
-          </InfoCard>
-        </div>
-
-        {/* FEATURED TOOLS */}
-        <section className="mt-16">
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Popular API and SaaS Cost Calculators
+          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
+            <h2 className="text-base font-semibold text-gray-950">
+              Understand Usage-Based Pricing Before You Commit
             </h2>
 
-            <p className="mt-3 leading-relaxed text-gray-600">
-              Start with practical calculators for API requests, per-seat subscriptions, usage tiers, overages, and recurring SaaS spending.
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              Estimate request volume, included usage, seats, overages, and recurring charges before choosing a plan.
             </p>
-          </div>
+          </article>
+
+          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
+            <h2 className="text-base font-semibold text-gray-950">
+              Useful for Teams and Product Builders
+            </h2>
+
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              Whether you are planning internal software or a customer-facing product, these tools help turn usage assumptions into clearer costs.
+            </p>
+          </article>
+
+          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
+            <h2 className="text-base font-semibold text-gray-950">
+              Quick Comparisons Without Complex Pricing Tables
+            </h2>
+
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              Compare plans and providers using consistent inputs instead of manually reviewing each pricing page.
+            </p>
+          </article>
+        </div>
+
+        {/* POPULAR TOOLS */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Popular API and SaaS Cost Calculators
+          </h2>
+
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600 md:text-base">
+            Start with frequently needed tools for API requests, subscriptions, seats, usage tiers, overages, and recurring software spending.
+          </p>
 
           {featuredTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {featuredTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                  className="group rounded-xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[var(--yellow-dark)]">
+                  <h3 className="text-base font-semibold text-gray-950">
                     {tool.title}
                   </h3>
 
@@ -132,41 +115,38 @@ export default function Page() {
                     {tool.description}
                   </p>
 
-                  <span className="mt-5 inline-flex text-sm font-semibold text-[var(--yellow-dark)]">
+                  <p className="mt-5 text-sm font-medium text-[var(--yellow-dark)]">
                     Open tool →
-                  </span>
+                  </p>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-6 text-gray-600">
-              Tools in this category will appear automatically as they are
-              created.
+            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
+              Tools in this category will appear automatically as they are created.
             </p>
           )}
         </section>
 
         {/* ALL TOOLS */}
         <section className="mt-16">
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              All API and SaaS Cost Calculators
-            </h2>
+          <h2 className="text-2xl font-semibold text-gray-950">
+            All API and SaaS Cost Calculators
+          </h2>
 
-            <p className="mt-3 leading-relaxed text-gray-600">
-              Browse Beeija's complete API and SaaS calculator set for request-based, user-based, tiered, and recurring pricing models.
-            </p>
-          </div>
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600 md:text-base">
+            Browse the complete API and SaaS cost tool set for request-based, user-based, tiered, and recurring pricing models.
+          </p>
 
-          {apiSaasCostTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {apiSaasCostTools.map((tool) => (
+          {categoryTools.length > 0 ? (
+            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {categoryTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                  className="rounded-xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[var(--yellow-dark)]">
+                  <h3 className="text-base font-semibold text-gray-950">
                     {tool.title}
                   </h3>
 
@@ -177,36 +157,36 @@ export default function Page() {
               ))}
             </div>
           ) : (
-            <p className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-6 text-gray-600">
+            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
               No tools have been published in this category yet.
             </p>
           )}
         </section>
 
-        {/* USE CASES */}
-        <SectionCard>
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Everyday API and SaaS Cost Questions These Calculators Make Easier
+        {/* TASKS */}
+        <section className="mt-16 rounded-2xl border border-gray-200 bg-white p-7 md:p-8">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Small API and SaaS Cost Questions These Tools Help Simplify
           </h2>
 
-          <p className="mt-4 max-w-3xl leading-relaxed text-gray-600">
-            API and SaaS pricing often combines subscriptions, included usage, seats, requests, overages, and volume tiers. These calculators help organize those variables into a practical estimate.
+          <p className="mt-4 max-w-4xl text-sm leading-relaxed text-gray-600 md:text-base">
+            API and SaaS pricing often depends on requests, seats, usage tiers, allowances, billing cycles, and overages. These tools help make those everyday cost questions easier to understand.
           </p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {[
               "Estimate API request costs at expected monthly volume.",
-              "Compare SaaS plans based on users, seats, or included usage.",
-              "Calculate overage costs beyond a plan's included allowance.",
-              "Estimate recurring software spend for a growing team.",
-              "Compare flat-rate and usage-based pricing models.",
-              "Forecast customer-facing API costs as product usage grows.",
-              "Calculate annual savings from monthly versus yearly billing.",
-              "Prepare a realistic software and API budget for a new product."
+              "Compare SaaS plans by users, seats, and included usage.",
+              "Calculate overage costs beyond plan allowances.",
+              "Estimate recurring software spending for a growing team.",
+              "Compare flat-rate and usage-based pricing.",
+              "Forecast customer-facing API costs as usage grows.",
+              "Calculate monthly versus annual plan differences.",
+              "Prepare a realistic software and API budget."
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+                className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-4"
               >
                 <p className="text-sm leading-relaxed text-gray-700">
                   {item}
@@ -214,116 +194,111 @@ export default function Page() {
               </div>
             ))}
           </div>
-        </SectionCard>
+        </section>
 
         {/* WHY MATTERS */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-gray-950">
             Why API and SaaS Cost Planning Matters
           </h2>
 
-          <div className="mt-5 space-y-4 leading-relaxed text-gray-600">
-            <p>Subscription and usage-based pricing can be difficult to compare when plans use different allowances, tiers, seats, or billing units.</p>
+          <div className="mt-5 space-y-4 text-sm leading-relaxed text-gray-600 md:text-base">
+          <p>Subscription and usage-based pricing can be difficult to compare when providers use different allowances, tiers, seats, or billing units.</p>
 
-            <p>Cost calculators help normalize those differences so teams can understand the likely monthly or annual commitment before choosing a service.</p>
+          <p>Cost calculators help normalize those differences so teams can understand the likely monthly or annual commitment before choosing a service.</p>
           </div>
         </section>
 
         {/* FAQ */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-gray-950">
             Frequently Asked Questions
           </h2>
 
-          <div className="mt-6 space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                What is an API cost calculator?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                It estimates API spending from request volume, usage units, included allowances, and overage pricing.
-              </p>
-            </div>
+          <div className="mt-7 space-y-7">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              What are API cost calculators used for?
+            </h3>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                What is a SaaS cost calculator?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                It estimates recurring software costs based on seats, plan tiers, usage, billing cycles, or add-ons.
-              </p>
-            </div>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              They estimate API spending from request volume, usage units, included allowances, and overage pricing.
+            </p>
+          </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Can I compare monthly and annual plans?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                Yes. Billing-cycle calculators can show total annual cost and potential savings from yearly commitments.
-              </p>
-            </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              What are SaaS cost calculators used for?
+            </h3>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Can I estimate costs as my team grows?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                Yes. You can increase seats, usage, or requests to model how recurring software spending may change.
-              </p>
-            </div>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              They estimate recurring software costs based on seats, plans, billing cycles, usage, and add-ons.
+            </p>
+          </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Are taxes and discounts included?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                Only when a tool explicitly includes them or allows manual inputs. Final invoices may differ because of taxes, negotiated rates, and provider changes.
-              </p>
-            </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              Can I compare monthly and annual plans?
+            </h3>
+
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              Yes. Billing tools can show total annual cost and potential savings.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              Do these tools upload my data?
+            </h3>
+
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              Most Beeija tools will run directly in your browser. Inputs are not uploaded unless a specific tool clearly requires an external pricing or URL check.
+            </p>
+          </div>
           </div>
         </section>
 
-        {/* RELATED CATEGORIES */}
+        {/* RELATED */}
         <section className="mt-16 border-t border-gray-200 pt-10">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-gray-950">
             Related Tool Categories
           </h2>
 
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href="/categories/ai-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              AI Cost Calculators
-            </Link>
+          <Link
+            href="/categories/ai-cost-calculators"
+            className="beeija-btn-outline"
+          >
+            AI Cost Calculators
+          </Link>
 
-            <Link
-              href="/categories/cloud-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              Cloud Cost Calculators
-            </Link>
+          <Link
+            href="/categories/cloud-cost-calculators"
+            className="beeija-btn-outline"
+          >
+            Cloud Cost Calculators
+          </Link>
 
-            <Link
-              href="/categories/hosting-infrastructure-calculators"
-              className="beeija-btn-outline"
-            >
-              Hosting & Infrastructure Calculators
-            </Link>
+          <Link
+            href="/categories/hosting-infrastructure-calculators"
+            className="beeija-btn-outline"
+          >
+            Hosting & Infrastructure Calculators
+          </Link>
 
-            <Link
-              href="/categories/capacity-usage-calculators"
-              className="beeija-btn-outline"
-            >
-              Capacity & Usage Calculators
-            </Link>
+          <Link
+            href="/categories/capacity-usage-calculators"
+            className="beeija-btn-outline"
+          >
+            Capacity & Usage Calculators
+          </Link>
 
-            <Link
-              href="/categories/technology-comparison-tools"
-              className="beeija-btn-outline"
-            >
-              Technology Comparison Tools
-            </Link>
+          <Link
+            href="/categories/technology-comparison-tools"
+            className="beeija-btn-outline"
+          >
+            Technology Comparison Tools
+          </Link>
           </div>
         </section>
       </section>
