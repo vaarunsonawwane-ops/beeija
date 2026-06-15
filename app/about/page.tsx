@@ -100,7 +100,7 @@ export default function AboutPage() {
               href="https://yoryantra.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-[var(--green)] transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+              className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
             >
               Yoryantra
             </a>
@@ -165,11 +165,11 @@ export default function AboutPage() {
             You can find my contact details on the{" "}
             <Link
               href="/contact"
-              className="font-medium text-[var(--green)] transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+              className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
             >
-              Contact page
-            </Link>
-            .
+              Contact
+            </Link>{" "}
+            page.
           </p>
 
           <p className="pt-3 font-medium text-[var(--yellow-dark)]">
