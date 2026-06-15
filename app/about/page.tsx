@@ -15,11 +15,7 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
       <section className="mx-auto max-w-3xl px-6 py-16">
-        <p className="text-sm font-medium text-[var(--yellow-dark)]">
-          ✦ Built for better beginnings
-        </p>
-
-        <h1 className="mt-5 text-4xl font-bold tracking-tight text-gray-950">
+        <h1 className="text-4xl font-bold tracking-tight text-gray-950">
           About Beeija
         </h1>
 
@@ -30,10 +26,6 @@ export default function AboutPage() {
             the cost or effort involved before building a cloud platform,
             AI-powered product, website, application, or technical system.
           </p>
-
-          <h2 className="pt-3 text-xl font-semibold text-gray-950">
-            Why I Created Beeija
-          </h2>
 
           <p>
             As a founder, I struggled to find clear answers for my own
@@ -63,22 +55,18 @@ export default function AboutPage() {
             the information you came for.
           </p>
 
-          <div className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-5 text-gray-800">
-            <p>
+          <div className="border-l-4 border-[#F2C94C] pl-5">
+            <p className="text-gray-800">
               I genuinely felt there should be one modern platform where people
               could explore practical AI, cloud, hosting, API, SaaS, capacity,
               and infrastructure costs in one place.
             </p>
           </div>
 
-          <h2 className="pt-3 text-xl font-semibold text-gray-950">
-            Practical Simulators, Not Generic Calculators
-          </h2>
-
           <p>
             Beeija is not being built as a collection of generic cost
             calculators. The aim is to create practical cost simulators that
-            reflect real pricing structures, usage patterns, limits, and
+            reflect real pricing structures, usage patterns, limits, and the
             decisions people face before building.
           </p>
 
@@ -95,12 +83,10 @@ export default function AboutPage() {
             Manual price overrides will remain available where needed.
           </p>
 
-          <div className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-5 text-gray-800">
-            <p>
-              We will give you directly what you came for, without unnecessary
-              hurdles or clutter.
-            </p>
-          </div>
+          <p>
+            We will give you directly what you came for, without unnecessary
+            hurdles or clutter.
+          </p>
 
           <p>
             Beeija will not fill pages with distracting pop-ups. A small,
@@ -108,10 +94,6 @@ export default function AboutPage() {
             platform, but it will never be allowed to take over the experience
             or waste your time.
           </p>
-
-          <h2 className="pt-3 text-xl font-semibold text-gray-950">
-            Before You Build, and While You Build
-          </h2>
 
           <p>
             Beeija is designed for the stage before building — estimating
@@ -139,10 +121,6 @@ export default function AboutPage() {
             you build.
           </p>
 
-          <h2 className="pt-3 text-xl font-semibold text-gray-950">
-            The Meaning Behind Beeija
-          </h2>
-
           <p>
             The name Beeija came to me while I was thinking about beginnings,
             starting points, and the first step behind every meaningful
@@ -160,10 +138,9 @@ export default function AboutPage() {
             point. “Beeija” is a spelling variation inspired by that word.
           </p>
 
-          <div className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-5 text-center">
-            <p className="font-semibold text-[var(--green)]">Beeija</p>
-            <p className="mt-1 text-gray-800">
-              Seed today. Better outcomes tomorrow.
+          <div className="border-l-4 border-[#F2C94C] pl-5">
+            <p className="text-gray-800">
+              Beeija — Seed today. Better outcomes tomorrow.
             </p>
           </div>
 
