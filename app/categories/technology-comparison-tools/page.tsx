@@ -58,7 +58,7 @@ export default function CategoryPage() {
 
         {/* INTRO CARDS */}
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
+          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
             <h2 className="text-base font-semibold text-gray-950">
               Compare With the Same Assumptions
             </h2>
@@ -68,7 +68,7 @@ export default function CategoryPage() {
             </p>
           </article>
 
-          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
+          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
             <h2 className="text-base font-semibold text-gray-950">
               Useful for Early Technical Decisions
             </h2>
@@ -78,7 +78,7 @@ export default function CategoryPage() {
             </p>
           </article>
 
-          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
+          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
             <h2 className="text-base font-semibold text-gray-950">
               Quick Comparisons Without Complex Research
             </h2>
@@ -186,7 +186,7 @@ export default function CategoryPage() {
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-4"
+                className="border-l-4 border-[#F2C94C] bg-white px-4 py-3"
               >
                 <p className="text-sm leading-relaxed text-gray-700">
                   {item}
