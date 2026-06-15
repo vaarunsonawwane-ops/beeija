@@ -133,7 +133,10 @@ export default function AboutPage() {
           <p>
             <strong className="font-semibold text-gray-950">“Beej”</strong> is
             a Sanskrit word meaning “seed”, “beginning”, or “starting point”.
-            “Beeija” is a spelling variation inspired by that word.
+            <strong className="font-semibold text-gray-950">
+              “Beeija”
+            </strong>{" "}
+            is a spelling variation inspired by that word.
           </p>
 
           <div className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
