@@ -2,178 +2,107 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-	<footer className="border-t border-gray-100 bg-white mt-12">
-	  <div className="max-w-7xl mx-auto px-6 py-10">
-
-        {/* TOP SECTION */}
-        <div className="flex flex-col md:flex-row items-start justify-between gap-10">
-
-          {/* BRAND */}
-          <div className="max-w-sm">
-            <h2 className="text-lg font-bold text-gray-900">
+    <footer className="border-t border-gray-200 bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+          <div>
+            <Link
+              href="/"
+              className="text-lg font-semibold text-gray-950 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+            >
               Beeija
-            </h2>
+            </Link>
 
-            <p className="mt-3 text-sm leading-relaxed text-gray-600">
-              Practical tools for AI, cloud, infrastructure, and technical cost planning.
+            <p className="mt-4 max-w-sm text-sm leading-6 text-gray-600">
+              Practical tools for AI, cloud, infrastructure, and technical cost
+              planning.
             </p>
           </div>
 
-          {/* LINKS */}
-          <div className="flex flex-wrap gap-10 text-sm">
+          <div>
+            <h2 className="text-sm font-semibold text-gray-950">Tools</h2>
 
-			{/* RESOURCES */}
-			<div className="flex flex-col gap-2">
-			  <p className="font-semibold text-gray-900">
-				Resources
-			  </p>
-
-			  <Link
-				href="/developers"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				Developers
-			  </Link>
-			  
-			  <Link
-			    href="/seo-resources"
-			    className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				SEO Resources
-			  </Link>
-			  
-			   <Link
-				href="/security-guides"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				Security Guides
-			  </Link>
-			  
-			  <Link
-			   href="/json-guides"
-			   className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-			   JSON Guides
-			  </Link>
-			  
-
-			  <Link
-				href="/devops-resources"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				DevOps Resources
-			  </Link>
-			  
-			  <Link
-				href="/encoding-guides"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				Encoding Guides
-			  </Link>			  
-			  
-			  
-			  <Link
-				href="/categories"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				Categories
-			  </Link>
-
-			  <Link
-				href="/tools"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				Tools
-			  </Link>
-
-			  <Link
-				href="/sitemap"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				Sitemap
-			  </Link>
-			</div>
-
-            {/* TOOLS */}
-            <div className="flex flex-col gap-2">
-              <p className="font-semibold text-gray-900">
-                Tools
-              </p>
-
+            <div className="mt-4 flex flex-col gap-3 text-sm">
               <Link
                 href="/tools"
-                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
               >
                 All Tools
               </Link>
-            </div>
-
-            {/* COMPANY */}
-            <div className="flex flex-col gap-2">
-              <p className="font-semibold text-gray-900">
-                Company
-              </p>
 
               <Link
+                href="/categories"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+              >
+                Categories
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-semibold text-gray-950">Company</h2>
+
+            <div className="mt-4 flex flex-col gap-3 text-sm">
+              <Link
                 href="/about"
-                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
               >
                 About
               </Link>
 
               <Link
                 href="/contact"
-                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
               >
                 Contact
               </Link>
             </div>
+          </div>
 
-            {/* LEGAL */}
-            <div className="flex flex-col gap-2">
-              <p className="font-semibold text-gray-900">
-                Legal
-              </p>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-950">Legal</h2>
 
+            <div className="mt-4 flex flex-col gap-3 text-sm">
               <Link
                 href="/privacy-policy"
-                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
               >
                 Privacy Policy
               </Link>
 
               <Link
                 href="/terms"
-                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
               >
                 Terms
               </Link>
-			  
-			  <Link
-				href="/disclaimer"
-				className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-			  >
-				Disclaimer
-			  </Link> 
-			  
-			   </div>
 
+              <Link
+                href="/disclaimer"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+              >
+                Disclaimer
+              </Link>
+
+              <Link
+                href="/sitemap-page"
+                className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+              >
+                Sitemap
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* BOTTOM BAR */}
-        <div className="border-t border-gray-100 mt-8 pt-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-sm text-gray-500">
-
-          <p>
+        <div className="mt-10 flex flex-col gap-3 border-t border-gray-200 pt-6 text-sm md:flex-row md:items-center md:justify-between">
+          <p className="text-gray-500">
             © {new Date().getFullYear()} Beeija. All rights reserved.
           </p>
 
-		  <p className="text-sm font-medium text-[var(--yellow-dark)]">
-		    Built with Gratitude 🙏
-		  </p>
-
+          <p className="font-medium text-[var(--yellow-dark)]">
+            Built with Gratitude 🙏
+          </p>
         </div>
-
       </div>
     </footer>
   );
