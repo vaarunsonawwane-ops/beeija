@@ -55,7 +55,7 @@ export default function AboutPage() {
             the information you came for.
           </p>
 
-          <div className="border-l-4 border-[#F2C94C] pl-5">
+          <div className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
             <p className="text-gray-800">
               I genuinely felt there should be one modern platform where people
               could explore practical AI, cloud, hosting, API, SaaS, capacity,
@@ -138,7 +138,7 @@ export default function AboutPage() {
             point. “Beeija” is a spelling variation inspired by that word.
           </p>
 
-          <div className="border-l-4 border-[#F2C94C] pl-5">
+          <div className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
             <p className="text-gray-800">
               Beeija — Seed today. Better outcomes tomorrow.
             </p>
