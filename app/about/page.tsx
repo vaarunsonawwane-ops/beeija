@@ -14,12 +14,12 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
-      <section className="mx-auto max-w-3xl px-6 py-16">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-950">
+      <section className="mx-auto max-w-[900px] px-6 py-[70px]">
+        <h1 className="mb-[45px] text-[34px] font-bold tracking-tight text-[#111] md:text-[42px]">
           About Beeija
         </h1>
 
-        <div className="mt-8 space-y-5 text-base leading-8 text-gray-600">
+        <div className="text-[17px] leading-[1.9] text-gray-600 md:text-[18px] [&>p]:mb-[26px]">
           <p>
             Beeija is a practical platform for business owners, founders, CEOs,
             cloud architects, developers, and anyone who wants to understand
@@ -51,7 +51,7 @@ export default function AboutPage() {
             the information you came for.
           </p>
 
-          <div className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+          <div className="my-[40px] rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-[26px]">
             <p className="text-gray-800">
               I genuinely felt there should be one modern platform where people
               could explore practical AI, cloud, hosting, API, SaaS, capacity,
@@ -139,13 +139,13 @@ export default function AboutPage() {
             is a spelling variation inspired by that word.
           </p>
 
-          <div className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+          <div className="my-[40px] rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-[26px]">
             <p className="text-gray-800">
               Beeija — Seed today. Better outcomes tomorrow.
             </p>
           </div>
 
-          <h2 className="pt-3 text-xl font-semibold text-gray-950">
+          <h2 className="mb-[30px] mt-[55px] text-[28px] font-bold text-[#111] md:text-[32px]">
             About Me
           </h2>
 
@@ -172,7 +172,7 @@ export default function AboutPage() {
             page.
           </p>
 
-          <p className="pt-3 font-medium text-[var(--yellow-dark)]">
+          <p className="mt-[60px] text-[22px] font-bold text-[#111]">
             Thank you &amp; Gratitude 🙏
           </p>
         </div>
