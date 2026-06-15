@@ -16,26 +16,17 @@ export default function Header() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
-    }
-
-    return pathname.startsWith(href);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex min-h-18 max-w-7xl items-center justify-between px-6">
+    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white">
+      <div className="mx-auto flex min-h-[74px] max-w-7xl items-center justify-between px-6">
         <Link
           href="/"
-          onClick={closeMenu}
-          className="inline-flex items-center"
           aria-label="Beeija home"
+          onClick={() => setIsMenuOpen(false)}
+          className="inline-flex items-center"
         >
           <Image
             src="/logo.png"
@@ -47,10 +38,7 @@ export default function Header() {
           />
         </Link>
 
-        <nav
-          className="hidden items-center gap-8 md:flex"
-          aria-label="Primary navigation"
-        >
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
           {navigation.map((item) => {
             const active = isActive(item.href);
 
@@ -58,10 +46,10 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition ${
+                className={`relative py-2 text-sm font-medium transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[var(--yellow-dark)] after:transition-all after:duration-200 hover:text-[var(--green)] hover:after:w-full ${
                   active
-                    ? "text-[var(--green)]"
-                    : "text-gray-600 hover:text-gray-950"
+                    ? "text-[var(--green)] after:w-full"
+                    : "text-gray-700"
                 }`}
               >
                 {item.label}
@@ -73,28 +61,24 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-900 transition hover:bg-gray-50 md:hidden"
+          className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-900 transition-colors duration-200 hover:border-[var(--green)] hover:bg-[var(--green-soft)] md:hidden"
           aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navigation"
         >
-          <span className="sr-only">
-            {isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          </span>
-
           <span className="relative block h-4 w-5">
             <span
-              className={`absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition ${
+              className={`absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition-transform duration-200 ${
                 isMenuOpen ? "translate-y-[7px] rotate-45" : ""
               }`}
             />
             <span
-              className={`absolute left-0 top-[7px] h-0.5 w-5 rounded-full bg-current transition ${
+              className={`absolute left-0 top-[7px] h-0.5 w-5 rounded-full bg-current transition-opacity duration-200 ${
                 isMenuOpen ? "opacity-0" : ""
               }`}
             />
             <span
-              className={`absolute left-0 top-[14px] h-0.5 w-5 rounded-full bg-current transition ${
+              className={`absolute left-0 top-[14px] h-0.5 w-5 rounded-full bg-current transition-transform duration-200 ${
                 isMenuOpen ? "-translate-y-[7px] -rotate-45" : ""
               }`}
             />
@@ -116,11 +100,11 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={closeMenu}
-                  className={`rounded-lg px-3 py-3 text-sm font-medium transition ${
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`rounded-lg px-3 py-3 text-sm font-medium transition-colors duration-200 ${
                     active
                       ? "bg-[var(--green-soft)] text-[var(--green)]"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-950"
+                      : "text-gray-700 hover:bg-[var(--green-soft)] hover:text-[var(--green)]"
                   }`}
                 >
                   {item.label}

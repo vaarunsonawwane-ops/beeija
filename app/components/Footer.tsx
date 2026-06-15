@@ -20,8 +20,8 @@ export default function Footer() {
           <div className="max-w-md">
             <Link
               href="/"
-              className="inline-flex items-center"
               aria-label="Beeija home"
+              className="inline-flex items-center"
             >
               <Image
                 src="/logo.png"
@@ -46,7 +46,7 @@ export default function Footer() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-gray-600 transition hover:text-gray-950"
+                className="font-medium text-gray-700 transition-colors duration-200 hover:text-[var(--green)]"
               >
                 {item.label}
               </Link>
