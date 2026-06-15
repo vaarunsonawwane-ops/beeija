@@ -37,7 +37,7 @@ const categories = [
   {
     title: "AI Cost Tools",
     description:
-      "Estimate token usage, model costs, API spending, inference expenses, and other practical AI-related costs.",
+      "Estimate token usage, model pricing, API spending, inference expenses, and other practical AI-related costs.",
     href: "/categories/ai-cost-tools",
   },
   {
@@ -75,14 +75,13 @@ const categories = [
 export default function HomePage() {
   return (
     <main className="bg-white text-gray-900">
-      {/* HERO */}
       <section className="mx-auto max-w-7xl px-6 pb-20 pt-4 md:pb-24 md:pt-8">
         <div className="max-w-4xl">
           <p className="text-sm font-medium text-[var(--yellow-dark)]">
-            ✦ Seed today. Better outcomes tomorrow.
+            ✦ Built for you
           </p>
 
-          <h1 className="mt-8 text-4xl font-semibold tracking-tight text-[var(--green)] md:text-6xl md:leading-tight">
+          <h1 className="mt-8 text-4xl font-semibold tracking-tight text-gray-950 md:text-6xl md:leading-tight">
             Practical tools for better technical decisions — clear, useful,
             and easy to understand.
           </h1>
@@ -111,14 +110,14 @@ export default function HomePage() {
           <div className="mt-10 flex flex-wrap gap-4">
             <Link
               href="/tools"
-              className="rounded-xl bg-[var(--green)] px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-[var(--green-dark)]"
+              className="rounded-xl bg-[var(--green)] px-6 py-3 text-sm font-medium !text-white transition hover:-translate-y-0.5 hover:opacity-95"
             >
               Explore Tools
             </Link>
 
             <Link
               href="/categories"
-              className="rounded-xl border border-[var(--green)] bg-white px-6 py-3 text-sm font-medium text-[var(--green)] transition hover:-translate-y-0.5 hover:bg-[var(--green-soft)]"
+              className="rounded-xl border border-[var(--green)] bg-white px-6 py-3 text-sm font-medium text-[var(--green)] transition hover:-translate-y-0.5 hover:bg-green-50"
             >
               Browse Categories
             </Link>
@@ -126,11 +125,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section className="border-y border-[var(--green)]/10 bg-[var(--green-soft)] py-20">
+      <section className="border-y border-gray-100 bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-3xl">
-            <h2 className="text-3xl font-semibold tracking-tight text-[var(--green)]">
+            <h2 className="text-3xl font-semibold tracking-tight text-gray-950">
               Explore by category
             </h2>
 
@@ -146,9 +144,9 @@ export default function HomePage() {
               <Link
                 key={category.href}
                 href={category.href}
-                className="group rounded-2xl border border-[var(--green)]/15 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[var(--yellow)] hover:shadow-md"
+                className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
               >
-                <h3 className="text-lg font-semibold text-[var(--green)] transition-colors duration-200 group-hover:text-[var(--yellow-dark)]">
+                <h3 className="text-lg font-semibold text-gray-900 transition-colors duration-200 group-hover:text-[var(--green)]">
                   {category.title}
                 </h3>
 
@@ -165,10 +163,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* WHY BEEIJA */}
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="max-w-4xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-[var(--green)]">
+          <h2 className="text-3xl font-semibold tracking-tight text-gray-950">
             Why Beeija
           </h2>
 
