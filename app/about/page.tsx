@@ -4,7 +4,7 @@ export const metadata = {
   title: "About Beeija",
 
   description:
-    "Learn why Beeija was created to make AI, cloud, API, SaaS, hosting, and infrastructure cost planning clearer and less cluttered.",
+    "Learn about Beeija, a practical platform for AI, cloud, hosting, API, SaaS, capacity, and infrastructure cost planning.",
 
   alternates: {
     canonical: "https://beeija.com/about",
@@ -28,24 +28,20 @@ export default function AboutPage() {
           </p>
 
           <p>
-            As a founder, I struggled to find clear answers for my own
-            requirements. Before building a system, platform, or website, I
-            wanted to understand the likely cost, the effort involved, and the
-            practical arrangements I would need to make.
+            Have you ever struggled to find clear answers for your requirements?
+            Before building a system, platform, or website, you wanted to
+            understand the likely cost, the effort involved, and the practical
+            arrangements you would need to make. Even when you find useful
+            websites, many would be heavily loaded with advertisements. The
+            pages will feel cluttered, pop-ups interrupting the flow, and
+            sometimes even finding the close button became an unnecessary task.
           </p>
 
           <p>
-            Even when I found useful websites, many were heavily loaded with
-            advertisements. The pages felt cluttered, pop-ups interrupted the
-            flow, and sometimes even finding the close button became an
-            unnecessary task.
-          </p>
-
-          <p>
-            In many cases, I also had to move between several different
-            platforms just to understand one complete requirement. That takes
-            time and breaks the connection between the idea in your mind and
-            the decision you are trying to make.
+            In my case I have also faced the similar issue, I had to move
+            between several different platforms just to understand one complete
+            requirement. That takes time and breaks the connection between the
+            idea in your mind and the decision you are trying to make.
           </p>
 
           <p>
@@ -64,10 +60,10 @@ export default function AboutPage() {
           </div>
 
           <p>
-            Beeija is not being built as a collection of generic cost
-            calculators. The aim is to create practical cost simulators that
-            reflect real pricing structures, usage patterns, limits, and the
-            decisions people face before building.
+            At Beeija, we are not a collection of generic cost calculators. The
+            aim is to create practical cost simulators that reflect real pricing
+            structures, usage patterns, limits, and the decisions people face
+            before building.
           </p>
 
           <p>
@@ -84,15 +80,10 @@ export default function AboutPage() {
           </p>
 
           <p>
-            We will give you directly what you came for, without unnecessary
-            hurdles or clutter.
-          </p>
-
-          <p>
-            Beeija will not fill pages with distracting pop-ups. A small,
-            sensible advertisement may appear occasionally to support the
-            platform, but it will never be allowed to take over the experience
-            or waste your time.
+            You will directly get what you came for, without unnecessary
+            hurdles or clutter. We will not fill pages with distracting
+            pop-ups. In a subtle way we might just show you very minimal ad and
+            that too only for our survival.
           </p>
 
           <p>
@@ -104,12 +95,12 @@ export default function AboutPage() {
           <p>
             When you move into actual development and need practical tools for
             JSON, encoding, security, DevOps, SEO, APIs, or technical
-            troubleshooting, you can continue with{" "}
+            troubleshooting, you can continue with our very own webstie{" "}
             <a
               href="https://yoryantra.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-[var(--green)] hover:!text-[var(--yellow-dark)]"
+              className="font-medium text-[var(--green)] transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
             >
               Yoryantra
             </a>
@@ -122,20 +113,27 @@ export default function AboutPage() {
           </p>
 
           <p>
-            The name Beeija came to me while I was thinking about beginnings,
-            starting points, and the first step behind every meaningful
-            outcome.
+            The name{" "}
+            <span className="font-medium text-[var(--yellow-dark)]">
+              Beeija
+            </span>{" "}
+            came to me while I was thinking about beginnings, starting points,
+            and the first step behind every meaningful outcome.
           </p>
 
           <p>
-            Being a spiritual person, I often turn to the Srimad Bhagavad Gita
+            Being a spiritual person, I often turn to the{" "}
+            <span className="font-medium text-[var(--yellow-dark)]">
+              SRIMAD BHAGAVAD GITA
+            </span>{" "}
             when I am looking for clarity or direction. I wanted a name that
             felt meaningful, rooted, and still relevant in the modern world.
           </p>
 
           <p>
-            “Beej” is a Sanskrit word meaning seed, beginning, or starting
-            point. “Beeija” is a spelling variation inspired by that word.
+            <strong className="font-semibold text-gray-950">“Beej”</strong> is
+            a Sanskrit word meaning “seed”, “beginning”, or “starting point”.
+            “Beeija” is a spelling variation inspired by that word.
           </p>
 
           <div className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
@@ -164,7 +162,7 @@ export default function AboutPage() {
             You can find my contact details on the{" "}
             <Link
               href="/contact"
-              className="font-medium text-[var(--green)] hover:!text-[var(--yellow-dark)]"
+              className="font-medium text-[var(--green)] transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
             >
               Contact page
             </Link>
