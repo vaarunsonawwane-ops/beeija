@@ -1,62 +1,29 @@
 import Link from "next/link";
 import { tools } from "@/app/data/tools";
-import InfoCard from "@/app/components/InfoCard";
-import SectionCard from "@/app/components/SectionCard";
 
-const cloudCostTools = tools.filter(
-  (tool) => tool.category === "Cloud Cost Calculators",
+const categoryTools = tools.filter(
+  (tool) => tool.category === "Capacity & Usage Calculators",
 );
 
-const featuredTools = cloudCostTools.slice(0, 6);
+const featuredTools = categoryTools.slice(0, 6);
 
 export const metadata = {
-  title: "Cloud Cost Calculators Online | Beeija",
+  title: "Capacity & Usage Calculators | Beeija",
 
   description:
-    "Estimate cloud compute, storage, bandwidth, database, serverless, and infrastructure costs with practical cloud cost calculators.",
-
-  keywords: [
-    "cloud cost calculator",
-    "AWS cost calculator",
-    "Azure cost calculator",
-    "Google Cloud cost calculator",
-    "cloud storage calculator",
-    "bandwidth cost calculator"
-  ],
+    "Use practical capacity and usage calculators to estimate users, requests, traffic, bandwidth, storage, throughput, and future growth.",
 
   alternates: {
-    canonical: "https://beeija.com/categories/cloud-cost-calculators",
-  },
-
-  openGraph: {
-    title: "Cloud Cost Calculators Online | Beeija",
-
-    description:
-      "Estimate cloud compute, storage, bandwidth, database, serverless, and infrastructure costs with practical cloud cost calculators.",
-
-    url: "https://beeija.com/categories/cloud-cost-calculators",
-
-    siteName: "Beeija",
-
-    type: "website",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-
-    title: "Cloud Cost Calculators Online | Beeija",
-
-    description:
-      "Estimate cloud compute, storage, bandwidth, database, serverless, and infrastructure costs with practical cloud cost calculators.",
+    canonical: "https://beeija.com/categories/capacity-usage-calculators",
   },
 };
 
-export default function Page() {
+export default function CategoryPage() {
   return (
     <main className="min-h-screen bg-white">
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-12">
         {/* BREADCRUMB */}
-        <div className="mb-8 flex items-center text-sm text-gray-500">
+        <div className="mb-10 flex items-center text-sm text-gray-500">
           <Link
             href="/"
             className="transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
@@ -75,56 +42,72 @@ export default function Page() {
 
           <span className="mx-2">/</span>
 
-          <span className="text-gray-900">Cloud Cost Calculators</span>
+          <span className="text-gray-900">Capacity & Usage Calculators</span>
         </div>
 
         {/* HERO */}
         <div className="max-w-3xl">
-          <h1 className="mt-3 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
-            Cloud Cost Calculators for Compute, Storage, Databases, and Bandwidth
+          <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
+            Capacity and Usage Calculators for Traffic, Requests, and Storage
           </h1>
 
-          <p className="mt-5 text-lg leading-relaxed text-gray-600">
-            Estimate cloud costs for compute, storage, databases, serverless functions, bandwidth, and other services before choosing or scaling an architecture.
+          <p className="mt-5 text-base leading-relaxed text-gray-600 md:text-lg">
+            Use practical capacity and usage calculators to estimate users, requests, traffic, bandwidth, storage, throughput, and future growth.
           </p>
         </div>
 
-        {/* INTRO */}
+        {/* INTRO CARDS */}
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          <InfoCard title="Estimate Before Provisioning">
-            <p>Work through expected compute, storage, bandwidth, and database usage before creating cloud resources.</p>
-          </InfoCard>
-
-          <InfoCard title="Compare Cloud Options">
-            <p>Use the same workload assumptions across providers or service types to understand cost differences.</p>
-          </InfoCard>
-
-          <InfoCard title="Forecast Monthly Growth">
-            <p>Model how traffic, storage, requests, and scaling may affect future cloud bills.</p>
-          </InfoCard>
-        </div>
-
-        {/* FEATURED TOOLS */}
-        <section className="mt-16">
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Popular Cloud Cost Calculators
+          <article className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-6">
+            <h2 className="text-base font-semibold text-gray-950">
+              Turn Growth Assumptions Into Clearer Numbers
             </h2>
 
-            <p className="mt-3 leading-relaxed text-gray-600">
-              Start with common calculators for compute, storage, databases, bandwidth, serverless usage, and recurring cloud expenses.
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              Estimate users, requests, traffic, storage, and throughput before usage reaches production scale.
             </p>
-          </div>
+          </article>
+
+          <article className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-6">
+            <h2 className="text-base font-semibold text-gray-950">
+              Useful for Product, Cloud, and Infrastructure Planning
+            </h2>
+
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              These tools provide practical inputs for cloud, AI, API, hosting, and infrastructure cost calculations.
+            </p>
+          </article>
+
+          <article className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-6">
+            <h2 className="text-base font-semibold text-gray-950">
+              Quick Checks Before Limits Are Reached
+            </h2>
+
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              Review future capacity needs before quotas, plan allowances, or infrastructure resources become insufficient.
+            </p>
+          </article>
+        </div>
+
+        {/* POPULAR TOOLS */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Popular Capacity and Usage Calculators
+          </h2>
+
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600 md:text-base">
+            Start with frequently needed tools for users, requests, traffic, storage, bandwidth, throughput, and growth assumptions.
+          </p>
 
           {featuredTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {featuredTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                  className="group rounded-xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[var(--yellow-dark)]">
+                  <h3 className="text-base font-semibold text-gray-950">
                     {tool.title}
                   </h3>
 
@@ -132,41 +115,38 @@ export default function Page() {
                     {tool.description}
                   </p>
 
-                  <span className="mt-5 inline-flex text-sm font-semibold text-[var(--yellow-dark)]">
+                  <p className="mt-5 text-sm font-medium text-[var(--yellow-dark)]">
                     Open tool →
-                  </span>
+                  </p>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-6 text-gray-600">
-              Tools in this category will appear automatically as they are
-              created.
+            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
+              Tools in this category will appear automatically as they are created.
             </p>
           )}
         </section>
 
         {/* ALL TOOLS */}
         <section className="mt-16">
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              All Cloud Cost Calculators
-            </h2>
+          <h2 className="text-2xl font-semibold text-gray-950">
+            All Capacity and Usage Calculators
+          </h2>
 
-            <p className="mt-3 leading-relaxed text-gray-600">
-              Browse Beeija's complete cloud cost calculator set for infrastructure planning, provider comparisons, and recurring service estimates.
-            </p>
-          </div>
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600 md:text-base">
+            Browse the complete capacity and usage tool set for websites, applications, APIs, storage, and infrastructure planning.
+          </p>
 
-          {cloudCostTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {cloudCostTools.map((tool) => (
+          {categoryTools.length > 0 ? (
+            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {categoryTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                  className="rounded-xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[var(--yellow-dark)]">
+                  <h3 className="text-base font-semibold text-gray-950">
                     {tool.title}
                   </h3>
 
@@ -177,36 +157,36 @@ export default function Page() {
               ))}
             </div>
           ) : (
-            <p className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-6 text-gray-600">
+            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
               No tools have been published in this category yet.
             </p>
           )}
         </section>
 
-        {/* USE CASES */}
-        <SectionCard>
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Everyday Cloud Cost Questions These Calculators Make Easier
+        {/* TASKS */}
+        <section className="mt-16 rounded-2xl border border-gray-200 bg-white p-7 md:p-8">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Small Capacity Questions These Tools Help Simplify
           </h2>
 
-          <p className="mt-4 max-w-3xl leading-relaxed text-gray-600">
-            Cloud bills often combine several services and usage units. These calculators help break down the cost of compute, storage, traffic, databases, requests, and scaling.
+          <p className="mt-4 max-w-4xl text-sm leading-relaxed text-gray-600 md:text-base">
+            Technical costs are usually driven by usage. These tools help convert users, traffic, requests, storage, and growth assumptions into practical planning numbers.
           </p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {[
-              "Estimate virtual machine or compute costs for a planned workload.",
-              "Compare object storage costs across providers and usage patterns.",
-              "Calculate bandwidth and data-transfer expenses.",
-              "Estimate serverless request and execution costs.",
-              "Forecast managed database spending before deployment.",
-              "Compare reserved, committed, or on-demand pricing assumptions.",
-              "Estimate costs for development, staging, and production environments.",
-              "Test how usage growth may affect a monthly cloud budget."
+              "Estimate monthly requests from daily active users.",
+              "Calculate bandwidth from visitors and page size.",
+              "Forecast storage growth from files, logs, or backups.",
+              "Estimate concurrent users from total traffic.",
+              "Calculate API request volume from product usage.",
+              "Estimate throughput for events or data processing.",
+              "Model future capacity at different growth rates.",
+              "Prepare usage inputs for cost calculators."
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+                className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-4"
               >
                 <p className="text-sm leading-relaxed text-gray-700">
                   {item}
@@ -214,116 +194,111 @@ export default function Page() {
               </div>
             ))}
           </div>
-        </SectionCard>
+        </section>
 
         {/* WHY MATTERS */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Why Cloud Cost Planning Matters
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Why Capacity and Usage Planning Matters
           </h2>
 
-          <div className="mt-5 space-y-4 leading-relaxed text-gray-600">
-            <p>Cloud pricing is flexible, but the same flexibility can make costs difficult to predict across multiple services and billing units.</p>
+          <div className="mt-5 space-y-4 text-sm leading-relaxed text-gray-600 md:text-base">
+          <p>Without realistic estimates of users, traffic, requests, storage, or throughput, pricing comparisons can become misleading.</p>
 
-            <p>Estimating costs before deployment helps teams compare architectures, avoid obvious overspending, and understand which usage assumptions matter most.</p>
+          <p>Capacity calculators provide the practical inputs needed for better cloud, AI, hosting, API, and infrastructure decisions.</p>
           </div>
         </section>
 
         {/* FAQ */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-gray-950">
             Frequently Asked Questions
           </h2>
 
-          <div className="mt-6 space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                What is a cloud cost calculator?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                It estimates spending for cloud services such as compute, storage, databases, bandwidth, serverless functions, and managed infrastructure.
-              </p>
-            </div>
+          <div className="mt-7 space-y-7">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              What are capacity calculators used for?
+            </h3>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Can I compare AWS, Azure, and Google Cloud?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                Where a comparison tool is available, you can apply similar workload assumptions to multiple providers for a clearer cost comparison.
-              </p>
-            </div>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              They estimate how much traffic, storage, throughput, compute, or other resources may be required.
+            </p>
+          </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Are regional prices included?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                Some tools may support regional prices or manual overrides. Always check the selected region and verify final numbers against official pricing.
-              </p>
-            </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              What are usage calculators used for?
+            </h3>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Can I estimate future cloud growth?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                Yes. Capacity and usage inputs can be increased to model how traffic, storage, or requests may affect future costs.
-              </p>
-            </div>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              They convert activity such as users, requests, sessions, files, or events into monthly totals.
+            </p>
+          </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Will these estimates match my final invoice?
-              </h3>
-              <p className="mt-2 leading-relaxed text-gray-600">
-                They are planning estimates. Discounts, taxes, commitments, support plans, and provider-specific billing rules can change actual invoices.
-              </p>
-            </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              Can these tools forecast growth?
+            </h3>
+
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              Yes. Many calculations can include growth rates or higher future usage scenarios.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-gray-950">
+              Do these tools upload my data?
+            </h3>
+
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              Most Beeija tools will run directly in your browser. Inputs are not uploaded unless a specific tool clearly requires an external pricing or URL check.
+            </p>
+          </div>
           </div>
         </section>
 
-        {/* RELATED CATEGORIES */}
+        {/* RELATED */}
         <section className="mt-16 border-t border-gray-200 pt-10">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-gray-950">
             Related Tool Categories
           </h2>
 
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href="/categories/ai-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              AI Cost Calculators
-            </Link>
+          <Link
+            href="/categories/ai-cost-calculators"
+            className="beeija-btn-outline"
+          >
+            AI Cost Calculators
+          </Link>
 
-            <Link
-              href="/categories/hosting-infrastructure-calculators"
-              className="beeija-btn-outline"
-            >
-              Hosting & Infrastructure Calculators
-            </Link>
+          <Link
+            href="/categories/cloud-cost-calculators"
+            className="beeija-btn-outline"
+          >
+            Cloud Cost Calculators
+          </Link>
 
-            <Link
-              href="/categories/api-saas-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              API & SaaS Cost Calculators
-            </Link>
+          <Link
+            href="/categories/hosting-infrastructure-calculators"
+            className="beeija-btn-outline"
+          >
+            Hosting & Infrastructure Calculators
+          </Link>
 
-            <Link
-              href="/categories/capacity-usage-calculators"
-              className="beeija-btn-outline"
-            >
-              Capacity & Usage Calculators
-            </Link>
+          <Link
+            href="/categories/api-saas-cost-calculators"
+            className="beeija-btn-outline"
+          >
+            API & SaaS Cost Calculators
+          </Link>
 
-            <Link
-              href="/categories/technology-comparison-tools"
-              className="beeija-btn-outline"
-            >
-              Technology Comparison Tools
-            </Link>
+          <Link
+            href="/categories/technology-comparison-tools"
+            className="beeija-btn-outline"
+          >
+            Technology Comparison Tools
+          </Link>
           </div>
         </section>
       </section>
