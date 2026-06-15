@@ -186,7 +186,7 @@ export default function CategoryPage() {
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-4"
+                className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-4"
               >
                 <p className="text-sm leading-relaxed text-gray-700">
                   {item}

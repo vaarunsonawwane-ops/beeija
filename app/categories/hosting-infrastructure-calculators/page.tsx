@@ -58,7 +58,7 @@ export default function CategoryPage() {
 
         {/* INTRO CARDS */}
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          <article className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-6">
+          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
             <h2 className="text-base font-semibold text-gray-950">
               Plan Infrastructure Before Traffic Grows
             </h2>
@@ -68,7 +68,7 @@ export default function CategoryPage() {
             </p>
           </article>
 
-          <article className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-6">
+          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
             <h2 className="text-base font-semibold text-gray-950">
               Useful for Developers and Site Owners
             </h2>
@@ -78,7 +78,7 @@ export default function CategoryPage() {
             </p>
           </article>
 
-          <article className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-6">
+          <article className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-6">
             <h2 className="text-base font-semibold text-gray-950">
               Quick Checks Without Complex Architecture Planning
             </h2>
@@ -186,7 +186,7 @@ export default function CategoryPage() {
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-xl border border-[#E6C66A] bg-[#FFFDF7] p-4"
+                className="rounded-xl border border-[#F2C94C] bg-[#F5FAF7] p-4"
               >
                 <p className="text-sm leading-relaxed text-gray-700">
                   {item}
