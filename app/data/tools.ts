@@ -47,6 +47,15 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "Gemini API Cost Calculator",
+  description:
+    "Estimate Google Gemini API costs using input tokens, cached input, output tokens, Batch API, prompt size, and monthly usage.",
+  href: "/tools/gemini-api-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
   
   
 ];
