@@ -1,20 +1,36 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Beeija | Practical AI, Cloud & Cost Planning Tools",
+export const metadata: Metadata = {
+  title: {
+    absolute: "Beeija | AI, Cloud & Technology Cost Calculators",
+  },
 
   description:
-    "Simple browser-based tools to estimate AI and cloud costs, compare technical options, and plan infrastructure without unnecessary complexity.",
+    "Use simple calculators to estimate AI, cloud, hosting, infrastructure, API, SaaS, capacity, and technology costs before you build.",
+
+  keywords: [
+    "AI cost calculator",
+    "cloud cost calculator",
+    "hosting cost calculator",
+    "infrastructure cost calculator",
+    "API cost calculator",
+    "SaaS cost calculator",
+    "capacity planning calculator",
+    "usage cost calculator",
+    "technology comparison tools",
+    "technical cost planning",
+  ],
 
   alternates: {
     canonical: "https://beeija.com",
   },
 
   openGraph: {
-    title: "Beeija | Practical AI, Cloud & Cost Planning Tools",
+    title: "Beeija | AI, Cloud & Technology Cost Calculators",
 
     description:
-      "Simple browser-based tools to estimate AI and cloud costs, compare technical options, and plan infrastructure without unnecessary complexity.",
+      "Estimate AI, cloud, hosting, infrastructure, API, SaaS, capacity, and technology costs before you build.",
 
     url: "https://beeija.com",
 
@@ -26,49 +42,49 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
 
-    title: "Beeija | Practical AI, Cloud & Cost Planning Tools",
+    title: "Beeija | AI, Cloud & Technology Cost Calculators",
 
     description:
-      "Simple browser-based tools to estimate AI and cloud costs, compare technical options, and plan infrastructure without unnecessary complexity.",
+      "Simple cost calculators and comparison tools for AI, cloud, hosting, APIs, SaaS, capacity, and technology planning.",
   },
 };
 
 const categories = [
   {
-    title: "AI Cost Tools",
+    title: "AI Cost Calculators",
     description:
-      "Estimate token usage, model pricing, API spending, inference expenses, and other practical AI-related costs.",
-    href: "/categories/ai-cost-tools",
+      "Estimate token use, model pricing, API cost, and other common AI expenses.",
+    href: "/categories/ai-cost-calculators",
   },
   {
-    title: "Cloud Cost Tools",
+    title: "Cloud Cost Calculators",
     description:
-      "Estimate compute, storage, bandwidth, database, hosting, and everyday cloud infrastructure costs.",
-    href: "/categories/cloud-cost-tools",
+      "Estimate compute, storage, bandwidth, database, and other cloud costs before you deploy.",
+    href: "/categories/cloud-cost-calculators",
   },
   {
-    title: "Infrastructure Tools",
+    title: "Hosting & Infrastructure Calculators",
     description:
-      "Plan servers, containers, capacity, traffic, scaling, and infrastructure requirements before deployment.",
-    href: "/categories/infrastructure-tools",
+      "Plan hosting, servers, containers, traffic, storage, scaling, and other infrastructure needs.",
+    href: "/categories/hosting-infrastructure-calculators",
   },
   {
-    title: "Stack Comparison Tools",
+    title: "API & SaaS Cost Calculators",
     description:
-      "Compare technical options using practical inputs, clear trade-offs, and understandable cost differences.",
-    href: "/categories/stack-comparison-tools",
+      "Estimate API and software costs using requests, users, usage limits, and price plans.",
+    href: "/categories/api-saas-cost-calculators",
   },
   {
-    title: "Usage & Growth Tools",
+    title: "Capacity & Usage Calculators",
     description:
-      "Estimate how users, requests, storage, traffic, and growth assumptions may affect future costs.",
-    href: "/categories/usage-growth-tools",
+      "See how users, requests, storage, traffic, workload, and growth may affect future costs.",
+    href: "/categories/capacity-usage-calculators",
   },
   {
-    title: "Pricing & Budget Tools",
+    title: "Technology Comparison Tools",
     description:
-      "Break down recurring expenses, compare pricing structures, and prepare more realistic technical budgets.",
-    href: "/categories/pricing-budget-tools",
+      "Compare technical options using clear inputs, simple trade-offs, and cost differences.",
+    href: "/categories/technology-comparison-tools",
   },
 ];
 
@@ -82,28 +98,26 @@ export default function HomePage() {
           </p>
 
           <h1 className="mt-8 text-4xl font-semibold tracking-tight text-gray-950 md:text-6xl md:leading-tight">
-            Practical tools for better technical decisions — clear, useful,
-            and easy to understand.
+            Simple cost calculators for better AI, cloud, and technology
+            decisions.
           </h1>
 
           <div className="mt-8 max-w-4xl space-y-5 text-lg leading-relaxed text-gray-600">
             <p>
-              Beeija is a growing collection of browser-based tools created to
-              help you estimate costs, compare options, and plan technical
-              decisions with greater clarity.
+              Beeija is a growing collection of simple calculators and
+              comparison tools that help you estimate costs, compare options,
+              and plan technical work with more clarity.
             </p>
 
             <p>
-              Whether you are working through AI usage, cloud infrastructure,
-              hosting, storage, traffic, scaling, or a complete technical stack,
-              each tool is designed to turn uncertain inputs into practical
-              estimates.
+              You can use Beeija to plan AI usage, cloud services, hosting,
+              APIs, SaaS tools, storage, traffic, capacity, and technology
+              choices.
             </p>
 
             <p>
-              When you are planning something new, you should be able to
-              understand the likely cost, compare realistic choices, and move
-              forward without unnecessary complexity.
+              Before you spend time or money, you should be able to test your
+              numbers, understand the likely cost, and compare your options.
             </p>
           </div>
 
@@ -129,13 +143,13 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-3xl">
             <h2 className="text-3xl font-semibold tracking-tight text-gray-950">
-              Explore by category
+              Explore cost and planning tools by category
             </h2>
 
             <p className="mt-4 leading-relaxed text-gray-600">
-              Find tools based on what you are planning — AI costs, cloud
-              infrastructure, stack comparisons, usage, growth, pricing,
-              budgeting, and more.
+              Choose the area you want to plan for: AI, cloud, hosting,
+              infrastructure, APIs, SaaS, capacity, usage, or technology
+              comparison.
             </p>
           </div>
 
@@ -171,14 +185,28 @@ export default function HomePage() {
 
           <div className="mt-6 space-y-5 leading-relaxed text-gray-600">
             <p>
-              Beeija was created because technical pricing and planning often
-              make early decisions feel harder than they need to be.
+              Technical pricing is often spread across many pages, price
+              levels, and billing units. Beeija brings the main inputs together
+              so you can test a real case before making a decision.
             </p>
 
             <p>
-              Sometimes you simply need to estimate a monthly cost, compare two
-              options, test a growth assumption, or understand whether an idea
-              is practical before investing more time and money.
+              You may only need to estimate a monthly cost, compare two
+              services, check a growth plan, or see whether an idea fits your
+              budget.
+            </p>
+
+            <p>
+              Beeija helps you before and while you plan a technical project.
+              When you need useful developer tools during the building stage,
+              you can also visit{" "}
+              <a
+                href="https://yoryantra.com"
+                className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
+              >
+                Yoryantra
+              </a>
+              .
             </p>
           </div>
         </div>
