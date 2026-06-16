@@ -1,59 +1,72 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 const categories = [
   {
     title: "AI Cost Calculators",
     description:
-      "Estimate token usage, model pricing, AI API spending, inference costs, and recurring AI expenses.",
+      "Estimate token use, model prices, AI API costs, inference costs, and monthly AI spending.",
     href: "/categories/ai-cost-calculators",
   },
   {
     title: "Cloud Cost Calculators",
     description:
-      "Estimate compute, storage, bandwidth, database, serverless, and everyday cloud costs.",
+      "Estimate compute, storage, bandwidth, database, serverless, and other cloud costs.",
     href: "/categories/cloud-cost-calculators",
   },
   {
     title: "Hosting & Infrastructure Calculators",
     description:
-      "Plan hosting, servers, containers, traffic, scaling, and infrastructure requirements.",
+      "Plan hosting, servers, containers, traffic, scaling, and infrastructure needs.",
     href: "/categories/hosting-infrastructure-calculators",
   },
   {
     title: "API & SaaS Cost Calculators",
     description:
-      "Estimate API requests, subscriptions, seats, usage tiers, overages, and recurring SaaS expenses.",
+      "Estimate API requests, subscriptions, users, price levels, overages, and monthly SaaS costs.",
     href: "/categories/api-saas-cost-calculators",
   },
   {
     title: "Capacity & Usage Calculators",
     description:
-      "Estimate users, requests, traffic, bandwidth, storage growth, throughput, and future capacity.",
+      "Estimate users, requests, traffic, bandwidth, storage growth, workload, and future capacity.",
     href: "/categories/capacity-usage-calculators",
   },
   {
     title: "Technology Comparison Tools",
     description:
-      "Compare providers, platforms, services, and technical options using practical inputs.",
+      "Compare providers, platforms, services, and technical options using clear inputs.",
     href: "/categories/technology-comparison-tools",
   },
 ];
 
-export const metadata = {
-  title: "Tool Categories | Beeija",
+export const metadata: Metadata = {
+  title: "Cost Calculator Categories | Beeija",
 
   description:
-    "Browse focused Beeija categories for AI costs, cloud pricing, hosting, infrastructure, APIs, SaaS, capacity, usage, and technology comparisons.",
+    "Browse AI, cloud, hosting, infrastructure, API, SaaS, capacity, usage, and technology comparison calculator categories on Beeija.",
+
+  keywords: [
+    "AI cost calculator categories",
+    "cloud cost calculator categories",
+    "hosting cost calculators",
+    "infrastructure cost calculators",
+    "API cost calculators",
+    "SaaS cost calculators",
+    "capacity planning calculators",
+    "usage calculators",
+    "technology comparison tools",
+  ],
 
   alternates: {
     canonical: "https://beeija.com/categories",
   },
 
   openGraph: {
-    title: "Tool Categories | Beeija",
+    title: "Cost Calculator Categories | Beeija",
 
     description:
-      "Browse focused Beeija categories for AI costs, cloud pricing, hosting, infrastructure, APIs, SaaS, capacity, usage, and technology comparisons.",
+      "Browse AI, cloud, hosting, infrastructure, API, SaaS, capacity, usage, and technology comparison tools.",
 
     url: "https://beeija.com/categories",
 
@@ -65,10 +78,10 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
 
-    title: "Tool Categories | Beeija",
+    title: "Cost Calculator Categories | Beeija",
 
     description:
-      "Explore AI cost, cloud, hosting, infrastructure, API, SaaS, capacity, usage, and technology comparison categories.",
+      "Explore simple cost calculators and comparison tools for AI, cloud, hosting, APIs, SaaS, capacity, and technology planning.",
   },
 };
 
@@ -79,14 +92,13 @@ export default function CategoriesPage() {
         {/* HERO */}
         <div className="max-w-4xl">
           <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
-            Explore Cost Categories Across AI, Cloud, Hosting, APIs, and
+            Explore Cost Calculators for AI, Cloud, Hosting, APIs, and
             Technology
           </h1>
 
           <p className="mt-5 max-w-3xl text-sm leading-relaxed text-gray-600 md:text-base">
-            Browse focused tool categories for AI costs, cloud pricing,
-            hosting, infrastructure, APIs, SaaS, capacity, usage, and
-            technology comparisons.
+            Choose a category to estimate costs, compare options, and plan your
+            next technical decision with clear and simple tools.
           </p>
         </div>
 
@@ -116,26 +128,23 @@ export default function CategoriesPage() {
         {/* WHY CATEGORIES */}
         <section className="mt-14 rounded-2xl border border-gray-200 bg-white p-7 md:p-8">
           <h2 className="text-xl font-semibold text-gray-950">
-            Why Beeija Uses Focused Categories
+            Why Beeija Uses Clear Categories
           </h2>
 
           <div className="mt-5 space-y-4 text-sm leading-7 text-gray-600 md:text-base">
             <p>
-              When you are planning AI usage, cloud infrastructure, hosting,
-              APIs, SaaS, or future capacity, you usually need several related
-              calculators and comparison tools rather than one isolated page.
+              When you plan AI use, cloud services, hosting, APIs, SaaS, or
+              future capacity, you may need more than one calculator.
             </p>
 
             <p>
-              Keeping tools grouped into focused categories makes them easier
-              to find. Instead of moving through unrelated pages, you can
-              quickly browse tools that naturally belong together.
+              Clear categories make related tools easier to find. You can stay
+              in one area instead of moving through unrelated pages.
             </p>
 
             <p>
-              Beeija is organized to help you find the right planning tool
-              faster, without turning the site into a random collection of
-              calculators.
+              Beeija keeps every tool in the right place so you can find what
+              you need faster.
             </p>
           </div>
         </section>
