@@ -2,27 +2,30 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-12">
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
-          <div>
-            <Link
-              href="/"
-              className="text-lg font-semibold text-gray-950 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
-            >
+    <footer className="mt-12 border-t border-gray-100 bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-10">
+        {/* TOP SECTION */}
+        <div className="flex flex-col items-start justify-between gap-10 md:flex-row">
+          {/* BRAND */}
+          <div className="max-w-sm">
+            <h2 className="text-lg font-bold text-gray-900">
               Beeija
-            </Link>
+            </h2>
 
-            <p className="mt-4 max-w-sm text-sm leading-6 text-gray-600">
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
               Practical tools for AI, cloud, infrastructure, and technical cost
               planning.
             </p>
           </div>
 
-          <div>
-            <h2 className="text-sm font-semibold text-gray-950">Tools</h2>
+          {/* LINKS */}
+          <div className="flex flex-wrap gap-10 text-sm">
+            {/* TOOLS */}
+            <div className="flex flex-col gap-2">
+              <p className="font-semibold text-gray-900">
+                Tools
+              </p>
 
-            <div className="mt-4 flex flex-col gap-3 text-sm">
               <Link
                 href="/tools"
                 className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
@@ -37,12 +40,13 @@ export default function Footer() {
                 Categories
               </Link>
             </div>
-          </div>
 
-          <div>
-            <h2 className="text-sm font-semibold text-gray-950">Company</h2>
+            {/* COMPANY */}
+            <div className="flex flex-col gap-2">
+              <p className="font-semibold text-gray-900">
+                Company
+              </p>
 
-            <div className="mt-4 flex flex-col gap-3 text-sm">
               <Link
                 href="/about"
                 className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
@@ -57,12 +61,13 @@ export default function Footer() {
                 Contact
               </Link>
             </div>
-          </div>
 
-          <div>
-            <h2 className="text-sm font-semibold text-gray-950">Legal</h2>
+            {/* LEGAL */}
+            <div className="flex flex-col gap-2">
+              <p className="font-semibold text-gray-900">
+                Legal
+              </p>
 
-            <div className="mt-4 flex flex-col gap-3 text-sm">
               <Link
                 href="/privacy-policy"
                 className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
@@ -94,12 +99,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-gray-200 pt-6 text-sm md:flex-row md:items-center md:justify-between">
-          <p className="text-gray-500">
+        {/* BOTTOM BAR */}
+        <div className="mt-8 flex flex-col items-start justify-between gap-2 border-t border-gray-100 pt-5 text-sm text-gray-500 md:flex-row md:items-center">
+          <p>
             © {new Date().getFullYear()} Beeija. All rights reserved.
           </p>
 
-          <p className="font-medium text-[var(--yellow-dark)]">
+          <p className="text-sm font-medium text-[var(--yellow-dark)]">
             Built with Gratitude 🙏
           </p>
         </div>
