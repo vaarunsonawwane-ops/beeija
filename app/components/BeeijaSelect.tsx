@@ -82,17 +82,17 @@ export default function BeeijaSelect({
         type="button"
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
-        className="relative w-full rounded-xl border border-gray-300 bg-white p-4 pr-10 text-left text-sm text-gray-900 outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+        className="relative w-full rounded-xl border border-gray-300 bg-white p-4 pr-10 text-left text-sm text-gray-900 outline-none transition hover:border-gray-400 focus:border-transparent focus:ring-2 focus:ring-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
       >
         {selected?.label || "Select option"}
 
-        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--green)]">
           ▾
         </span>
       </button>
 
       {open ? (
-        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-[#F2C94C] bg-white shadow-sm">
           {options.map((option) => {
             const active = option.value === value;
 
@@ -103,8 +103,8 @@ export default function BeeijaSelect({
                 onClick={() => chooseOption(option.value)}
                 className={`block w-full px-4 py-3 text-left text-sm transition ${
                   active
-                    ? "bg-[#E8F2EC] font-medium text-[var(--green)]"
-                    : "bg-white text-gray-900 hover:bg-[#F5FAF7]"
+                    ? "bg-[#F5FAF7] font-medium text-[var(--green)]"
+                    : "bg-white text-gray-900 hover:bg-[#FFFBEA]"
                 }`}
               >
                 {option.label}
