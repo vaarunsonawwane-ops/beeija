@@ -37,21 +37,24 @@ export default function BeeijaNumberField({
         ) : null}
 
         <input
-          type="number"
+          type="text"
           inputMode="decimal"
           value={value}
-          onChange={(event) => onChange(event.target.value)}
-          min={min}
-          max={max}
-          step={step}
+          onChange={(event) => {
+            const next = event.target.value;
+            if (next === "" || /^\d*\.?\d*$/.test(next)) onChange(next);
+          }}
+          data-min={min}
+          data-max={max}
+          data-step={step}
           disabled={disabled}
-          className={`min-h-12 w-full rounded-xl border border-gray-300 bg-white py-3 text-sm text-gray-900 outline-none transition hover:border-gray-400 focus:border-transparent focus:ring-2 focus:ring-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
+          className={`min-h-12 w-full rounded-xl border border-gray-300 bg-white py-3 text-sm text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
             prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-10" : "px-4"
           }`}
         />
 
         {suffix ? (
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[var(--yellow-dark)]">
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
             {suffix}
           </span>
         ) : null}

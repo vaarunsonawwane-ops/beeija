@@ -45,10 +45,7 @@ export default function BeeijaSelect({
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const selected = options.find((option) => option.value === value);
@@ -57,14 +54,8 @@ export default function BeeijaSelect({
     if (disabled) return;
 
     onChange({
-      target: {
-        value: nextValue,
-        name: name ?? "",
-      },
-      currentTarget: {
-        value: nextValue,
-        name: name ?? "",
-      },
+      target: { value: nextValue, name: name ?? "" },
+      currentTarget: { value: nextValue, name: name ?? "" },
     } as ChangeEvent<HTMLSelectElement>);
 
     setOpen(false);
@@ -81,18 +72,40 @@ export default function BeeijaSelect({
       <button
         type="button"
         disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="relative w-full rounded-xl border border-gray-300 bg-white p-4 pr-10 text-left text-sm text-gray-900 outline-none transition hover:border-gray-400 focus:border-transparent focus:ring-2 focus:ring-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+        className={`relative flex min-h-12 w-full items-center justify-between rounded-xl border bg-white px-4 py-3 text-left text-sm text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
+          open
+            ? "border-[var(--green)] ring-1 ring-[var(--green)]"
+            : "border-gray-300 hover:border-gray-400"
+        }`}
       >
-        {selected?.label || "Select option"}
+        <span>{selected?.label || "Select option"}</span>
 
-        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--green)]">
-          ▾
-        </span>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 20 20"
+          fill="none"
+          className={`h-4 w-4 shrink-0 text-[var(--green)] transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        >
+          <path
+            d="m6 8 4 4 4-4"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
       {open ? (
-        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-[#F2C94C] bg-white shadow-sm">
+        <div
+          role="listbox"
+          className="absolute z-50 mt-1.5 w-full overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+        >
           {options.map((option) => {
             const active = option.value === value;
 
@@ -100,8 +113,10 @@ export default function BeeijaSelect({
               <button
                 key={option.value}
                 type="button"
+                role="option"
+                aria-selected={active}
                 onClick={() => chooseOption(option.value)}
-                className={`block w-full px-4 py-3 text-left text-sm transition ${
+                className={`block w-full px-4 py-2.5 text-left text-sm transition ${
                   active
                     ? "bg-[#F5FAF7] font-medium text-[var(--green)]"
                     : "bg-white text-gray-900 hover:bg-[#FFFBEA]"
