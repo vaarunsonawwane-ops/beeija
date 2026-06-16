@@ -13,10 +13,36 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://beeija.com"),
 
-  title: "BEEIJA",
+  title: {
+    default: "Beeija",
+    template: "%s | Beeija",
+  },
 
   description:
     "Practical tools for AI, cloud, infrastructure, cost estimation, and technical planning.",
+
+  applicationName: "Beeija",
+
+  openGraph: {
+    type: "website",
+    url: "https://beeija.com",
+    siteName: "Beeija",
+    title: "Beeija",
+    description:
+      "Practical tools for AI, cloud, infrastructure, cost estimation, and technical planning.",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Beeija",
+    description:
+      "Practical tools for AI, cloud, infrastructure, cost estimation, and technical planning.",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
 
   icons: {
     icon: "/favicon.ico",
@@ -27,9 +53,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
       <body className={`${inter.className} bg-white text-gray-900`}>
