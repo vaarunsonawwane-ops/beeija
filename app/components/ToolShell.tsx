@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 type ToolShellProps = {
   title: string;
@@ -19,8 +20,15 @@ export default function ToolShell({
     <main className="bg-white text-gray-900">
       <section className="mx-auto max-w-7xl px-6 pb-20 pt-8 md:pb-24 md:pt-12">
         <div className="max-w-4xl">
+          <Link
+            href="/tools"
+            className="inline-flex text-sm text-gray-600 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+          >
+            ← Back to Tools
+          </Link>
+
           {category ? (
-            <p className="text-sm font-medium text-[var(--yellow-dark)]">
+            <p className="mt-8 text-sm font-medium uppercase tracking-[0.14em] text-[var(--yellow-dark)]">
               {category}
             </p>
           ) : null}
@@ -40,9 +48,7 @@ export default function ToolShell({
           ) : null}
         </div>
 
-        <div className="mt-12">
-          {children}
-        </div>
+        <div className="mt-12">{children}</div>
       </section>
     </main>
   );
