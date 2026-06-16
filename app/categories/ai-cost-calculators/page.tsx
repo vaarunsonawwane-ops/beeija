@@ -9,7 +9,7 @@ const categoryTools = tools.filter(
 const featuredTools = categoryTools.slice(0, 6);
 
 export const metadata: Metadata = {
-  title: "AI Cost Calculators for Tokens, Models & APIs | Beeija",
+  title: "AI Cost Calculators for Tokens, Models & APIs",
 
   description:
     "Estimate AI token costs, model pricing, API usage, embeddings, image generation, audio, and monthly AI spending with simple planning calculators.",
