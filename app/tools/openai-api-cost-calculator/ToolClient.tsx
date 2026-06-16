@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type ModelKey = "gpt-5.5" | "gpt-5.4" | "gpt-5.4-mini";
 
@@ -402,10 +403,9 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <p className="mt-6 text-xs leading-relaxed text-gray-500">
-          Built-in rates checked June 16, 2026. Final charges may include other
-          OpenAI services, taxes, discounts, retries, or usage not entered here.
-        </p>
+        <BeeijaNotice>
+          Built-in rates checked June 16, 2026. Final charges may include other OpenAI services, taxes, discounts, retries, or usage not entered here.
+        </BeeijaNotice>
       </section>
     </div>
   );

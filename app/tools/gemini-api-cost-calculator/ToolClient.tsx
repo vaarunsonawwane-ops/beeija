@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type ModelKey =
   | "gemini-2.5-pro"
@@ -505,10 +506,9 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <p className="mt-6 text-xs leading-relaxed text-gray-500">
-          Built-in rates checked June 17, 2026. Cache storage, grounding, media,
-          taxes, discounts, and other services are not included.
-        </p>
+        <BeeijaNotice>
+          Built-in rates checked June 17, 2026. Cache storage, grounding, media, taxes, discounts, and other services are not included.
+        </BeeijaNotice>
       </section>
     </div>
   );

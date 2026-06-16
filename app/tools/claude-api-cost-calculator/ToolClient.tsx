@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type ModelKey = "claude-opus-4.8" | "claude-sonnet-4.6" | "claude-haiku-4.5";
 type CacheMode = "none" | "5m" | "1h";
@@ -504,11 +505,9 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <p className="mt-6 text-xs leading-relaxed text-gray-500">
-          Built-in rates checked June 17, 2026. Final charges may include other
-          Anthropic services, taxes, discounts, retries, or usage not entered
-          here.
-        </p>
+        <BeeijaNotice>
+          Built-in rates checked June 17, 2026. Final charges may include other Anthropic services, taxes, discounts, retries, or usage not entered here.
+        </BeeijaNotice>
       </section>
     </div>
   );
