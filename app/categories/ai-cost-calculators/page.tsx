@@ -62,9 +62,9 @@ export const metadata: Metadata = {
 export default function CategoryPage() {
   return (
     <main className="min-h-screen bg-white">
-      <section className="mx-auto max-w-7xl px-6 py-12">
+      <section className="mx-auto max-w-7xl px-6 py-16">
         {/* BREADCRUMB */}
-        <div className="mb-10 flex items-center text-sm text-gray-500">
+        <div className="mb-8 flex items-center text-sm text-gray-500">
           <Link
             href="/"
             className="transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
@@ -92,7 +92,7 @@ export default function CategoryPage() {
             AI Cost Calculators for Tokens, Models, APIs, Images, and Audio
           </h1>
 
-          <p className="mt-5 text-base leading-relaxed text-gray-600 md:text-lg">
+          <p className="mt-5 text-lg leading-relaxed text-gray-600">
             Estimate the cost of AI models, token use, API requests, embeddings,
             image generation, speech, and other AI services before you build or
             scale a product.
@@ -102,33 +102,33 @@ export default function CategoryPage() {
         {/* INTRO CARDS */}
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-base font-semibold text-gray-950">
+            <h2 className="text-lg font-semibold text-gray-900">
               Plan AI Costs Before Usage Grows
             </h2>
 
-            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+            <p className="mt-3 text-base leading-relaxed text-gray-600">
               Test token volume, request count, model choice, and other billing
               units before a small AI feature becomes a large monthly cost.
             </p>
           </article>
 
           <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-base font-semibold text-gray-950">
+            <h2 className="text-lg font-semibold text-gray-900">
               Useful for Real AI Products
             </h2>
 
-            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+            <p className="mt-3 text-base leading-relaxed text-gray-600">
               Plan costs for chatbots, assistants, search tools, support tools,
               image features, voice tools, and other AI-based products.
             </p>
           </article>
 
           <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-base font-semibold text-gray-950">
+            <h2 className="text-lg font-semibold text-gray-900">
               Compare Models and Providers
             </h2>
 
-            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+            <p className="mt-3 text-base leading-relaxed text-gray-600">
               Use the same workload to compare model prices, provider rates, and
               possible monthly costs without reading long pricing tables.
             </p>
@@ -142,25 +142,25 @@ export default function CategoryPage() {
               Popular AI Cost Calculators
             </h2>
 
-            <p className="mt-3 text-sm leading-relaxed text-gray-600 md:text-base">
+            <p className="mt-3 text-gray-600 leading-relaxed">
               Start with tools for token cost, AI APIs, model use, inference,
               embeddings, images, audio, and monthly workload planning.
             </p>
           </div>
 
           {featuredTools.length > 0 ? (
-            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {featuredTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="group rounded-xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                  className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
                 >
                   <h3 className="text-base font-semibold text-gray-950 transition-colors duration-200 group-hover:text-[var(--green)]">
                     {tool.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                  <p className="mt-3 text-base leading-relaxed text-gray-600">
                     {tool.description}
                   </p>
 
@@ -185,25 +185,25 @@ export default function CategoryPage() {
               All AI Cost Calculators
             </h2>
 
-            <p className="mt-3 text-sm leading-relaxed text-gray-600 md:text-base">
+            <p className="mt-3 text-gray-600 leading-relaxed">
               Browse every AI cost tool for tokens, models, requests, inference,
               embeddings, images, audio, and other running costs.
             </p>
           </div>
 
           {categoryTools.length > 0 ? (
-            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {categoryTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="rounded-xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                  className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <h3 className="text-base font-semibold text-gray-950">
+                  <h3 className="text-lg font-semibold text-gray-900">
                     {tool.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                  <p className="mt-3 text-base leading-relaxed text-gray-600">
                     {tool.description}
                   </p>
                 </Link>
@@ -222,7 +222,7 @@ export default function CategoryPage() {
             Small AI Cost Questions These Tools Help Simplify
           </h2>
 
-          <p className="mt-4 max-w-4xl text-sm leading-relaxed text-gray-600 md:text-base">
+          <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">
             AI pricing can change with token length, model choice, request
             volume, images, audio, embeddings, and other billing units. These
             tools help you test those numbers before you spend money.
@@ -243,7 +243,7 @@ export default function CategoryPage() {
                 key={item}
                 className="border-l-4 border-[#F2C94C] bg-white px-4 py-3"
               >
-                <p className="text-sm leading-relaxed text-gray-700">
+                <p className="text-base leading-relaxed text-gray-700">
                   {item}
                 </p>
               </div>
@@ -257,7 +257,7 @@ export default function CategoryPage() {
             Why AI Cost Planning Matters
           </h2>
 
-          <div className="mt-5 max-w-4xl space-y-4 text-sm leading-relaxed text-gray-600 md:text-base">
+          <div className="mt-5 max-w-4xl space-y-4 text-gray-600 leading-relaxed">
             <p>
               AI pricing may look simple at first, but the final cost can depend
               on input tokens, output tokens, request count, model choice,
@@ -293,13 +293,13 @@ export default function CategoryPage() {
             Frequently Asked Questions
           </h2>
 
-          <div className="mt-7 space-y-7">
+          <div className="mt-6 space-y-6">
             <div>
-              <h3 className="text-sm font-semibold text-gray-950">
+              <h3 className="font-semibold text-gray-900">
                 What is an AI cost calculator?
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <p className="mt-2 text-gray-600 leading-relaxed">
                 An AI cost calculator estimates spending for tokens, models,
                 API requests, images, audio, embeddings, and other paid AI
                 services.
@@ -307,11 +307,11 @@ export default function CategoryPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-950">
+              <h3 className="font-semibold text-gray-900">
                 How do I estimate AI API costs?
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <p className="mt-2 text-gray-600 leading-relaxed">
                 Start with the model price, number of requests, and average
                 input and output tokens. A calculator can then show the cost per
                 request, day, month, or user.
@@ -319,22 +319,22 @@ export default function CategoryPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-950">
+              <h3 className="font-semibold text-gray-900">
                 Can I compare AI model prices?
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <p className="mt-2 text-gray-600 leading-relaxed">
                 Yes. Use the same request and token numbers across different
                 models to compare possible costs for one workload.
               </p>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-950">
+              <h3 className="font-semibold text-gray-900">
                 Do embeddings, images, and audio add extra costs?
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <p className="mt-2 text-gray-600 leading-relaxed">
                 Yes. Embeddings may be priced by text volume. Images may be
                 priced by size, quality, or model. Audio may be priced by
                 minutes, characters, tokens, or requests.
@@ -342,11 +342,11 @@ export default function CategoryPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-950">
+              <h3 className="font-semibold text-gray-900">
                 Are AI cost estimates exact?
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <p className="mt-2 text-gray-600 leading-relaxed">
                 No. They are planning estimates. The final bill may change
                 because of updated prices, discounts, taxes, retries, extra
                 services, or actual usage.
@@ -354,11 +354,11 @@ export default function CategoryPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-950">
+              <h3 className="font-semibold text-gray-900">
                 Do these tools upload my data?
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <p className="mt-2 text-gray-600 leading-relaxed">
                 Most Beeija tools run in your browser. Your inputs are not
                 uploaded unless a tool clearly says that it needs an external
                 price or URL check.
