@@ -30,7 +30,15 @@ export type BeeijaTool = {
   - internal linking
 */
 
-export const tools: BeeijaTool[] = [];
+export const tools: BeeijaTool[] = [
+  {
+    title: "OpenAI API Cost Calculator",
+    description:
+      "Estimate OpenAI API costs using requests, input tokens, cached input tokens, output tokens, and model pricing.",
+    href: "/tools/openai-api-cost-calculator",
+    category: "AI Cost Calculators",
+  },
+];
 
 export function getToolsByCategory(category: BeeijaCategory) {
   return tools.filter((tool) => tool.category === category);
