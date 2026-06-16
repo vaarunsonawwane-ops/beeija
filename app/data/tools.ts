@@ -38,6 +38,17 @@ export const tools: BeeijaTool[] = [
     href: "/tools/openai-api-cost-calculator",
     category: "AI Cost Calculators",
   },
+  
+  {
+  title: "Claude API Cost Calculator",
+  description:
+    "Estimate Anthropic Claude API costs using input tokens, prompt caching, output tokens, Batch API, and monthly usage.",
+  href: "/tools/claude-api-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
 ];
 
 export function getToolsByCategory(category: BeeijaCategory) {
