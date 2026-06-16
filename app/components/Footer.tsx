@@ -85,7 +85,7 @@ export default function Footer() {
               </Link>
 
               <Link
-                href="/sitemap-page"
+                href="/sitemap"
                 className="text-gray-700 transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
               >
                 Sitemap
