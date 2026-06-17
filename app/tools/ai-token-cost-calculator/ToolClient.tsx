@@ -144,13 +144,13 @@ export default function ToolClient() {
           />
         </div>
 
-        <label className="mt-6 flex cursor-not-allowed items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+        <label className="mt-6 flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
           <input
             type="checkbox"
             checked
-            disabled
             readOnly
-            className="mt-1 h-4 w-4 accent-[var(--green)]"
+            aria-label="Custom prices are always enabled"
+            className="pointer-events-none mt-1 h-4 w-4 accent-[var(--green)]"
           />
 
           <span>

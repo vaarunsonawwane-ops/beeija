@@ -25,7 +25,7 @@ export default function BeeijaNumberField({
 }: BeeijaNumberFieldProps) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-gray-700">
+      <span className="mb-2 block text-sm font-medium text-gray-800">
         {label}
       </span>
 
@@ -51,7 +51,7 @@ export default function BeeijaNumberField({
           data-max={max}
           data-step={step}
           disabled={disabled}
-          className={`min-h-12 w-full rounded-xl border border-gray-300 bg-white py-3 text-sm text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
+          className={`min-h-12 w-full rounded-xl border border-gray-200 bg-white py-3 text-sm text-gray-900 outline-none transition focus:border-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
             prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-10" : "px-4"
           }`}
         />
