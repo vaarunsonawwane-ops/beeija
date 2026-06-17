@@ -79,6 +79,16 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "Perplexity API Cost Calculator",
+  description:
+    "Estimate Perplexity Sonar API costs using tokens, search context fees, Deep Research usage, requests, and monthly volume.",
+  href: "/tools/perplexity-api-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
   
   
   
