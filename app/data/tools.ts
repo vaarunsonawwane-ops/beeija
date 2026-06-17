@@ -87,7 +87,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
-  
+  {
+  title: "Cohere API Cost Calculator",
+  description:
+    "Estimate Cohere Command API costs using input tokens, output tokens, requests, and monthly usage.",
+  href: "/tools/cohere-api-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
