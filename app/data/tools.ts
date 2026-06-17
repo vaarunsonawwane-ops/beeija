@@ -104,6 +104,14 @@ export const tools: BeeijaTool[] = [
   },
   
   
+  {
+  title: "AI Image Generation Cost Calculator",
+  description:
+    "Estimate AI image generation costs using price per image, monthly requests, retries, and other fixed costs.",
+  href: "/tools/ai-image-generation-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
   
   
   
