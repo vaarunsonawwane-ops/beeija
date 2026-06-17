@@ -63,7 +63,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
-  
+  {
+  title: "Grok API Cost Calculator",
+  description:
+    "Estimate xAI Grok API costs using requests, input tokens, cached input tokens, output tokens, and monthly usage.",
+  href: "/tools/grok-api-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
