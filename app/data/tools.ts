@@ -71,6 +71,16 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "Mistral API Cost Calculator",
+  description:
+    "Estimate Mistral API costs using input tokens, output tokens, Batch API, requests, and monthly usage.",
+  href: "/tools/mistral-api-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
   
   
 ];
