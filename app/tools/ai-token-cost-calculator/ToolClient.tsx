@@ -268,6 +268,7 @@ export default function ToolClient() {
             </p>
           </div>
         }
+        noticeText="This tool uses only the prices entered by you. Check the provider’s official pricing page before relying on the estimate. Final charges may also include tools, images, audio, storage, web search, taxes, discounts, retries, and other services."
         provider="AI provider"
         pricingCheckedDate="the date you checked the provider's pricing"
         excludedCosts="tools, images, audio, storage, web search, taxes, discounts, retries, and other services"

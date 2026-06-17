@@ -327,7 +327,7 @@ export default function ToolClient() {
           </div>
         }
         provider="DeepSeek"
-        pricingCheckedDate="June 17, 2026"
+        pricingCheckedDate="June 18, 2026"
         excludedCosts="taxes, discounts, retries, price changes, and other services not entered here"
       />
     </div>

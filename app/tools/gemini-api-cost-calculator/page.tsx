@@ -186,7 +186,7 @@ export default function GeminiApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in prices were checked against Google's official
-                    Gemini Developer API pricing page on June 17, 2026. Google
+                    Gemini Developer API pricing page on June 18, 2026. Google
                     may change models, prices, limits, or billing rules at any
                     time.
                   </p>

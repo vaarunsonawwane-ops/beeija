@@ -2,8 +2,6 @@
 
 import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
-import BeeijaNumberField from "@/app/components/BeeijaNumberField";
-import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type ModelKey = "gpt-5.5" | "gpt-5.4" | "gpt-5.4-mini";
 
@@ -221,7 +219,7 @@ export default function ToolClient() {
             options={pricingModeOptions}
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Requests per month"
             value={requestsPerMonth}
             onChange={setRequestsPerMonth}
@@ -229,7 +227,7 @@ export default function ToolClient() {
             step="1"
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Average input tokens per request"
             value={inputTokensPerRequest}
             onChange={setInputTokensPerRequest}
@@ -237,7 +235,7 @@ export default function ToolClient() {
             step="1"
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Average output tokens per request"
             value={outputTokensPerRequest}
             onChange={setOutputTokensPerRequest}
@@ -245,7 +243,7 @@ export default function ToolClient() {
             step="1"
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Cached input percentage"
             value={cachedInputPercent}
             onChange={setCachedInputPercent}
@@ -276,7 +274,7 @@ export default function ToolClient() {
 
         {customPricing ? (
           <div className="mt-5 grid gap-5 md:grid-cols-3">
-            <BeeijaNumberField
+            <NumberField
               label="Input price"
               value={customInputPrice}
               onChange={setCustomInputPrice}
@@ -285,7 +283,7 @@ export default function ToolClient() {
               prefix="$"
             />
 
-            <BeeijaNumberField
+            <NumberField
               label="Cached input price"
               value={customCachedPrice}
               onChange={setCustomCachedPrice}
@@ -294,7 +292,7 @@ export default function ToolClient() {
               prefix="$"
             />
 
-            <BeeijaNumberField
+            <NumberField
               label="Output price"
               value={customOutputPrice}
               onChange={setCustomOutputPrice}
@@ -403,11 +401,69 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <BeeijaNotice>
-          Built-in rates checked June 16, 2026. Final charges may include other OpenAI services, taxes, discounts, retries, or usage not entered here.
-        </BeeijaNotice>
+        <p className="mt-6 text-xs leading-relaxed text-gray-500">
+          Built-in rates checked June 18, 2026. Final charges may include other
+          OpenAI services, taxes, discounts, retries, or usage not entered here.
+        </p>
       </section>
     </div>
+  );
+}
+
+type NumberFieldProps = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  min?: string;
+  max?: string;
+  step?: string;
+  prefix?: string;
+  suffix?: string;
+};
+
+function NumberField({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  prefix,
+  suffix,
+}: NumberFieldProps) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-gray-800">
+        {label}
+      </span>
+
+      <div className="relative">
+        {prefix ? (
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+            {prefix}
+          </span>
+        ) : null}
+
+        <input
+          type="number"
+          inputMode="decimal"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          min={min}
+          max={max}
+          step={step}
+          className={`min-h-12 w-full rounded-xl border border-gray-200 bg-white py-3 text-sm text-gray-900 outline-none transition focus:border-[var(--green)] focus:ring-4 focus:ring-[var(--green)]/10 ${
+            prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-10" : "px-4"
+          }`}
+        />
+
+        {suffix ? (
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+            {suffix}
+          </span>
+        ) : null}
+      </div>
+    </label>
   );
 }
 

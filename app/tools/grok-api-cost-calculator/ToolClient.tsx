@@ -7,7 +7,7 @@ import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResult
 
 type ModelKey =
   | "grok-4.3"
-  | "grok-4.20-reasoning"
+  | "grok-4.20-0309-non-reasoning"
   | "grok-build-0.1";
 
 type ModelPrice = {
@@ -24,8 +24,8 @@ const MODEL_PRICES: Record<ModelKey, ModelPrice> = {
     cachedInput: 0.2,
     output: 2.5,
   },
-  "grok-4.20-reasoning": {
-    label: "Grok 4.20 Reasoning",
+  "grok-4.20-0309-non-reasoning": {
+    label: "Grok 4.20 0309 Non-Reasoning",
     input: 1.25,
     cachedInput: 0.2,
     output: 2.5,
@@ -358,8 +358,8 @@ export default function ToolClient() {
           </div>
         }
         provider="xAI"
-        pricingCheckedDate="June 17, 2026"
-        excludedCosts="agent tools, web search, voice, images, video, storage, taxes, discounts, retries, and other services"
+        pricingCheckedDate="June 18, 2026"
+        excludedCosts="higher-context pricing above 200K tokens, agent tools, web search, voice, images, video, storage, taxes, discounts, retries, and other services"
       />
     </div>
   );

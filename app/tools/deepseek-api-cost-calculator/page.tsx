@@ -171,7 +171,7 @@ export default function DeepSeekApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in prices were checked against DeepSeek's official
-                    API pricing page on June 17, 2026.
+                    API pricing page on June 18, 2026.
                   </p>
                   <p>
                     Context caching is enabled by default, but cache hits are

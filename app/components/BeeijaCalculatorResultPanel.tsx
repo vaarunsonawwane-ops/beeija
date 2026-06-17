@@ -16,6 +16,7 @@ type BeeijaCalculatorResultPanelProps = {
   provider: string;
   pricingCheckedDate: string;
   excludedCosts?: string;
+  noticeText?: ReactNode;
 
   className?: string;
 };
@@ -32,6 +33,7 @@ export default function BeeijaCalculatorResultPanel({
   provider,
   pricingCheckedDate,
   excludedCosts = "taxes, discounts, retries, price changes, and other services not entered in this calculator",
+  noticeText,
   className = "",
 }: BeeijaCalculatorResultPanelProps) {
   return (
@@ -83,8 +85,12 @@ export default function BeeijaCalculatorResultPanel({
       ) : null}
 
       <BeeijaNotice>
-        Built-in {provider} rates were checked on {pricingCheckedDate}. Final
-        charges may include {excludedCosts}.
+        {noticeText ?? (
+          <>
+            Built-in {provider} rates were checked on {pricingCheckedDate}. Final
+            charges may include {excludedCosts}.
+          </>
+        )}
       </BeeijaNotice>
     </section>
   );

@@ -204,7 +204,7 @@ export default function OpenAIApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in model prices were checked against the official
-                    OpenAI API pricing page on June 16, 2026. OpenAI may change
+                    OpenAI API pricing page on June 18, 2026. Built-in standard rates apply to context lengths under 270K tokens. OpenAI may change
                     models, prices, billing rules, or service tiers at any time.
                   </p>
 

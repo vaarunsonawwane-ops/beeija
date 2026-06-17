@@ -2,8 +2,6 @@
 
 import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
-import BeeijaNumberField from "@/app/components/BeeijaNumberField";
-import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type ModelKey = "claude-opus-4.8" | "claude-sonnet-4.6" | "claude-haiku-4.5";
 type CacheMode = "none" | "5m" | "1h";
@@ -296,7 +294,7 @@ export default function ToolClient() {
             options={geographyOptions}
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Requests per month"
             value={requestsPerMonth}
             onChange={setRequestsPerMonth}
@@ -304,7 +302,7 @@ export default function ToolClient() {
             step="1"
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Base input tokens per request"
             value={baseInputTokens}
             onChange={setBaseInputTokens}
@@ -312,7 +310,7 @@ export default function ToolClient() {
             step="1"
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Cache write tokens per request"
             value={cacheWriteTokens}
             onChange={setCacheWriteTokens}
@@ -321,7 +319,7 @@ export default function ToolClient() {
             disabled={cacheMode === "none"}
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Cache read tokens per request"
             value={cacheReadTokens}
             onChange={setCacheReadTokens}
@@ -329,7 +327,7 @@ export default function ToolClient() {
             step="1"
           />
 
-          <BeeijaNumberField
+          <NumberField
             label="Output tokens per request"
             value={outputTokens}
             onChange={setOutputTokens}
@@ -358,7 +356,7 @@ export default function ToolClient() {
 
         {customPricing ? (
           <div className="mt-5 grid gap-5 md:grid-cols-2">
-            <BeeijaNumberField
+            <NumberField
               label="Base input price"
               value={customInputPrice}
               onChange={setCustomInputPrice}
@@ -367,7 +365,7 @@ export default function ToolClient() {
               prefix="$"
             />
 
-            <BeeijaNumberField
+            <NumberField
               label="Cache write price"
               value={customCacheWritePrice}
               onChange={setCustomCacheWritePrice}
@@ -376,7 +374,7 @@ export default function ToolClient() {
               prefix="$"
             />
 
-            <BeeijaNumberField
+            <NumberField
               label="Cache read price"
               value={customCacheReadPrice}
               onChange={setCustomCacheReadPrice}
@@ -385,7 +383,7 @@ export default function ToolClient() {
               prefix="$"
             />
 
-            <BeeijaNumberField
+            <NumberField
               label="Output price"
               value={customOutputPrice}
               onChange={setCustomOutputPrice}
@@ -505,11 +503,73 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <BeeijaNotice>
-          Built-in rates checked June 17, 2026. Final charges may include other Anthropic services, taxes, discounts, retries, or usage not entered here.
-        </BeeijaNotice>
+        <p className="mt-6 text-xs leading-relaxed text-gray-500">
+          Built-in rates checked June 18, 2026. Final charges may include other
+          Anthropic services, taxes, discounts, retries, or usage not entered
+          here.
+        </p>
       </section>
     </div>
+  );
+}
+
+type NumberFieldProps = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  min?: string;
+  max?: string;
+  step?: string;
+  prefix?: string;
+  suffix?: string;
+  disabled?: boolean;
+};
+
+function NumberField({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  prefix,
+  suffix,
+  disabled,
+}: NumberFieldProps) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-gray-800">
+        {label}
+      </span>
+
+      <div className="relative">
+        {prefix ? (
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+            {prefix}
+          </span>
+        ) : null}
+
+        <input
+          type="number"
+          inputMode="decimal"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          className={`min-h-12 w-full rounded-xl border border-gray-200 bg-white py-3 text-sm text-gray-900 outline-none transition focus:border-[var(--green)] focus:ring-4 focus:ring-[var(--green)]/10 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
+            prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-10" : "px-4"
+          }`}
+        />
+
+        {suffix ? (
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+            {suffix}
+          </span>
+        ) : null}
+      </div>
+    </label>
   );
 }
 

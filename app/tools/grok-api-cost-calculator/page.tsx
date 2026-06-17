@@ -180,12 +180,12 @@ export default function GrokApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in prices were checked against xAI's official model
-                    and pricing pages on June 17, 2026. xAI may change models,
+                    and pricing pages on June 18, 2026. xAI may change models,
                     prices, limits, or billing rules at any time.
                   </p>
 
                   <p>
-                    This calculator covers text token charges only. Agent tools,
+                    Built-in text rates are for standard-context requests up to 200K tokens. This calculator covers text token charges only. Agent tools,
                     voice, images, video, storage, taxes, and other services may
                     add separate costs.
                   </p>

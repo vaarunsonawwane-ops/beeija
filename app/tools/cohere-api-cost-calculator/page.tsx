@@ -177,7 +177,10 @@ export default function CohereApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in prices were checked against Cohere&apos;s official
-                    model and pricing pages on June 18, 2026. Cohere may change
+                    model and pricing pages on June 18, 2026. The calculator
+                    uses the live model IDs command-a-03-2025,
+                    command-r-plus-08-2024, command-r-08-2024, and
+                    command-r7b-12-2024. Cohere may change
                     models, prices, limits, or billing rules at any time.
                   </p>
 

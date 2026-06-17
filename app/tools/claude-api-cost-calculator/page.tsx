@@ -185,8 +185,8 @@ export default function ClaudeApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in model prices were checked against Anthropic's
-                    official Claude API pricing documentation on June 17, 2026.
-                    Anthropic may change models, prices, or billing rules at any
+                    official Claude API pricing documentation on June 18, 2026.
+                    The built-in rates use first-party global routing; US-only inference applies the calculator's 1.1x multiplier. Anthropic may change models, prices, or billing rules at any
                     time.
                   </p>
 

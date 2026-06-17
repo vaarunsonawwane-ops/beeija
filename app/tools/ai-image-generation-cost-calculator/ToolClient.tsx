@@ -243,6 +243,7 @@ export default function ToolClient() {
             </p>
           </div>
         }
+        noticeText="This tool uses only the price and costs entered by you. Check the provider’s official pricing page before relying on the estimate. Final charges may also include editing, upscaling, storage, CDN delivery, moderation, taxes, discounts, failed jobs, and other services."
         provider="AI image provider"
         pricingCheckedDate="the date you checked the provider's image pricing"
         excludedCosts="editing, upscaling, storage, CDN delivery, moderation, taxes, discounts, failed jobs not covered by the retry rate, and other services"

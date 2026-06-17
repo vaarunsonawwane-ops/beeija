@@ -19,22 +19,22 @@ type ModelPrice = {
 
 const MODEL_PRICES: Record<ModelKey, ModelPrice> = {
   "command-a": {
-    label: "Command A",
+    label: "Command A (command-a-03-2025)",
     input: 2.5,
     output: 10,
   },
   "command-r-plus": {
-    label: "Command R+",
+    label: "Command R+ (command-r-plus-08-2024)",
     input: 2.5,
     output: 10,
   },
   "command-r": {
-    label: "Command R",
+    label: "Command R (command-r-08-2024)",
     input: 0.15,
     output: 0.6,
   },
   "command-r7b": {
-    label: "Command R7B",
+    label: "Command R7B (command-r7b-12-2024)",
     input: 0.0375,
     output: 0.15,
   },
