@@ -144,6 +144,27 @@ export default function ToolClient() {
           />
         </div>
 
+        <label className="mt-6 flex cursor-not-allowed items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+          <input
+            type="checkbox"
+            checked
+            disabled
+            readOnly
+            className="mt-1 h-4 w-4 accent-[var(--green)]"
+          />
+
+          <span>
+            <span className="block font-medium text-gray-900">
+              Use custom prices
+            </span>
+
+            <span className="mt-1 block text-sm leading-relaxed text-gray-600">
+              This provider-independent calculator uses the prices you enter
+              below.
+            </span>
+          </span>
+        </label>
+
         <div className="mt-7">
           <h3 className="text-lg font-semibold text-gray-950">
             Price per 1 Million Tokens

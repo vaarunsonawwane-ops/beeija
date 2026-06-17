@@ -42,7 +42,10 @@ export default function BeeijaNumberField({
           value={value}
           onChange={(event) => {
             const next = event.target.value;
-            if (next === "" || /^\d*\.?\d*$/.test(next)) onChange(next);
+
+            if (next === "" || /^\d*\.?\d*$/.test(next)) {
+              onChange(next);
+            }
           }}
           data-min={min}
           data-max={max}
