@@ -55,6 +55,15 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "DeepSeek API Cost Calculator",
+  description:
+    "Estimate DeepSeek V4 Flash and V4 Pro API costs using cache-hit input, cache-miss input, output tokens, requests, and monthly usage.",
+  href: "/tools/deepseek-api-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
   
   
   
