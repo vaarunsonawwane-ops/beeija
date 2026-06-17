@@ -95,6 +95,16 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Token Cost Calculator",
+  description:
+    "Estimate AI API costs using input tokens, cached input tokens, output tokens, requests, and your own pricing.",
+  href: "/tools/ai-token-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
   
   
   
