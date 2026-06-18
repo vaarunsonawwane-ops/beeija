@@ -145,7 +145,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
-  
+  {
+  title: "AI Embedding Cost Comparison Calculator",
+  description:
+    "Compare current OpenAI, Google Gemini, Mistral, Voyage AI, and custom embedding costs across indexing, refreshes, queries, and first-year usage.",
+  href: "/tools/ai-embedding-cost-comparison-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
