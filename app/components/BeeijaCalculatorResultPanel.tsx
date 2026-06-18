@@ -39,8 +39,10 @@ export default function BeeijaCalculatorResultPanel({
   const defaultNotice =
     provider && pricingCheckedDate ? (
       <>
-        Built-in {provider} rates were checked on {pricingCheckedDate}. Final
-        charges may include {excludedCosts}.
+        Calculated from the values currently shown. Default usage values are
+        examples, so change them to match your expected usage. Built-in{" "}
+        {provider} rates were checked on {pricingCheckedDate}. Final charges may
+        include {excludedCosts}.
       </>
     ) : null;
 
