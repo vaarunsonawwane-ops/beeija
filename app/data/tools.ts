@@ -112,6 +112,16 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Voice Agent Cost Calculator",
+  description:
+    "Estimate the full cost of an AI voice agent using current rates you enter for speech-to-text, LLM, text-to-speech, telephony, platform, recording, setup, and fixed costs.",
+  href: "/tools/ai-voice-agent-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
   
   
   
