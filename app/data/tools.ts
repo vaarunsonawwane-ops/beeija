@@ -129,6 +129,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Video Generation Cost Comparison Calculator",
+  description:
+    "Compare current Google Veo 3.1 and Runway API video generation costs using clip duration, usable output, repeated attempts, budget, and custom pricing.",
+  href: "/tools/ai-video-generation-cost-comparison-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
