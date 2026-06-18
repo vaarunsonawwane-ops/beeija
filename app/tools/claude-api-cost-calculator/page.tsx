@@ -185,8 +185,8 @@ export default function ClaudeApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in model prices were checked against Anthropic's
-                    official Claude API pricing documentation on June 18, 2026.
-                    The built-in rates use first-party global routing; US-only inference applies the calculator's 1.1x multiplier. Anthropic may change models, prices, or billing rules at any
+                    official Claude API pricing documentation on June 19, 2026.
+                    Anthropic may change models, prices, or billing rules at any
                     time.
                   </p>
 
@@ -230,22 +230,23 @@ export default function ClaudeApiCostCalculatorPage() {
               title: "Explore More AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/openai-api-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
+                  <Link href="/tools/openai-api-cost-calculator" className="beeija-btn-outline">
                     OpenAI API Cost Calculator
                   </Link>
-
-                  <Link
-                    href="/categories/ai-cost-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    AI Cost Calculators
+                  <Link href="/tools/gemini-api-cost-calculator" className="beeija-btn-outline">
+                    Gemini API Cost Calculator
                   </Link>
-
-                  <Link href="/tools" className="beeija-btn-outline">
-                    All Tools
+                  <Link href="/tools/ai-token-cost-calculator" className="beeija-btn-outline">
+                    AI Token Cost Calculator
+                  </Link>
+                  <Link href="/tools/ai-voice-agent-cost-calculator" className="beeija-btn-outline">
+                    AI Voice Agent Cost Calculator
+                  </Link>
+                  <Link href="/tools/ai-transcription-cost-comparison-calculator" className="beeija-btn-outline">
+                    AI Transcription Cost Comparison
+                  </Link>
+                  <Link href="/categories/ai-cost-calculators" className="beeija-btn-outline">
+                    AI Cost Calculators
                   </Link>
                 </div>
               ),

@@ -7,11 +7,12 @@ import ToolClient from "./ToolClient";
 export const metadata: Metadata = {
   title: "Mistral API Cost Calculator",
   description:
-    "Estimate Mistral API costs for Mistral Large, Medium, and Codestral using input tokens, output tokens, Batch API, requests, and monthly usage.",
+    "Estimate Mistral API costs for Mistral Small, Large, Medium, and Codestral using input tokens, output tokens, Batch API, requests, and monthly usage.",
   keywords: [
     "Mistral API cost calculator",
     "Mistral AI pricing calculator",
     "Mistral token cost calculator",
+    "Mistral Small 4 cost calculator",
     "Mistral Large cost calculator",
     "Mistral Medium cost calculator",
     "Codestral cost calculator",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mistral API Cost Calculator",
     description:
-      "Estimate Mistral Large, Medium, and Codestral API costs using your own token usage.",
+      "Estimate Mistral Small, Large, Medium, and Codestral API costs using your own token usage.",
   },
 };
 
@@ -138,7 +139,7 @@ export default function MistralApiCostCalculatorPage() {
               content: (
                 <ul className="list-disc space-y-2 pl-6">
                   <li>Estimate the monthly cost of a Mistral chatbot.</li>
-                  <li>Compare Mistral Large, Medium, and Codestral.</li>
+                  <li>Compare Mistral Small, Large, Medium, and Codestral.</li>
                   <li>Compare Standard API and Batch API pricing.</li>
                   <li>Estimate cost per request, day, month, and year.</li>
                   <li>Review the effect of longer prompts and answers.</li>
@@ -153,10 +154,10 @@ export default function MistralApiCostCalculatorPage() {
                   <p>
                     Imagine an AI assistant with 60,000 requests per month. Each
                     request uses 1,100 input tokens and 350 output tokens. Enter
-                    those values and choose Mistral Large 3.
+                    those values and choose Mistral Small 4.
                   </p>
                   <p>
-                    You can then switch to Mistral Medium 3.5 or Codestral
+                    You can then switch to Mistral Large 3, Mistral Medium 3.5, or Codestral
                     without changing the workload.
                   </p>
                 </>
@@ -168,7 +169,7 @@ export default function MistralApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in prices were checked against Mistral&apos;s official
-                    pricing and model pages on June 18, 2026.
+                    pricing and model pages on June 19, 2026.
                   </p>
                   <p>
                     This calculator covers text token charges only. OCR,

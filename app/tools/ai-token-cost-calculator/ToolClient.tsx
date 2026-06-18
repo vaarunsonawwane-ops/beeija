@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaNotice from "@/app/components/BeeijaNotice";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
 function toNumber(value: string) {
@@ -33,9 +34,9 @@ export default function ToolClient() {
   const [outputTokensPerRequest, setOutputTokensPerRequest] = useState("300");
   const [cachedInputPercent, setCachedInputPercent] = useState("0");
 
-  const [inputPrice, setInputPrice] = useState("1");
-  const [cachedInputPrice, setCachedInputPrice] = useState("0.1");
-  const [outputPrice, setOutputPrice] = useState("5");
+  const [inputPrice, setInputPrice] = useState("");
+  const [cachedInputPrice, setCachedInputPrice] = useState("");
+  const [outputPrice, setOutputPrice] = useState("");
 
   const result = useMemo(() => {
     const requests = toNumber(requestsPerMonth);
@@ -74,6 +75,10 @@ export default function ToolClient() {
       costPerRequest: requests > 0 ? monthlyCost / requests : 0,
       dailyCost: monthlyCost / 30,
       yearlyCost: monthlyCost * 12,
+      hasAnyPrice:
+        inputPrice.trim() !== "" ||
+        cachedInputPrice.trim() !== "" ||
+        outputPrice.trim() !== "",
     };
   }, [
     cachedInputPercent,
@@ -90,9 +95,9 @@ export default function ToolClient() {
     setInputTokensPerRequest("1000");
     setOutputTokensPerRequest("300");
     setCachedInputPercent("0");
-    setInputPrice("1");
-    setCachedInputPrice("0.1");
-    setOutputPrice("5");
+    setInputPrice("");
+    setCachedInputPrice("");
+    setOutputPrice("");
   };
 
   return (
@@ -107,6 +112,12 @@ export default function ToolClient() {
             Add your expected requests, average tokens, and provider prices.
           </p>
         </div>
+
+        <BeeijaNotice>
+          Price fields are blank by design. Enter the current input, cached
+          input, and output prices from the official page for the exact model
+          and processing mode you plan to use.
+        </BeeijaNotice>
 
         <div className="mt-7 grid gap-5 md:grid-cols-2">
           <BeeijaNumberField
@@ -143,27 +154,6 @@ export default function ToolClient() {
             suffix="%"
           />
         </div>
-
-        <label className="mt-6 flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
-          <input
-            type="checkbox"
-            checked
-            readOnly
-            aria-label="Custom prices are always enabled"
-            className="pointer-events-none mt-1 h-4 w-4 accent-[var(--green)]"
-          />
-
-          <span>
-            <span className="block font-medium text-gray-900">
-              Use custom prices
-            </span>
-
-            <span className="mt-1 block text-sm leading-relaxed text-gray-600">
-              This provider-independent calculator uses the prices you enter
-              below.
-            </span>
-          </span>
-        </label>
 
         <div className="mt-7">
           <h3 className="text-lg font-semibold text-gray-950">
@@ -206,9 +196,9 @@ export default function ToolClient() {
           </p>
 
           <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-3">
-            <p>Input: {formatMoney(toNumber(inputPrice))}</p>
-            <p>Cached: {formatMoney(toNumber(cachedInputPrice))}</p>
-            <p>Output: {formatMoney(toNumber(outputPrice))}</p>
+            <p>Input: {inputPrice.trim() !== "" ? formatMoney(toNumber(inputPrice)) : "Not entered"}</p>
+            <p>Cached: {cachedInputPrice.trim() !== "" ? formatMoney(toNumber(cachedInputPrice)) : "Not entered"}</p>
+            <p>Output: {outputPrice.trim() !== "" ? formatMoney(toNumber(outputPrice)) : "Not entered"}</p>
           </div>
         </div>
 
@@ -225,22 +215,22 @@ export default function ToolClient() {
         title="Estimated AI Token Cost"
         description="This estimate covers the token prices entered above."
         primaryLabel="Estimated monthly cost"
-        primaryValue={formatMoney(result.monthlyCost)}
+        primaryValue={result.hasAnyPrice ? formatMoney(result.monthlyCost) : "Enter prices"}
         stats={
           <div className="grid gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per request"
-              value={formatMoney(result.costPerRequest)}
+              value={result.hasAnyPrice ? formatMoney(result.costPerRequest) : "—"}
             />
 
             <ResultStat
               label="Per day"
-              value={formatMoney(result.dailyCost)}
+              value={result.hasAnyPrice ? formatMoney(result.dailyCost) : "—"}
             />
 
             <ResultStat
               label="Per year"
-              value={formatMoney(result.yearlyCost)}
+              value={result.hasAnyPrice ? formatMoney(result.yearlyCost) : "—"}
             />
           </div>
         }
@@ -249,19 +239,19 @@ export default function ToolClient() {
             <CostRow
               label="Uncached input cost"
               detail={`${formatNumber(result.uncachedInputTokens)} tokens`}
-              value={formatMoney(result.uncachedInputCost)}
+              value={inputPrice.trim() !== "" ? formatMoney(result.uncachedInputCost) : "—"}
             />
 
             <CostRow
               label="Cached input cost"
               detail={`${formatNumber(result.cachedInputTokens)} tokens`}
-              value={formatMoney(result.cachedInputCost)}
+              value={cachedInputPrice.trim() !== "" ? formatMoney(result.cachedInputCost) : "—"}
             />
 
             <CostRow
               label="Output cost"
               detail={`${formatNumber(result.totalOutputTokens)} tokens`}
-              value={formatMoney(result.outputCost)}
+              value={outputPrice.trim() !== "" ? formatMoney(result.outputCost) : "—"}
             />
           </div>
         }
@@ -289,10 +279,7 @@ export default function ToolClient() {
             </p>
           </div>
         }
-        noticeText="This tool uses only the prices entered by you. Check the provider’s official pricing page before relying on the estimate. Final charges may also include tools, images, audio, storage, web search, taxes, discounts, retries, and other services."
-        provider="AI provider"
-        pricingCheckedDate="the date you checked the provider's pricing"
-        excludedCosts="tools, images, audio, storage, web search, taxes, discounts, retries, and other services"
+        noticeText="Beeija stores no built-in provider rate in this calculator. Verify every price on the official provider page before relying on the result. Costs not entered are treated as zero."
       />
     </div>
   );

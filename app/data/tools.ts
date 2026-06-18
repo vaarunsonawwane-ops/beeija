@@ -121,6 +121,19 @@ export const tools: BeeijaTool[] = [
   },
   
   
+  {
+  title: "AI Transcription Cost Comparison Calculator",
+  description:
+    "Compare OpenAI, Deepgram, AssemblyAI, Google Cloud, and custom speech-to-text costs using monthly audio hours and processing mode.",
+  href: "/tools/ai-transcription-cost-comparison-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
+  
+  
+  
   
   
   

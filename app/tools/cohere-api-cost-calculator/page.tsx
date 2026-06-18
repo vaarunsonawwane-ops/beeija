@@ -75,6 +75,11 @@ const faqs = [
     answer:
       "Yes. Turn on custom pricing and enter your own input and output rates per million tokens.",
   },
+  {
+    question: "Why is Command A+ not shown as a normal paid token model?",
+    answer:
+      "Cohere currently presents Command A+ through Model Vault and describes it as free within published rate limits. Because that is not a normal pay-as-you-go token rate, the calculator does not treat it as a zero-cost metered model. Use custom pricing if Cohere gives you a separate commercial rate.",
+  },
 ];
 
 export default function CohereApiCostCalculatorPage() {
@@ -177,11 +182,14 @@ export default function CohereApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in prices were checked against Cohere&apos;s official
-                    model and pricing pages on June 18, 2026. The calculator
-                    uses the live model IDs command-a-03-2025,
-                    command-r-plus-08-2024, command-r-08-2024, and
-                    command-r7b-12-2024. Cohere may change
+                    model and pricing pages on June 19, 2026. Cohere may change
                     models, prices, limits, or billing rules at any time.
+                  </p>
+                  <p>
+                    Command A+ is not included as a normal metered model because
+                    Cohere currently presents it through Model Vault and lists
+                    free use within rate limits instead of a standard token
+                    price. Enter a custom commercial rate if one applies to you.
                   </p>
 
                   <p>

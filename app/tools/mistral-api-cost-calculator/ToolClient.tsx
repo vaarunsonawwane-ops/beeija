@@ -5,7 +5,11 @@ import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
-type ModelKey = "mistral-large-3" | "mistral-medium-3.5" | "codestral";
+type ModelKey =
+  | "mistral-small-4"
+  | "mistral-large-3"
+  | "mistral-medium-3.5"
+  | "codestral";
 type PricingMode = "standard" | "batch";
 
 type ModelPrice = {
@@ -15,6 +19,11 @@ type ModelPrice = {
 };
 
 const MODEL_PRICES: Record<ModelKey, ModelPrice> = {
+  "mistral-small-4": {
+    label: "Mistral Small 4",
+    input: 0.15,
+    output: 0.6,
+  },
   "mistral-large-3": {
     label: "Mistral Large 3",
     input: 0.5,
@@ -66,14 +75,14 @@ function formatNumber(value: number) {
 }
 
 export default function ToolClient() {
-  const [model, setModel] = useState<ModelKey>("mistral-large-3");
+  const [model, setModel] = useState<ModelKey>("mistral-small-4");
   const [pricingMode, setPricingMode] = useState<PricingMode>("standard");
   const [requestsPerMonth, setRequestsPerMonth] = useState("60000");
   const [inputTokensPerRequest, setInputTokensPerRequest] = useState("1100");
   const [outputTokensPerRequest, setOutputTokensPerRequest] = useState("350");
   const [customPricing, setCustomPricing] = useState(false);
-  const [customInputPrice, setCustomInputPrice] = useState("0.5");
-  const [customOutputPrice, setCustomOutputPrice] = useState("1.5");
+  const [customInputPrice, setCustomInputPrice] = useState("0.15");
+  const [customOutputPrice, setCustomOutputPrice] = useState("0.6");
 
   const selectedModel = MODEL_PRICES[model];
 
@@ -142,14 +151,14 @@ export default function ToolClient() {
   };
 
   const reset = () => {
-    setModel("mistral-large-3");
+    setModel("mistral-small-4");
     setPricingMode("standard");
     setRequestsPerMonth("60000");
     setInputTokensPerRequest("1100");
     setOutputTokensPerRequest("350");
     setCustomPricing(false);
-    setCustomInputPrice("0.5");
-    setCustomOutputPrice("1.5");
+    setCustomInputPrice("0.15");
+    setCustomOutputPrice("0.6");
   };
 
   return (
@@ -311,7 +320,7 @@ export default function ToolClient() {
           </div>
         }
         provider="Mistral"
-        pricingCheckedDate="June 18, 2026"
+        pricingCheckedDate="June 19, 2026"
         excludedCosts="OCR, transcription, speech, fine-tuning, agents, tools, storage, taxes, discounts, retries, and other services"
       />
     </div>

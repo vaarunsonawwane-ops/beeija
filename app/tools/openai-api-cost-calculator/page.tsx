@@ -204,7 +204,7 @@ export default function OpenAIApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in model prices were checked against the official
-                    OpenAI API pricing page on June 18, 2026. Built-in standard rates apply to context lengths under 270K tokens. OpenAI may change
+                    OpenAI API pricing page on June 19, 2026. OpenAI may change
                     models, prices, billing rules, or service tiers at any time.
                   </p>
 
@@ -249,15 +249,23 @@ export default function OpenAIApiCostCalculatorPage() {
               title: "Explore More AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/categories/ai-cost-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    AI Cost Calculators
+                  <Link href="/tools/ai-token-cost-calculator" className="beeija-btn-outline">
+                    AI Token Cost Calculator
                   </Link>
-
-                  <Link href="/tools" className="beeija-btn-outline">
-                    All Tools
+                  <Link href="/tools/ai-transcription-cost-comparison-calculator" className="beeija-btn-outline">
+                    AI Transcription Cost Comparison
+                  </Link>
+                  <Link href="/tools/ai-voice-agent-cost-calculator" className="beeija-btn-outline">
+                    AI Voice Agent Cost Calculator
+                  </Link>
+                  <Link href="/tools/claude-api-cost-calculator" className="beeija-btn-outline">
+                    Claude API Cost Calculator
+                  </Link>
+                  <Link href="/tools/gemini-api-cost-calculator" className="beeija-btn-outline">
+                    Gemini API Cost Calculator
+                  </Link>
+                  <Link href="/categories/ai-cost-calculators" className="beeija-btn-outline">
+                    AI Cost Calculators
                   </Link>
                 </div>
               ),

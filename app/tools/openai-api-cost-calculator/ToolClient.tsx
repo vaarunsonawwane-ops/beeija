@@ -404,9 +404,7 @@ export default function ToolClient() {
         </div>
 
         <BeeijaNotice>
-          Built-in OpenAI rates were checked on June 18, 2026. Final charges may
-          include other OpenAI services, taxes, discounts, retries, or usage not
-          entered here.
+          Built-in rates checked June 19, 2026. Final charges may include other OpenAI services, taxes, discounts, retries, or usage not entered here.
         </BeeijaNotice>
       </section>
     </div>

@@ -163,8 +163,9 @@ export default function AiImageGenerationCostCalculatorPage() {
                 <>
                   <p>
                     Imagine a tool that receives 20,000 requests per month and
-                    generates two images per request. If each image costs $0.04
-                    and retries add another 8%, enter those values.
+                    generates two images per request. For an illustrative example only, assume each image costs $0.04
+                    and retries add another 8%. Replace the image price with the
+                    current official rate before using the result.
                   </p>
 
                   <p>

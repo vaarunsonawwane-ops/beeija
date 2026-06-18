@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaNotice from "@/app/components/BeeijaNotice";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
 function toNumber(value: string) {
@@ -30,9 +31,9 @@ function formatNumber(value: number) {
 export default function ToolClient() {
   const [requestsPerMonth, setRequestsPerMonth] = useState("20000");
   const [imagesPerRequest, setImagesPerRequest] = useState("2");
-  const [pricePerImage, setPricePerImage] = useState("0.04");
+  const [pricePerImage, setPricePerImage] = useState("");
   const [retryPercent, setRetryPercent] = useState("8");
-  const [monthlyFixedCosts, setMonthlyFixedCosts] = useState("25");
+  const [monthlyFixedCosts, setMonthlyFixedCosts] = useState("");
 
   const result = useMemo(() => {
     const requests = toNumber(requestsPerMonth);
@@ -67,6 +68,8 @@ export default function ToolClient() {
         totalGeneratedImages > 0 ? monthlyCost / totalGeneratedImages : 0,
       dailyCost: monthlyCost / 30,
       yearlyCost: monthlyCost * 12,
+      hasImagePrice: pricePerImage.trim() !== "",
+      hasFixedCosts: monthlyFixedCosts.trim() !== "",
     };
   }, [
     imagesPerRequest,
@@ -79,9 +82,9 @@ export default function ToolClient() {
   const reset = () => {
     setRequestsPerMonth("20000");
     setImagesPerRequest("2");
-    setPricePerImage("0.04");
+    setPricePerImage("");
     setRetryPercent("8");
-    setMonthlyFixedCosts("25");
+    setMonthlyFixedCosts("");
   };
 
   return (
@@ -97,6 +100,12 @@ export default function ToolClient() {
             retries, and monthly fixed costs.
           </p>
         </div>
+
+        <BeeijaNotice>
+          Price fields are blank by design. Enter the current price for the
+          exact provider, model, quality, resolution, and processing mode you
+          plan to use.
+        </BeeijaNotice>
 
         <div className="mt-7 grid gap-5 md:grid-cols-2">
           <BeeijaNumberField
@@ -150,11 +159,13 @@ export default function ToolClient() {
           </p>
 
           <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Price per image: {formatMoney(toNumber(pricePerImage))}</p>
+            <p>Price per image: {pricePerImage.trim() !== "" ? formatMoney(toNumber(pricePerImage)) : "Not entered"}</p>
             <p>Retry rate: {formatNumber(toNumber(retryPercent))}%</p>
             <p>
               Monthly fixed costs:{" "}
-              {formatMoney(toNumber(monthlyFixedCosts))}
+              {monthlyFixedCosts.trim() !== ""
+                ? formatMoney(toNumber(monthlyFixedCosts))
+                : "Not entered"}
             </p>
           </div>
         </div>
@@ -172,22 +183,22 @@ export default function ToolClient() {
         title="Estimated AI Image Cost"
         description="This estimate includes generated images, retries, and fixed monthly costs."
         primaryLabel="Estimated monthly cost"
-        primaryValue={formatMoney(result.monthlyCost)}
+        primaryValue={result.hasImagePrice ? formatMoney(result.monthlyCost) : "Enter price"}
         stats={
           <div className="grid gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per request"
-              value={formatMoney(result.costPerRequest)}
+              value={result.hasImagePrice ? formatMoney(result.costPerRequest) : "—"}
             />
 
             <ResultStat
               label="Per image"
-              value={formatMoney(result.costPerGeneratedImage)}
+              value={result.hasImagePrice ? formatMoney(result.costPerGeneratedImage) : "—"}
             />
 
             <ResultStat
               label="Per year"
-              value={formatMoney(result.yearlyCost)}
+              value={result.hasImagePrice ? formatMoney(result.yearlyCost) : "—"}
             />
           </div>
         }
@@ -196,19 +207,19 @@ export default function ToolClient() {
             <CostRow
               label="Base image cost"
               detail={`${formatNumber(result.successfulImages)} planned images`}
-              value={formatMoney(result.baseImageCost)}
+              value={result.hasImagePrice ? formatMoney(result.baseImageCost) : "—"}
             />
 
             <CostRow
               label="Retry and extra image cost"
               detail={`${formatNumber(result.retryImages)} extra images`}
-              value={formatMoney(result.retryCost)}
+              value={result.hasImagePrice ? formatMoney(result.retryCost) : "—"}
             />
 
             <CostRow
               label="Other fixed monthly costs"
               detail="Storage, delivery, moderation, or other costs entered"
-              value={formatMoney(result.fixedCosts)}
+              value={result.hasFixedCosts ? formatMoney(result.fixedCosts) : "—"}
             />
           </div>
         }
@@ -238,15 +249,12 @@ export default function ToolClient() {
             <p className="mt-2">
               Estimated daily cost:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.dailyCost)}
+                {result.hasImagePrice ? formatMoney(result.dailyCost) : "—"}
               </span>
             </p>
           </div>
         }
-        noticeText="This tool uses only the price and costs entered by you. Check the provider’s official pricing page before relying on the estimate. Final charges may also include editing, upscaling, storage, CDN delivery, moderation, taxes, discounts, failed jobs, and other services."
-        provider="AI image provider"
-        pricingCheckedDate="the date you checked the provider's image pricing"
-        excludedCosts="editing, upscaling, storage, CDN delivery, moderation, taxes, discounts, failed jobs not covered by the retry rate, and other services"
+        noticeText="Beeija stores no built-in image-generation price in this calculator. Verify the exact provider, model, quality, resolution, and processing-mode rate on the official page. Costs not entered are treated as zero."
       />
     </div>
   );

@@ -8,12 +8,15 @@ export const metadata: Metadata = {
   title: "Gemini API Cost Calculator",
 
   description:
-    "Estimate Google Gemini API costs for Pro, Flash, and Flash-Lite models using input tokens, cached input, output tokens, Batch API, and monthly usage.",
+    "Estimate Google Gemini API costs for current Pro, Flash, and Flash-Lite models using input tokens, cached input, output tokens, Batch API, and monthly usage.",
 
   keywords: [
     "Gemini API cost calculator",
     "Google Gemini pricing calculator",
     "Gemini token cost calculator",
+    "Gemini 3.1 Pro cost calculator",
+    "Gemini 3.5 Flash cost calculator",
+    "Gemini 3.1 Flash-Lite cost calculator",
     "Gemini 2.5 Pro cost calculator",
     "Gemini 2.5 Flash cost calculator",
     "Gemini Flash-Lite cost calculator",
@@ -42,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Gemini API Cost Calculator",
     description:
-      "Estimate Google Gemini Pro, Flash, and Flash-Lite API costs using your own token usage.",
+      "Estimate current Google Gemini Pro, Flash, and Flash-Lite API costs using your own token usage.",
   },
 };
 
@@ -58,9 +61,9 @@ const faqs = [
       "Cached input tokens are tokens reused from stored context. They can use a lower token rate, but context cache storage may create a separate hourly charge that is not included in this calculator.",
   },
   {
-    question: "Why does Gemini 2.5 Pro have two price levels?",
+    question: "Why do some Gemini Pro models have two price levels?",
     answer:
-      "Gemini 2.5 Pro uses one rate for prompts up to 200,000 tokens and a higher rate for prompts above 200,000 tokens. Choose the matching prompt size in the calculator.",
+      "Gemini 3.1 Pro Preview and Gemini 2.5 Pro use one rate for prompts up to 200,000 tokens and a higher rate for prompts above 200,000 tokens. Choose the matching prompt size in the calculator.",
   },
   {
     question: "Does Gemini Batch API cost less?",
@@ -117,7 +120,7 @@ export default function GeminiApiCostCalculatorPage() {
                   </p>
 
                   <p>
-                    For Gemini 2.5 Pro, select whether the prompt is up to
+                    For Gemini Pro models with long-context tiers, select whether the prompt is up to
                     200,000 tokens or above 200,000 tokens because the official
                     token rates are different.
                   </p>
@@ -153,7 +156,7 @@ export default function GeminiApiCostCalculatorPage() {
               content: (
                 <ul className="list-disc space-y-2 pl-6">
                   <li>Estimate the monthly cost of a Gemini chatbot.</li>
-                  <li>Compare Gemini Pro, Flash, and Flash-Lite.</li>
+                  <li>Compare current Gemini Pro, Flash, and Flash-Lite models.</li>
                   <li>Test the possible saving from cached input.</li>
                   <li>Compare Standard and Batch API pricing.</li>
                   <li>Review the effect of prompts above 200,000 tokens.</li>
@@ -169,13 +172,13 @@ export default function GeminiApiCostCalculatorPage() {
                     Imagine an AI assistant with 60,000 requests per month. Each
                     request uses 1,200 input tokens and 400 output tokens. If
                     25% of the input may use cached pricing, enter those values
-                    and choose Gemini 2.5 Flash.
+                    and choose Gemini 3.5 Flash.
                   </p>
 
                   <p>
                     The result shows the separate input, cached input, and
-                    output costs. You can then switch to Gemini 2.5 Pro or
-                    Flash-Lite without changing the workload.
+                    output costs. You can then switch to Gemini 3.1 Pro Preview or
+                    Gemini 3.1 Flash-Lite without changing the workload.
                   </p>
                 </>
               ),
@@ -186,7 +189,7 @@ export default function GeminiApiCostCalculatorPage() {
                 <>
                   <p>
                     Built-in prices were checked against Google's official
-                    Gemini Developer API pricing page on June 18, 2026. Google
+                    Gemini Developer API pricing page on June 19, 2026. Google
                     may change models, prices, limits, or billing rules at any
                     time.
                   </p>
@@ -246,6 +249,15 @@ export default function GeminiApiCostCalculatorPage() {
                     Claude API Cost Calculator
                   </Link>
 
+                  <Link href="/tools/ai-token-cost-calculator" className="beeija-btn-outline">
+                    AI Token Cost Calculator
+                  </Link>
+                  <Link href="/tools/ai-voice-agent-cost-calculator" className="beeija-btn-outline">
+                    AI Voice Agent Cost Calculator
+                  </Link>
+                  <Link href="/tools/mistral-api-cost-calculator" className="beeija-btn-outline">
+                    Mistral API Cost Calculator
+                  </Link>
                   <Link
                     href="/categories/ai-cost-calculators"
                     className="beeija-btn-outline"

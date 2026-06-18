@@ -6,6 +6,9 @@ import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type ModelKey =
+  | "gemini-3.5-flash"
+  | "gemini-3.1-pro-preview"
+  | "gemini-3.1-flash-lite"
   | "gemini-2.5-pro"
   | "gemini-2.5-flash"
   | "gemini-2.5-flash-lite";
@@ -28,6 +31,55 @@ type ModelPrice = {
 };
 
 const MODEL_PRICES: Record<ModelKey, ModelPrice> = {
+  "gemini-3.5-flash": {
+    label: "Gemini 3.5 Flash",
+    standardShort: {
+      input: 1.5,
+      cachedInput: 0.15,
+      output: 9,
+    },
+    batchShort: {
+      input: 0.75,
+      cachedInput: 0.075,
+      output: 4.5,
+    },
+  },
+  "gemini-3.1-pro-preview": {
+    label: "Gemini 3.1 Pro Preview",
+    standardShort: {
+      input: 2,
+      cachedInput: 0.2,
+      output: 12,
+    },
+    standardLong: {
+      input: 4,
+      cachedInput: 0.4,
+      output: 18,
+    },
+    batchShort: {
+      input: 1,
+      cachedInput: 0.2,
+      output: 6,
+    },
+    batchLong: {
+      input: 2,
+      cachedInput: 0.4,
+      output: 9,
+    },
+  },
+  "gemini-3.1-flash-lite": {
+    label: "Gemini 3.1 Flash-Lite",
+    standardShort: {
+      input: 0.25,
+      cachedInput: 0.025,
+      output: 1.5,
+    },
+    batchShort: {
+      input: 0.125,
+      cachedInput: 0.0125,
+      output: 0.75,
+    },
+  },
   "gemini-2.5-pro": {
     label: "Gemini 2.5 Pro",
     standardShort: {
@@ -121,7 +173,7 @@ function formatNumber(value: number) {
 }
 
 export default function ToolClient() {
-  const [model, setModel] = useState<ModelKey>("gemini-2.5-flash");
+  const [model, setModel] = useState<ModelKey>("gemini-3.5-flash");
   const [promptTier, setPromptTier] = useState<PromptTier>("short");
   const [pricingMode, setPricingMode] =
     useState<PricingMode>("standard");
@@ -132,9 +184,9 @@ export default function ToolClient() {
   const [cachedInputPercent, setCachedInputPercent] = useState("25");
 
   const [customPricing, setCustomPricing] = useState(false);
-  const [customInputPrice, setCustomInputPrice] = useState("0.3");
-  const [customCachedPrice, setCustomCachedPrice] = useState("0.03");
-  const [customOutputPrice, setCustomOutputPrice] = useState("2.5");
+  const [customInputPrice, setCustomInputPrice] = useState("1.5");
+  const [customCachedPrice, setCustomCachedPrice] = useState("0.15");
+  const [customOutputPrice, setCustomOutputPrice] = useState("9");
 
   const selectedModel = MODEL_PRICES[model];
   const supportsLongPrompt = Boolean(selectedModel.standardLong);
@@ -274,7 +326,7 @@ export default function ToolClient() {
   };
 
   const reset = () => {
-    setModel("gemini-2.5-flash");
+    setModel("gemini-3.5-flash");
     setPromptTier("short");
     setPricingMode("standard");
     setRequestsPerMonth("60000");
@@ -282,9 +334,9 @@ export default function ToolClient() {
     setOutputTokensPerRequest("400");
     setCachedInputPercent("25");
     setCustomPricing(false);
-    setCustomInputPrice("0.3");
-    setCustomCachedPrice("0.03");
-    setCustomOutputPrice("2.5");
+    setCustomInputPrice("1.5");
+    setCustomCachedPrice("0.15");
+    setCustomOutputPrice("9");
   };
 
   return (
@@ -507,9 +559,7 @@ export default function ToolClient() {
         </div>
 
         <BeeijaNotice>
-          Built-in Google Gemini rates were checked on June 18, 2026. Cache
-          storage, grounding, media, taxes, discounts, and other services are
-          not included.
+          Built-in Gemini rates were checked on June 19, 2026. Cache storage, grounding, media, taxes, discounts, and other services are not included.
         </BeeijaNotice>
       </section>
     </div>

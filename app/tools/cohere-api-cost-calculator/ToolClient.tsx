@@ -19,22 +19,22 @@ type ModelPrice = {
 
 const MODEL_PRICES: Record<ModelKey, ModelPrice> = {
   "command-a": {
-    label: "Command A (command-a-03-2025)",
+    label: "Command A",
     input: 2.5,
     output: 10,
   },
   "command-r-plus": {
-    label: "Command R+ (command-r-plus-08-2024)",
+    label: "Command R+",
     input: 2.5,
     output: 10,
   },
   "command-r": {
-    label: "Command R (command-r-08-2024)",
+    label: "Command R",
     input: 0.15,
     output: 0.6,
   },
   "command-r7b": {
-    label: "Command R7B (command-r7b-12-2024)",
+    label: "Command R7B",
     input: 0.0375,
     output: 0.15,
   },
@@ -322,7 +322,7 @@ export default function ToolClient() {
           </div>
         }
         provider="Cohere"
-        pricingCheckedDate="June 18, 2026"
+        pricingCheckedDate="June 19, 2026"
         excludedCosts="Embed, Rerank, transcription, private deployment, cloud platform fees, taxes, discounts, retries, and other services"
       />
     </div>
