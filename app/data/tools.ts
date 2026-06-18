@@ -137,7 +137,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
-  
+  {
+  title: "RAG Cost Calculator",
+  description:
+    "Estimate retrieval-augmented generation costs across chunking, embeddings, vector storage, reads, writes, reranking, LLM usage, refreshes, and setup.",
+  href: "/tools/rag-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
