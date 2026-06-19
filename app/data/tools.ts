@@ -177,6 +177,14 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Agent Workflow Cost Calculator",
+  description:
+    "Estimate multi-step AI agent costs across planner and worker models, context growth, retries, paid tools, memory, human review, infrastructure, and product margin.",
+  href: "/tools/ai-agent-workflow-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+
   
   
   
