@@ -153,6 +153,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Reranking Cost Calculator",
+  description:
+    "Compare Voyage AI and Pinecone reranking costs, estimate downstream LLM token savings, and calculate the net monthly impact.",
+  href: "/tools/ai-reranking-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
