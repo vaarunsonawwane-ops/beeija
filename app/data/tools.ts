@@ -161,6 +161,15 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Prompt Caching Savings Calculator",
+  description:
+    "Estimate prompt caching savings across OpenAI, Claude, Google Gemini, and custom pricing using reusable tokens, cache hit rate, writes, storage, and monthly requests.",
+  href: "/tools/ai-prompt-caching-savings-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
   
   
   
