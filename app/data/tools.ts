@@ -185,6 +185,14 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
 
+  {
+  title: "AI Fine-Tuning Cost Calculator",
+  description:
+    "Estimate dataset, training, evaluation, retraining, tuned-model inference, hosting, payback, break-even usage, and first-year fine-tuning costs.",
+  href: "/tools/ai-fine-tuning-cost-calculator",
+  category: "AI Cost Calculators",
+  }, 
+
   
   
   
