@@ -169,6 +169,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Batch API Savings Calculator",
+  description:
+    "Estimate standard versus batch AI processing costs across OpenAI, Claude, Gemini, Mistral, and custom pricing, including repeat processing, setup, and break-even savings.",
+  href: "/tools/ai-batch-api-savings-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
