@@ -226,6 +226,14 @@ export const tools: BeeijaTool[] = [
   },
   
   
+  {
+  title: "AI Document Processing Cost Calculator",
+  description:
+    "Estimate OCR, extraction, vision, LLM validation, retries, human review, setup, break-even volume, and first-year document automation costs.",
+  href: "/tools/ai-document-processing-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
   
   
   
