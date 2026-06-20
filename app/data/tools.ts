@@ -234,6 +234,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Coding Agent Cost Calculator",
+  description:
+    "Estimate planning, coding, repair, review, CI, human approval, setup, cost per successful task, manual savings, payback, and break-even volume.",
+  href: "/tools/ai-coding-agent-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
