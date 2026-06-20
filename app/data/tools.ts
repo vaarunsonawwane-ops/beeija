@@ -258,6 +258,15 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Synthetic Data Generation Cost Calculator",
+  description:
+    "Estimate generation, validation, deduplication, human review, rejected candidates, setup, accepted-record cost, savings, payback, and break-even dataset volume.",
+  href: "/tools/ai-synthetic-data-generation-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
   
   
   
