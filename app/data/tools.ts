@@ -275,6 +275,14 @@ export const tools: BeeijaTool[] = [
   },
   
   
+  {
+  title: "AI Meeting Assistant Cost Calculator",
+  description:
+    "Estimate transcription, diarization, summaries, action items, storage, integrations, human review, setup, savings, payback, and break-even meeting volume.",
+  href: "/tools/ai-meeting-assistant-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
   
   
   
