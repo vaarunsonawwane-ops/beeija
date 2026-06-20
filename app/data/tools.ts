@@ -291,6 +291,15 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "Cloud VM Cost Comparison Calculator",
+  description:
+    "Compare AWS EC2, Azure Virtual Machines, Google Compute Engine, or custom VM plans using runtime, commitments, Spot usage, storage, bandwidth, IPs, load balancers, and first-year cost.",
+  href: "/tools/cloud-vm-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+  },
+  
+  
   
   
   
