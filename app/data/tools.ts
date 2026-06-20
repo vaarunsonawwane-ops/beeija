@@ -283,6 +283,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI GPU Inference Cost Calculator",
+  description:
+    "Estimate GPUs per replica, throughput-based GPU hours, batching, utilization, idle capacity, self-hosted cost, managed API comparison, payback, and break-even volume.",
+  href: "/tools/ai-gpu-inference-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
