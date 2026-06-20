@@ -1,0 +1,832 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import BeeijaSelect from "@/app/components/BeeijaSelect";
+import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+
+type SearchPlan = {
+  id: string;
+  provider: string;
+  model: string;
+  modelInputPricePerMillion: number;
+  modelOutputPricePerMillion: number;
+  searchPricePerThousand: number;
+  freeGroundedPromptsPerMonth: number;
+  retrievedContextBilledAsInput: boolean;
+  note: string;
+};
+
+type ComparisonRow = SearchPlan & {
+  groundedPrompts: number;
+  billedSearchQueries: number;
+  modelInputTokens: number;
+  modelOutputTokens: number;
+  searchToolCost: number;
+  modelInputCost: number;
+  modelOutputCost: number;
+  totalMonthlyCost: number;
+  firstYearCost: number;
+  costPerAllPrompt: number;
+  costPerGroundedPrompt: number;
+};
+
+const SEARCH_PLANS: SearchPlan[] = [
+  {
+    id: "openai-gpt-5-4-mini",
+    provider: "OpenAI",
+    model: "GPT-5.4 mini + Web search",
+    modelInputPricePerMillion: 0.75,
+    modelOutputPricePerMillion: 4.5,
+    searchPricePerThousand: 10,
+    freeGroundedPromptsPerMonth: 0,
+    retrievedContextBilledAsInput: false,
+    note: "Search-content tokens are free",
+  },
+  {
+    id: "anthropic-claude-sonnet-4-6",
+    provider: "Anthropic",
+    model: "Claude Sonnet 4.6 + Web search",
+    modelInputPricePerMillion: 3,
+    modelOutputPricePerMillion: 15,
+    searchPricePerThousand: 10,
+    freeGroundedPromptsPerMonth: 0,
+    retrievedContextBilledAsInput: true,
+    note: "Retrieved search content is billed as input",
+  },
+  {
+    id: "google-gemini-3-1-flash-lite",
+    provider: "Google",
+    model: "Gemini 3.1 Flash-Lite + Google Search",
+    modelInputPricePerMillion: 0.25,
+    modelOutputPricePerMillion: 1.5,
+    searchPricePerThousand: 14,
+    freeGroundedPromptsPerMonth: 5000,
+    retrievedContextBilledAsInput: false,
+    note: "5,000 grounded prompts free across Gemini 3",
+  },
+];
+
+const defaultPlanId = "openai-gpt-5-4-mini";
+
+function toNumber(value: string) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+}
+
+function clampPercent(value: string) {
+  return Math.min(100, Math.max(0, toNumber(value)));
+}
+
+function formatMoney(value: number) {
+  if (!Number.isFinite(value)) return "$0.00";
+
+  if (value > 0 && value < 0.01) {
+    return `$${value.toFixed(6)}`;
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  }).format(value);
+}
+
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function formatInteger(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function calculatePlan({
+  plan,
+  prompts,
+  searchShare,
+  searchesPerGroundedPrompt,
+  retryMultiplier,
+  baseInputTokens,
+  retrievedContextTokens,
+  outputTokens,
+}: {
+  plan: SearchPlan;
+  prompts: number;
+  searchShare: number;
+  searchesPerGroundedPrompt: number;
+  retryMultiplier: number;
+  baseInputTokens: number;
+  retrievedContextTokens: number;
+  outputTokens: number;
+}): ComparisonRow {
+  const groundedPrompts = prompts * searchShare * retryMultiplier;
+  const nonGroundedPrompts =
+    prompts * (1 - searchShare) * retryMultiplier;
+
+  const billableGroundedPrompts = Math.max(
+    0,
+    groundedPrompts - plan.freeGroundedPromptsPerMonth,
+  );
+
+  const billedSearchQueries =
+    billableGroundedPrompts * searchesPerGroundedPrompt;
+
+  const modelInputTokens =
+    (groundedPrompts + nonGroundedPrompts) * baseInputTokens +
+    (plan.retrievedContextBilledAsInput
+      ? groundedPrompts * retrievedContextTokens
+      : 0);
+
+  const modelOutputTokens =
+    (groundedPrompts + nonGroundedPrompts) * outputTokens;
+
+  const searchToolCost =
+    (billedSearchQueries / 1000) * plan.searchPricePerThousand;
+
+  const modelInputCost =
+    (modelInputTokens / 1_000_000) *
+    plan.modelInputPricePerMillion;
+
+  const modelOutputCost =
+    (modelOutputTokens / 1_000_000) *
+    plan.modelOutputPricePerMillion;
+
+  const totalMonthlyCost =
+    searchToolCost + modelInputCost + modelOutputCost;
+
+  return {
+    ...plan,
+    groundedPrompts,
+    billedSearchQueries,
+    modelInputTokens,
+    modelOutputTokens,
+    searchToolCost,
+    modelInputCost,
+    modelOutputCost,
+    totalMonthlyCost,
+    firstYearCost: totalMonthlyCost * 12,
+    costPerAllPrompt:
+      prompts > 0 ? totalMonthlyCost / prompts : 0,
+    costPerGroundedPrompt:
+      groundedPrompts > 0 ? totalMonthlyCost / groundedPrompts : 0,
+  };
+}
+
+export default function ToolClient() {
+  const [selectedPlanId, setSelectedPlanId] =
+    useState(defaultPlanId);
+
+  const [monthlyPrompts, setMonthlyPrompts] = useState("100000");
+  const [searchTriggerPercent, setSearchTriggerPercent] =
+    useState("40");
+  const [searchesPerGroundedPrompt, setSearchesPerGroundedPrompt] =
+    useState("1.5");
+  const [baseInputTokensPerPrompt, setBaseInputTokensPerPrompt] =
+    useState("600");
+  const [retrievedContextTokensPerPrompt, setRetrievedContextTokensPerPrompt] =
+    useState("2500");
+  const [outputTokensPerPrompt, setOutputTokensPerPrompt] =
+    useState("500");
+  const [retryOverheadPercent, setRetryOverheadPercent] =
+    useState("3");
+  const [monthlyBudget, setMonthlyBudget] = useState("1000");
+
+  const [includeCustom, setIncludeCustom] = useState(false);
+  const [customProviderName, setCustomProviderName] =
+    useState("Custom Provider");
+  const [customModelName, setCustomModelName] =
+    useState("Custom Search Model");
+  const [customInputPrice, setCustomInputPrice] = useState("");
+  const [customOutputPrice, setCustomOutputPrice] = useState("");
+  const [customSearchPrice, setCustomSearchPrice] = useState("");
+  const [customFreeGroundedPrompts, setCustomFreeGroundedPrompts] =
+    useState("0");
+  const [customContextBilled, setCustomContextBilled] =
+    useState(false);
+
+  const customPlan = useMemo<SearchPlan | null>(() => {
+    const ready =
+      customInputPrice.trim() !== "" &&
+      customOutputPrice.trim() !== "" &&
+      customSearchPrice.trim() !== "";
+
+    if (!includeCustom || !ready) {
+      return null;
+    }
+
+    return {
+      id: "custom-provider",
+      provider: customProviderName.trim() || "Custom Provider",
+      model: customModelName.trim() || "Custom Search Model",
+      modelInputPricePerMillion: toNumber(customInputPrice),
+      modelOutputPricePerMillion: toNumber(customOutputPrice),
+      searchPricePerThousand: toNumber(customSearchPrice),
+      freeGroundedPromptsPerMonth: toNumber(
+        customFreeGroundedPrompts,
+      ),
+      retrievedContextBilledAsInput: customContextBilled,
+      note: "User-entered current pricing",
+    };
+  }, [
+    customContextBilled,
+    customFreeGroundedPrompts,
+    customInputPrice,
+    customModelName,
+    customOutputPrice,
+    customProviderName,
+    customSearchPrice,
+    includeCustom,
+  ]);
+
+  const availablePlans = useMemo(
+    () => (customPlan ? [...SEARCH_PLANS, customPlan] : SEARCH_PLANS),
+    [customPlan],
+  );
+
+  const planOptions = useMemo(
+    () =>
+      availablePlans.map((plan) => ({
+        value: plan.id,
+        label: `${plan.provider} — ${plan.model}`,
+      })),
+    [availablePlans],
+  );
+
+  useEffect(() => {
+    if (
+      selectedPlanId === "custom-provider" &&
+      !availablePlans.some((plan) => plan.id === "custom-provider")
+    ) {
+      setSelectedPlanId(defaultPlanId);
+    }
+  }, [availablePlans, selectedPlanId]);
+
+  const result = useMemo(() => {
+    const prompts = toNumber(monthlyPrompts);
+    const searchShare = clampPercent(searchTriggerPercent) / 100;
+    const searches = toNumber(searchesPerGroundedPrompt);
+    const retryMultiplier =
+      1 + clampPercent(retryOverheadPercent) / 100;
+    const baseInput = toNumber(baseInputTokensPerPrompt);
+    const retrievedContext = toNumber(
+      retrievedContextTokensPerPrompt,
+    );
+    const output = toNumber(outputTokensPerPrompt);
+
+    const rows = availablePlans
+      .map((plan) =>
+        calculatePlan({
+          plan,
+          prompts,
+          searchShare,
+          searchesPerGroundedPrompt: searches,
+          retryMultiplier,
+          baseInputTokens: baseInput,
+          retrievedContextTokens: retrievedContext,
+          outputTokens: output,
+        }),
+      )
+      .sort((a, b) => a.totalMonthlyCost - b.totalMonthlyCost);
+
+    const selected =
+      rows.find((row) => row.id === selectedPlanId) ??
+      rows.find((row) => row.id === defaultPlanId) ??
+      rows[0];
+
+    const cheapest = rows[0];
+    const budget = toNumber(monthlyBudget);
+
+    const groundedPromptsBeforeRetry = prompts * searchShare;
+    const searchQueriesBeforeFreeAllowance =
+      groundedPromptsBeforeRetry * retryMultiplier * searches;
+
+    return {
+      prompts,
+      searchSharePercent: searchShare * 100,
+      groundedPromptsBeforeRetry,
+      nonGroundedPromptsBeforeRetry:
+        prompts - groundedPromptsBeforeRetry,
+      searchQueriesBeforeFreeAllowance,
+      retryPercent: (retryMultiplier - 1) * 100,
+      rows,
+      selected,
+      cheapest,
+      monthlySavingVsSelected:
+        selected && cheapest
+          ? selected.totalMonthlyCost - cheapest.totalMonthlyCost
+          : 0,
+      firstYearSavingVsSelected:
+        selected && cheapest
+          ? selected.firstYearCost - cheapest.firstYearCost
+          : 0,
+      budget,
+      budgetDifference: selected
+        ? budget - selected.totalMonthlyCost
+        : budget,
+    };
+  }, [
+    availablePlans,
+    baseInputTokensPerPrompt,
+    monthlyBudget,
+    monthlyPrompts,
+    outputTokensPerPrompt,
+    retrievedContextTokensPerPrompt,
+    retryOverheadPercent,
+    searchesPerGroundedPrompt,
+    searchTriggerPercent,
+    selectedPlanId,
+  ]);
+
+  const reset = () => {
+    setSelectedPlanId(defaultPlanId);
+    setMonthlyPrompts("100000");
+    setSearchTriggerPercent("40");
+    setSearchesPerGroundedPrompt("1.5");
+    setBaseInputTokensPerPrompt("600");
+    setRetrievedContextTokensPerPrompt("2500");
+    setOutputTokensPerPrompt("500");
+    setRetryOverheadPercent("3");
+    setMonthlyBudget("1000");
+    setIncludeCustom(false);
+    setCustomProviderName("Custom Provider");
+    setCustomModelName("Custom Search Model");
+    setCustomInputPrice("");
+    setCustomOutputPrice("");
+    setCustomSearchPrice("");
+    setCustomFreeGroundedPrompts("0");
+    setCustomContextBilled(false);
+  };
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Enter Your Web-Grounded AI Workload
+          </h2>
+
+          <p className="mt-3 leading-relaxed text-gray-600">
+            Compare search-tool fees and model tokens for the same monthly
+            prompt volume.
+          </p>
+        </div>
+
+        <div className="mt-7 grid gap-5 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <BeeijaSelect
+              label="Selected provider and model"
+              value={selectedPlanId}
+              onChange={(event) =>
+                setSelectedPlanId(event.target.value)
+              }
+              options={planOptions}
+            />
+          </div>
+
+          <BeeijaNumberField
+            label="AI prompts per month"
+            value={monthlyPrompts}
+            onChange={setMonthlyPrompts}
+            min="0"
+            step="1"
+          />
+
+          <BeeijaNumberField
+            label="Prompts that trigger web search"
+            value={searchTriggerPercent}
+            onChange={setSearchTriggerPercent}
+            min="0"
+            max="100"
+            step="1"
+            suffix="%"
+          />
+
+          <BeeijaNumberField
+            label="Average search queries per grounded prompt"
+            value={searchesPerGroundedPrompt}
+            onChange={setSearchesPerGroundedPrompt}
+            min="0"
+            step="0.1"
+          />
+
+          <BeeijaNumberField
+            label="Base input tokens per prompt"
+            value={baseInputTokensPerPrompt}
+            onChange={setBaseInputTokensPerPrompt}
+            min="0"
+            step="1"
+          />
+
+          <BeeijaNumberField
+            label="Retrieved web-context tokens per grounded prompt"
+            value={retrievedContextTokensPerPrompt}
+            onChange={setRetrievedContextTokensPerPrompt}
+            min="0"
+            step="1"
+          />
+
+          <BeeijaNumberField
+            label="Output tokens per prompt"
+            value={outputTokensPerPrompt}
+            onChange={setOutputTokensPerPrompt}
+            min="0"
+            step="1"
+          />
+
+          <BeeijaNumberField
+            label="Retry and repeated-call overhead"
+            value={retryOverheadPercent}
+            onChange={setRetryOverheadPercent}
+            min="0"
+            max="100"
+            step="1"
+            suffix="%"
+          />
+
+          <BeeijaNumberField
+            label="Target monthly budget"
+            value={monthlyBudget}
+            onChange={setMonthlyBudget}
+            min="0"
+            step="1"
+            prefix="$"
+          />
+        </div>
+
+        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+          <input
+            type="checkbox"
+            checked={includeCustom}
+            onChange={(event) => setIncludeCustom(event.target.checked)}
+            className="mt-1 h-4 w-4 accent-[var(--green)]"
+          />
+
+          <span>
+            <span className="block font-medium text-gray-900">
+              Add a custom web-search provider
+            </span>
+
+            <span className="mt-1 block text-sm leading-relaxed text-gray-600">
+              Compare another model, search API, cloud platform, or private
+              agreement.
+            </span>
+          </span>
+        </label>
+
+        {includeCustom ? (
+          <div className="mt-5 grid gap-5 md:grid-cols-2">
+            <TextField
+              label="Provider name"
+              value={customProviderName}
+              onChange={setCustomProviderName}
+            />
+
+            <TextField
+              label="Model or plan name"
+              value={customModelName}
+              onChange={setCustomModelName}
+            />
+
+            <BeeijaNumberField
+              label="Current model input price per 1M tokens"
+              value={customInputPrice}
+              onChange={setCustomInputPrice}
+              min="0"
+              step="0.001"
+              prefix="$"
+            />
+
+            <BeeijaNumberField
+              label="Current model output price per 1M tokens"
+              value={customOutputPrice}
+              onChange={setCustomOutputPrice}
+              min="0"
+              step="0.001"
+              prefix="$"
+            />
+
+            <BeeijaNumberField
+              label="Current search price per 1,000 queries"
+              value={customSearchPrice}
+              onChange={setCustomSearchPrice}
+              min="0"
+              step="0.001"
+              prefix="$"
+            />
+
+            <BeeijaNumberField
+              label="Free grounded prompts per month"
+              value={customFreeGroundedPrompts}
+              onChange={setCustomFreeGroundedPrompts}
+              min="0"
+              step="1"
+            />
+
+            <label className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 md:col-span-2">
+              <input
+                type="checkbox"
+                checked={customContextBilled}
+                onChange={(event) =>
+                  setCustomContextBilled(event.target.checked)
+                }
+                className="mt-1 h-4 w-4 accent-[var(--green)]"
+              />
+
+              <span>
+                <span className="block font-medium text-gray-900">
+                  Retrieved web context is billed as model input
+                </span>
+
+                <span className="mt-1 block text-sm leading-relaxed text-gray-600">
+                  Enable this when search-result content enters the billed input
+                  token count.
+                </span>
+              </span>
+            </label>
+          </div>
+        ) : null}
+
+        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+          <p className="font-medium text-gray-900">
+            Grounding workload used for comparison
+          </p>
+
+          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+            <p>
+              Grounded prompts before retries:{" "}
+              {formatInteger(result.groundedPromptsBeforeRetry)}
+            </p>
+
+            <p>
+              Non-grounded prompts before retries:{" "}
+              {formatInteger(result.nonGroundedPromptsBeforeRetry)}
+            </p>
+
+            <p>
+              Search queries before free allowances:{" "}
+              {formatInteger(result.searchQueriesBeforeFreeAllowance)}
+            </p>
+
+            <p>
+              Retry overhead: {formatNumber(result.retryPercent)}%
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={reset}
+          className="beeija-btn-outline mt-6"
+        >
+          Reset values
+        </button>
+      </section>
+
+      <BeeijaCalculatorResultPanel
+        title="Web Search Grounding Cost Comparison"
+        description="The selected option is shown first, followed by a ranked comparison for the same workload."
+        primaryLabel="Selected monthly cost"
+        primaryValue={
+          result.selected
+            ? formatMoney(result.selected.totalMonthlyCost)
+            : "$0.00"
+        }
+        stats={
+          <div className="grid gap-4 sm:grid-cols-3">
+            <ResultStat
+              label="Search-tool cost"
+              value={
+                result.selected
+                  ? formatMoney(result.selected.searchToolCost)
+                  : "$0.00"
+              }
+            />
+
+            <ResultStat
+              label="Per grounded prompt"
+              value={
+                result.selected
+                  ? formatMoney(result.selected.costPerGroundedPrompt)
+                  : "$0.00"
+              }
+            />
+
+            <ResultStat
+              label="First-year cost"
+              value={
+                result.selected
+                  ? formatMoney(result.selected.firstYearCost)
+                  : "$0.00"
+              }
+            />
+          </div>
+        }
+        breakdown={
+          <div className="overflow-hidden rounded-xl border border-gray-200">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
+                <thead className="bg-white">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold text-gray-700">
+                      Provider and model
+                    </th>
+
+                    <th className="px-4 py-3 font-semibold text-gray-700">
+                      Billed searches
+                    </th>
+
+                    <th className="px-4 py-3 font-semibold text-gray-700">
+                      Search fee
+                    </th>
+
+                    <th className="px-4 py-3 font-semibold text-gray-700">
+                      Model tokens
+                    </th>
+
+                    <th className="px-4 py-3 font-semibold text-gray-700">
+                      Monthly total
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {result.rows.map((row, index) => (
+                    <tr
+                      key={row.id}
+                      className={
+                        row.id === result.selected?.id
+                          ? "bg-[#F5FAF7]"
+                          : ""
+                      }
+                    >
+                      <td className="px-4 py-4 align-top">
+                        <p className="font-medium text-gray-900">
+                          {index === 0 ? "Lowest cost · " : ""}
+                          {row.provider}
+                        </p>
+
+                        <p className="mt-1 text-gray-600">{row.model}</p>
+
+                        <p className="mt-1 text-xs text-gray-500">
+                          {row.note}
+                        </p>
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
+                        {formatInteger(row.billedSearchQueries)}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
+                        {formatMoney(row.searchToolCost)}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
+                        {formatMoney(
+                          row.modelInputCost + row.modelOutputCost,
+                        )}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 font-semibold text-gray-950">
+                        {formatMoney(row.totalMonthlyCost)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+        totals={
+          <div className="text-sm leading-relaxed text-gray-600">
+            <p>
+              Selected option:{" "}
+              <span className="font-medium text-gray-900">
+                {result.selected
+                  ? `${result.selected.provider} — ${result.selected.model}`
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Selected model input cost:{" "}
+              <span className="font-medium text-gray-900">
+                {result.selected
+                  ? formatMoney(result.selected.modelInputCost)
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Selected model output cost:{" "}
+              <span className="font-medium text-gray-900">
+                {result.selected
+                  ? formatMoney(result.selected.modelOutputCost)
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Lowest calculated option:{" "}
+              <span className="font-medium text-gray-900">
+                {result.cheapest
+                  ? `${result.cheapest.provider} — ${result.cheapest.model}`
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Possible monthly saving against selected option:{" "}
+              <span className="font-medium text-gray-900">
+                {formatMoney(result.monthlySavingVsSelected)}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Possible first-year saving:{" "}
+              <span className="font-medium text-gray-900">
+                {formatMoney(result.firstYearSavingVsSelected)}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Cost per all prompts:{" "}
+              <span className="font-medium text-gray-900">
+                {result.selected
+                  ? formatMoney(result.selected.costPerAllPrompt)
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Budget status:{" "}
+              <span
+                className={`font-semibold ${
+                  result.budgetDifference >= 0
+                    ? "text-[var(--green)]"
+                    : "text-red-700"
+                }`}
+              >
+                {result.budgetDifference >= 0
+                  ? `${formatMoney(result.budgetDifference)} remaining`
+                  : `${formatMoney(
+                      Math.abs(result.budgetDifference),
+                    )} over budget`}
+              </span>
+            </p>
+          </div>
+        }
+        provider="OpenAI web search, Anthropic Claude web search, and Google Gemini Grounding with Google Search"
+        pricingCheckedDate="June 20, 2026"
+        excludedCosts="regional and data-residency premiums, priority or batch processing, caching, orchestration, storage, citations, taxes, negotiated discounts, quality differences, and searches beyond the entered average"
+      />
+    </div>
+  );
+}
+
+function TextField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-gray-700">
+        {label}
+      </span>
+
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
+      />
+    </label>
+  );
+}
+
+function ResultStat({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div>
+      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+        {label}
+      </p>
+
+      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+    </div>
+  );
+}

@@ -217,6 +217,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Web Search Grounding Cost Calculator",
+  description:
+    "Compare current OpenAI, Claude, Google Gemini, and custom web search grounding costs across search calls, model tokens, retrieved context, retries, and free allowances.",
+  href: "/tools/ai-web-search-grounding-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
