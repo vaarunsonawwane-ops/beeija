@@ -201,6 +201,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Evaluation Cost Calculator",
+  description:
+    "Estimate candidate-model inference, model-grader calls, repeated evaluation runs, selective human review, platform costs, setup, and first-year evaluation spend.",
+  href: "/tools/ai-evaluation-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
