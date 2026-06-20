@@ -266,6 +266,15 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Context Window Cost Calculator",
+  description:
+    "Compare full conversation history with summarized context using token growth, cached prefixes, summary overhead, context limits, overflow turns, monthly cost, and savings.",
+  href: "/tools/ai-context-window-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
   
   
   
