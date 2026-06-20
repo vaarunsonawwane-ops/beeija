@@ -193,6 +193,17 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   }, 
 
+  {
+  title: "AI Model Routing Savings Calculator",
+  description:
+    "Compare an all-premium AI workflow with a low-cost and premium model routing strategy, including pass rate, fallback, retries, gateway fees, setup, and break-even savings.",
+  href: "/tools/ai-model-routing-savings-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
+  
   
   
   
