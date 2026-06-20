@@ -209,6 +209,17 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Guardrail Cost Calculator",
+  description:
+    "Estimate input and output safety checks, policy-model grading, regeneration, human review, platform fees, setup, break-even blocking, and total guarded AI cost.",
+  href: "/tools/ai-guardrail-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
+  
+  
+  
   
   
   
