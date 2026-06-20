@@ -242,6 +242,14 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Customer Support Automation Cost Calculator",
+  description:
+    "Estimate AI-handled support conversations, ticket deflection, model and retrieval spend, escalations, QA review, setup, savings, payback, and break-even automation share.",
+  href: "/tools/ai-customer-support-automation-cost-calculator",
+  category: "AI Cost Calculators",
+  },
+  
   
   
   
