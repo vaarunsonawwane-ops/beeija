@@ -250,6 +250,13 @@ export const tools: BeeijaTool[] = [
   category: "AI Cost Calculators",
   },
   
+  {
+  title: "AI Translation and Localization Cost Calculator",
+  description:
+    "Estimate translation-model tokens, terminology lookup, QA, retries, human post-editing, setup, savings, payback, and break-even multilingual content volume.",
+  href: "/tools/ai-translation-localization-cost-calculator",
+  category: "AI Cost Calculators",
+  },
   
   
   
