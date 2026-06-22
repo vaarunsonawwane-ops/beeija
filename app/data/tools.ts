@@ -299,7 +299,13 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
   },
   
-  
+  {
+  title: "Cloud Object Storage Cost Comparison Calculator",
+  description:
+    "Compare Amazon S3, Azure Blob Storage, Google Cloud Storage, or custom object storage plans using storage tiers, requests, retrievals, egress, lifecycle transitions, replication, and migration cost.",
+  href: "/tools/cloud-object-storage-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+  },
   
   
   
