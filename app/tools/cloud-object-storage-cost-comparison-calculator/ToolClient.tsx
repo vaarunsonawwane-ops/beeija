@@ -4,11 +4,22 @@ import { useMemo, useState, type ReactNode } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import {
+  getObjectStorageOptionLabel,
+  getObjectStorageProvider,
+  objectStorageProviders,
+  type ObjectStorageProvider,
+} from "@/app/data/objectStorageOptions";
 
 type PlanInput = {
   id: string;
-  provider: string;
-  planName: string;
+  providerId: string;
+  regionId: string;
+  customRegion: string;
+  resilienceId: string;
+  hotClassId: string;
+  coolClassId: string;
+  archiveClassId: string;
   standardStoragePrice: string;
   coolStoragePrice: string;
   archiveStoragePrice: string;
@@ -29,9 +40,13 @@ type PlanInput = {
 
 type PlanResult = {
   id: string;
-  provider: string;
-  planName: string;
+  providerId: string;
+  providerName: string;
+  serviceName: string;
   displayName: string;
+  regionLabel: string;
+  resilienceLabel: string;
+  classSummary: string;
   configured: boolean;
   standardStorageCost: number;
   coolStorageCost: number;
@@ -69,70 +84,41 @@ type CostRow = {
   entered: boolean;
 };
 
+function createPlan(id: string, providerId: string): PlanInput {
+  const provider = getObjectStorageProvider(providerId);
+
+  return {
+    id,
+    providerId: provider.id,
+    regionId: provider.defaults.regionId,
+    customRegion: "",
+    resilienceId: provider.defaults.resilienceId,
+    hotClassId: provider.defaults.hotClassId,
+    coolClassId: provider.defaults.coolClassId,
+    archiveClassId: provider.defaults.archiveClassId,
+    standardStoragePrice: "",
+    coolStoragePrice: "",
+    archiveStoragePrice: "",
+    writePricePerTenThousand: "",
+    readPricePerTenThousand: "",
+    listPricePerTenThousand: "",
+    transitionPricePerTenThousand: "",
+    coolRetrievalPricePerGb: "",
+    archiveRetrievalPricePerGb: "",
+    egressPricePerGb: "",
+    replicationTransferPricePerGb: "",
+    managementPricePerMillionObjects: "",
+    earlyDeletionPricePerGb: "",
+    fixedMonthlyCost: "",
+    oneTimeMigrationCost: "",
+    migrationAmortizationMonths: "12",
+  };
+}
+
 const initialPlans: PlanInput[] = [
-  {
-    id: "plan-a",
-    provider: "AWS",
-    planName: "Amazon S3 plan",
-    standardStoragePrice: "",
-    coolStoragePrice: "",
-    archiveStoragePrice: "",
-    writePricePerTenThousand: "",
-    readPricePerTenThousand: "",
-    listPricePerTenThousand: "",
-    transitionPricePerTenThousand: "",
-    coolRetrievalPricePerGb: "",
-    archiveRetrievalPricePerGb: "",
-    egressPricePerGb: "",
-    replicationTransferPricePerGb: "",
-    managementPricePerMillionObjects: "",
-    earlyDeletionPricePerGb: "",
-    fixedMonthlyCost: "",
-    oneTimeMigrationCost: "",
-    migrationAmortizationMonths: "12",
-  },
-  {
-    id: "plan-b",
-    provider: "Microsoft Azure",
-    planName: "Azure Blob Storage plan",
-    standardStoragePrice: "",
-    coolStoragePrice: "",
-    archiveStoragePrice: "",
-    writePricePerTenThousand: "",
-    readPricePerTenThousand: "",
-    listPricePerTenThousand: "",
-    transitionPricePerTenThousand: "",
-    coolRetrievalPricePerGb: "",
-    archiveRetrievalPricePerGb: "",
-    egressPricePerGb: "",
-    replicationTransferPricePerGb: "",
-    managementPricePerMillionObjects: "",
-    earlyDeletionPricePerGb: "",
-    fixedMonthlyCost: "",
-    oneTimeMigrationCost: "",
-    migrationAmortizationMonths: "12",
-  },
-  {
-    id: "plan-c",
-    provider: "Google Cloud",
-    planName: "Cloud Storage plan",
-    standardStoragePrice: "",
-    coolStoragePrice: "",
-    archiveStoragePrice: "",
-    writePricePerTenThousand: "",
-    readPricePerTenThousand: "",
-    listPricePerTenThousand: "",
-    transitionPricePerTenThousand: "",
-    coolRetrievalPricePerGb: "",
-    archiveRetrievalPricePerGb: "",
-    egressPricePerGb: "",
-    replicationTransferPricePerGb: "",
-    managementPricePerMillionObjects: "",
-    earlyDeletionPricePerGb: "",
-    fixedMonthlyCost: "",
-    oneTimeMigrationCost: "",
-    migrationAmortizationMonths: "12",
-  },
+  createPlan("plan-a", "aws"),
+  createPlan("plan-b", "azure"),
+  createPlan("plan-c", "gcp"),
 ];
 
 function toNumber(value: string) {
@@ -168,10 +154,50 @@ function formatInteger(value: number) {
   }).format(value);
 }
 
-function displayPlanName(plan: Pick<PlanInput, "provider" | "planName">) {
-  return `${plan.provider.trim() || "Cloud provider"} — ${
-    plan.planName.trim() || "Object storage plan"
-  }`;
+function getRegionLabel(plan: PlanInput, provider: ObjectStorageProvider) {
+  if (plan.regionId === "other") {
+    return plan.customRegion.trim() || "Other region";
+  }
+
+  return getObjectStorageOptionLabel(provider.regions, plan.regionId);
+}
+
+function getClassLabels(plan: PlanInput, provider: ObjectStorageProvider) {
+  return {
+    hot: getObjectStorageOptionLabel(
+      provider.hotClasses,
+      plan.hotClassId,
+    ),
+    cool: getObjectStorageOptionLabel(
+      provider.coolClasses,
+      plan.coolClassId,
+    ),
+    archive: getObjectStorageOptionLabel(
+      provider.archiveClasses,
+      plan.archiveClassId,
+    ),
+  };
+}
+
+function getDisplayName(plan: PlanInput) {
+  const provider = getObjectStorageProvider(plan.providerId);
+  return `${provider.serviceName} — ${getRegionLabel(plan, provider)}`;
+}
+
+function getClassSummary(plan: PlanInput) {
+  const provider = getObjectStorageProvider(plan.providerId);
+  const classes = getClassLabels(plan, provider);
+
+  return [classes.hot, classes.cool, classes.archive]
+    .filter((label) => label !== "Not used")
+    .join(" / ");
+}
+
+function isAzureArchiveUnsupported(plan: PlanInput) {
+  return (
+    plan.providerId === "azure" &&
+    ["zrs", "gzrs", "ra-gzrs"].includes(plan.resilienceId)
+  );
 }
 
 export default function ToolClient() {
@@ -219,6 +245,44 @@ export default function ToolClient() {
     );
   };
 
+  const changeProvider = (planId: string, providerId: string) => {
+    const provider = getObjectStorageProvider(providerId);
+
+    setPlans((current) =>
+      current.map((plan) =>
+        plan.id === planId
+          ? {
+              ...plan,
+              providerId: provider.id,
+              regionId: provider.defaults.regionId,
+              customRegion: "",
+              resilienceId: provider.defaults.resilienceId,
+              hotClassId: provider.defaults.hotClassId,
+              coolClassId: provider.defaults.coolClassId,
+              archiveClassId: provider.defaults.archiveClassId,
+            }
+          : plan,
+      ),
+    );
+  };
+
+  const changeResilience = (planId: string, resilienceId: string) => {
+    setPlans((current) =>
+      current.map((plan) => {
+        if (plan.id !== planId) return plan;
+
+        const nextPlan = {
+          ...plan,
+          resilienceId,
+        };
+
+        return isAzureArchiveUnsupported(nextPlan)
+          ? { ...nextPlan, archiveClassId: "not-used" }
+          : nextPlan;
+      }),
+    );
+  };
+
   const result = useMemo(() => {
     const primaryStoredGb = toNumber(averageStoredDataGb);
     const newDataGb = toNumber(monthlyNewDataGb);
@@ -240,7 +304,9 @@ export default function ToolClient() {
         ? enteredStandardShare / enteredShareTotal
         : 0;
     const coolShare =
-      enteredShareTotal > 0 ? enteredCoolShare / enteredShareTotal : 0;
+      enteredShareTotal > 0
+        ? enteredCoolShare / enteredShareTotal
+        : 0;
     const archiveShare =
       enteredShareTotal > 0
         ? enteredArchiveShare / enteredShareTotal
@@ -265,12 +331,19 @@ export default function ToolClient() {
     const budget = toNumber(monthlyBudget);
 
     const rows: PlanResult[] = plans.map((plan) => {
+      const provider = getObjectStorageProvider(plan.providerId);
+      const classes = getClassLabels(plan, provider);
+      const coolEnabled = plan.coolClassId !== "not-used";
+      const archiveEnabled = plan.archiveClassId !== "not-used";
+
       const standardStorageCost =
         standardStoredGb * toNumber(plan.standardStoragePrice);
-      const coolStorageCost =
-        coolStoredGb * toNumber(plan.coolStoragePrice);
-      const archiveStorageCost =
-        archiveStoredGb * toNumber(plan.archiveStoragePrice);
+      const coolStorageCost = coolEnabled
+        ? coolStoredGb * toNumber(plan.coolStoragePrice)
+        : 0;
+      const archiveStorageCost = archiveEnabled
+        ? archiveStoredGb * toNumber(plan.archiveStoragePrice)
+        : 0;
       const totalStorageCost =
         standardStorageCost + coolStorageCost + archiveStorageCost;
 
@@ -278,9 +351,11 @@ export default function ToolClient() {
         (writes / 10_000) *
         toNumber(plan.writePricePerTenThousand);
       const readRequestCost =
-        (reads / 10_000) * toNumber(plan.readPricePerTenThousand);
+        (reads / 10_000) *
+        toNumber(plan.readPricePerTenThousand);
       const listRequestCost =
-        (lists / 10_000) * toNumber(plan.listPricePerTenThousand);
+        (lists / 10_000) *
+        toNumber(plan.listPricePerTenThousand);
       const transitionRequestCost =
         (transitions / 10_000) *
         toNumber(plan.transitionPricePerTenThousand);
@@ -290,15 +365,19 @@ export default function ToolClient() {
         listRequestCost +
         transitionRequestCost;
 
-      const coolRetrievalCost =
-        coolRetrievalGb * toNumber(plan.coolRetrievalPricePerGb);
-      const archiveRetrievalCost =
-        archiveRetrievalGb *
-        toNumber(plan.archiveRetrievalPricePerGb);
+      const coolRetrievalCost = coolEnabled
+        ? coolRetrievalGb *
+          toNumber(plan.coolRetrievalPricePerGb)
+        : 0;
+      const archiveRetrievalCost = archiveEnabled
+        ? archiveRetrievalGb *
+          toNumber(plan.archiveRetrievalPricePerGb)
+        : 0;
       const totalRetrievalCost =
         coolRetrievalCost + archiveRetrievalCost;
 
-      const egressCost = egressGb * toNumber(plan.egressPricePerGb);
+      const egressCost =
+        egressGb * toNumber(plan.egressPricePerGb);
       const replicationTransferCost =
         replicatedNewGb *
         toNumber(plan.replicationTransferPricePerGb);
@@ -309,7 +388,8 @@ export default function ToolClient() {
         earlyDeletedGb * toNumber(plan.earlyDeletionPricePerGb);
       const fixedMonthlyCost = toNumber(plan.fixedMonthlyCost);
 
-      const oneTimeMigrationCost = toNumber(plan.oneTimeMigrationCost);
+      const oneTimeMigrationCost =
+        toNumber(plan.oneTimeMigrationCost);
       const amortizationMonths = Math.max(
         1,
         toNumber(plan.migrationAmortizationMonths),
@@ -334,14 +414,14 @@ export default function ToolClient() {
 
       const enteredPriceCount = [
         plan.standardStoragePrice,
-        plan.coolStoragePrice,
-        plan.archiveStoragePrice,
+        coolEnabled ? plan.coolStoragePrice : "",
+        archiveEnabled ? plan.archiveStoragePrice : "",
         plan.writePricePerTenThousand,
         plan.readPricePerTenThousand,
         plan.listPricePerTenThousand,
         plan.transitionPricePerTenThousand,
-        plan.coolRetrievalPricePerGb,
-        plan.archiveRetrievalPricePerGb,
+        coolEnabled ? plan.coolRetrievalPricePerGb : "",
+        archiveEnabled ? plan.archiveRetrievalPricePerGb : "",
         plan.egressPricePerGb,
         plan.replicationTransferPricePerGb,
         plan.managementPricePerMillionObjects,
@@ -352,14 +432,24 @@ export default function ToolClient() {
 
       const configured =
         plan.standardStoragePrice.trim() !== "" ||
-        plan.coolStoragePrice.trim() !== "" ||
-        plan.archiveStoragePrice.trim() !== "";
+        (coolEnabled && plan.coolStoragePrice.trim() !== "") ||
+        (archiveEnabled &&
+          plan.archiveStoragePrice.trim() !== "");
 
       return {
         id: plan.id,
-        provider: plan.provider,
-        planName: plan.planName,
-        displayName: displayPlanName(plan),
+        providerId: provider.id,
+        providerName: provider.providerName,
+        serviceName: provider.serviceName,
+        displayName: getDisplayName(plan),
+        regionLabel: getRegionLabel(plan, provider),
+        resilienceLabel: getObjectStorageOptionLabel(
+          provider.resilienceOptions,
+          plan.resilienceId,
+        ),
+        classSummary: [classes.hot, classes.cool, classes.archive]
+          .filter((label) => label !== "Not used")
+          .join(" / "),
         configured,
         standardStorageCost,
         coolStorageCost,
@@ -471,26 +561,46 @@ export default function ToolClient() {
 
   const selectedPlanInput =
     plans.find((plan) => plan.id === selectedPlanId) ?? plans[0];
+  const selectedProvider = getObjectStorageProvider(
+    selectedPlanInput.providerId,
+  );
+  const selectedClasses = getClassLabels(
+    selectedPlanInput,
+    selectedProvider,
+  );
   const selectedResult = result.selected;
+  const selectedCoolEnabled =
+    selectedPlanInput.coolClassId !== "not-used";
+  const selectedArchiveEnabled =
+    selectedPlanInput.archiveClassId !== "not-used";
 
   const selectedRows: CostRow[] = [
     {
-      label: "Standard storage",
+      label: selectedClasses.hot,
       detail: `${formatNumber(result.standardStoredGb)} GB-months`,
       value: selectedResult.standardStorageCost,
-      entered: selectedPlanInput.standardStoragePrice.trim() !== "",
+      entered:
+        selectedPlanInput.standardStoragePrice.trim() !== "",
     },
     {
-      label: "Cool or infrequent-access storage",
-      detail: `${formatNumber(result.coolStoredGb)} GB-months`,
+      label: selectedClasses.cool,
+      detail: selectedCoolEnabled
+        ? `${formatNumber(result.coolStoredGb)} GB-months`
+        : "Cool or infrequent-access tier is not used",
       value: selectedResult.coolStorageCost,
-      entered: selectedPlanInput.coolStoragePrice.trim() !== "",
+      entered:
+        selectedCoolEnabled &&
+        selectedPlanInput.coolStoragePrice.trim() !== "",
     },
     {
-      label: "Archive storage",
-      detail: `${formatNumber(result.archiveStoredGb)} GB-months`,
+      label: selectedClasses.archive,
+      detail: selectedArchiveEnabled
+        ? `${formatNumber(result.archiveStoredGb)} GB-months`
+        : "Archive tier is not used",
       value: selectedResult.archiveStorageCost,
-      entered: selectedPlanInput.archiveStoragePrice.trim() !== "",
+      entered:
+        selectedArchiveEnabled &&
+        selectedPlanInput.archiveStoragePrice.trim() !== "",
     },
     {
       label: "Write, read, list, and transition requests",
@@ -507,14 +617,17 @@ export default function ToolClient() {
       detail: `${formatNumber(result.totalRetrievedGb)} GB retrieved`,
       value: selectedResult.totalRetrievalCost,
       entered:
-        selectedPlanInput.coolRetrievalPricePerGb.trim() !== "" ||
-        selectedPlanInput.archiveRetrievalPricePerGb.trim() !== "",
+        (selectedCoolEnabled &&
+          selectedPlanInput.coolRetrievalPricePerGb.trim() !== "") ||
+        (selectedArchiveEnabled &&
+          selectedPlanInput.archiveRetrievalPricePerGb.trim() !== ""),
     },
     {
       label: "Internet or cross-region egress",
       detail: `${formatNumber(toNumber(internetEgressGb))} GB`,
       value: selectedResult.egressCost,
-      entered: selectedPlanInput.egressPricePerGb.trim() !== "",
+      entered:
+        selectedPlanInput.egressPricePerGb.trim() !== "",
     },
     {
       label: "Replication transfer",
@@ -534,15 +647,20 @@ export default function ToolClient() {
     },
     {
       label: "Early deletion or minimum-duration charge",
-      detail: `${formatNumber(toNumber(earlyDeletedDataGb))} GB affected`,
+      detail: `${formatNumber(
+        toNumber(earlyDeletedDataGb),
+      )} GB affected`,
       value: selectedResult.earlyDeletionCost,
-      entered: selectedPlanInput.earlyDeletionPricePerGb.trim() !== "",
+      entered:
+        selectedPlanInput.earlyDeletionPricePerGb.trim() !== "",
     },
     {
       label: "Fixed monthly services",
-      detail: "Inventory, analytics, monitoring, support, or other fixed charges",
+      detail:
+        "Inventory, analytics, monitoring, support, or other fixed charges",
       value: selectedResult.fixedMonthlyCost,
-      entered: selectedPlanInput.fixedMonthlyCost.trim() !== "",
+      entered:
+        selectedPlanInput.fixedMonthlyCost.trim() !== "",
     },
     {
       label: "Amortised migration",
@@ -551,17 +669,20 @@ export default function ToolClient() {
       )} spread across ${formatInteger(
         Math.max(
           1,
-          toNumber(selectedPlanInput.migrationAmortizationMonths),
+          toNumber(
+            selectedPlanInput.migrationAmortizationMonths,
+          ),
         ),
       )} months`,
       value: selectedResult.amortizedMigrationCost,
-      entered: selectedPlanInput.oneTimeMigrationCost.trim() !== "",
+      entered:
+        selectedPlanInput.oneTimeMigrationCost.trim() !== "",
     },
   ];
 
-  const planOptions = plans.map((plan) => ({
+  const planOptions = plans.map((plan, index) => ({
     value: plan.id,
-    label: displayPlanName(plan),
+    label: `Plan ${index + 1}: ${getDisplayName(plan)}`,
   }));
 
   const reset = () => {
@@ -581,7 +702,7 @@ export default function ToolClient() {
     setObjectCountMillions("10");
     setEarlyDeletedDataGb("100");
     setMonthlyBudget("");
-    setPlans(initialPlans);
+    setPlans(initialPlans.map((plan) => ({ ...plan })));
     setSelectedPlanId("plan-a");
   };
 
@@ -594,8 +715,8 @@ export default function ToolClient() {
           </h2>
 
           <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same storage, request, retrieval, and transfer workload for
-            every provider plan.
+            Use the same storage, request, retrieval, and transfer workload
+            for every provider plan.
           </p>
         </div>
 
@@ -771,7 +892,8 @@ export default function ToolClient() {
             </p>
 
             <p>
-              Cool share: {formatNumber(result.coolSharePercent)}%</p>
+              Cool share: {formatNumber(result.coolSharePercent)}%
+            </p>
 
             <p>
               Archive share:{" "}
@@ -797,22 +919,30 @@ export default function ToolClient() {
 
         <div className="mt-10">
           <h2 className="text-2xl font-semibold text-gray-950">
-            Enter Provider Plan Prices
+            Select Provider Configurations and Enter Prices
           </h2>
 
           <p className="mt-3 leading-relaxed text-gray-600">
-            Enter at least one storage-tier price for a plan to appear in the
-            ranked comparison.
+            Choose the provider, region, resilience setup, and storage
+            classes. Current prices remain blank so you can enter the exact
+            rates for the selected configuration.
           </p>
         </div>
 
         <div className="mt-6 space-y-6">
-          {plans.map((plan) => (
+          {plans.map((plan, index) => (
             <PlanEditor
               key={plan.id}
+              planNumber={index + 1}
               plan={plan}
               onChange={(field, value) =>
                 updatePlan(plan.id, field, value)
+              }
+              onProviderChange={(providerId) =>
+                changeProvider(plan.id, providerId)
+              }
+              onResilienceChange={(resilienceId) =>
+                changeResilience(plan.id, resilienceId)
               }
             />
           ))}
@@ -851,7 +981,9 @@ export default function ToolClient() {
               label="Request cost per 1M"
               value={
                 selectedResult.configured
-                  ? formatMoney(selectedResult.requestCostPerMillion)
+                  ? formatMoney(
+                      selectedResult.requestCostPerMillion,
+                    )
                   : "—"
               }
             />
@@ -876,6 +1008,18 @@ export default function ToolClient() {
               }
               options={planOptions}
             />
+
+            <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+              <p className="font-medium text-gray-900">
+                {selectedResult.displayName}
+              </p>
+              <p className="mt-1">
+                {selectedResult.resilienceLabel}
+              </p>
+              <p className="mt-1">
+                {selectedResult.classSummary}
+              </p>
+            </div>
 
             <div className="space-y-4">
               {selectedRows.map((row) => (
@@ -902,10 +1046,20 @@ export default function ToolClient() {
             </p>
 
             <p className="mt-2">
+              Configuration:{" "}
+              <span className="font-medium text-gray-900">
+                {selectedResult.resilienceLabel} ·{" "}
+                {selectedResult.classSummary}
+              </span>
+            </p>
+
+            <p className="mt-2">
               Monthly operating cost:{" "}
               <span className="font-medium text-gray-900">
                 {selectedResult.configured
-                  ? formatMoney(selectedResult.monthlyOperatingCost)
+                  ? formatMoney(
+                      selectedResult.monthlyOperatingCost,
+                    )
                   : "—"}
               </span>
             </p>
@@ -924,7 +1078,9 @@ export default function ToolClient() {
               <span className="font-medium text-gray-900">
                 {selectedResult.configured &&
                 result.totalRetrievedGb > 0
-                  ? formatMoney(selectedResult.retrievalCostPerGb)
+                  ? formatMoney(
+                      selectedResult.retrievalCostPerGb,
+                    )
                   : "—"}
               </span>
             </p>
@@ -993,38 +1149,142 @@ export default function ToolClient() {
             </p>
           </div>
         }
-        provider="Amazon S3, Microsoft Azure Blob Storage, Google Cloud Storage, or custom object storage plans"
+        provider="Amazon S3, Microsoft Azure Blob Storage, and Google Cloud Storage"
         excludedCosts="taxes, support, CDN delivery, private connectivity, accelerated transfer, restore-speed premiums, encryption key requests, analytics, legal retention, negotiated credits, and services not entered"
-        noticeText="No provider price is hardcoded. Enter current effective rates for the exact region, storage class, redundancy option, retrieval speed, request category, currency, and billing agreement. Blank optional price fields are treated as zero. Minimum object sizes, minimum storage durations, free allowances, tiered egress, and binary-versus-decimal units can change the final bill."
+        noticeText="Provider, region, resilience, and storage-class selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. The region lists contain commonly used locations plus an Other option and are not intended to replace the providers' authoritative location lists. Blank optional price fields are treated as zero."
       />
     </div>
   );
 }
 
 function PlanEditor({
+  planNumber,
   plan,
   onChange,
+  onProviderChange,
+  onResilienceChange,
 }: {
+  planNumber: number;
   plan: PlanInput;
   onChange: (field: keyof PlanInput, value: string) => void;
+  onProviderChange: (providerId: string) => void;
+  onResilienceChange: (resilienceId: string) => void;
 }) {
+  const provider = getObjectStorageProvider(plan.providerId);
+  const classes = getClassLabels(plan, provider);
+  const coolEnabled = plan.coolClassId !== "not-used";
+  const archiveEnabled = plan.archiveClassId !== "not-used";
+
+  const providerOptions = objectStorageProviders.map((item) => ({
+    value: item.id,
+    label: `${item.providerName} — ${item.serviceName}`,
+  }));
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+      <div className="mb-5">
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
+          Comparison plan {planNumber}
+        </p>
+        <h3 className="mt-1 text-lg font-semibold text-gray-950">
+          {provider.serviceName}
+        </h3>
+      </div>
+
       <div className="grid gap-5 md:grid-cols-2">
-        <TextField
-          label="Provider name"
-          value={plan.provider}
-          onChange={(value) => onChange("provider", value)}
+        <BeeijaSelect
+          label="Object storage provider"
+          value={plan.providerId}
+          onChange={(event) =>
+            onProviderChange(event.target.value)
+          }
+          options={providerOptions}
         />
 
-        <TextField
-          label="Plan, region, or storage-class set"
-          value={plan.planName}
-          onChange={(value) => onChange("planName", value)}
+        <BeeijaSelect
+          label="Region or bucket location"
+          value={plan.regionId}
+          onChange={(event) =>
+            onChange("regionId", event.target.value)
+          }
+          options={provider.regions}
         />
 
+        {plan.regionId === "other" ? (
+          <TextField
+            label="Enter the exact provider region or location"
+            value={plan.customRegion}
+            onChange={(value) => onChange("customRegion", value)}
+          />
+        ) : null}
+
+        <BeeijaSelect
+          label="Location or redundancy setup"
+          value={plan.resilienceId}
+          onChange={(event) =>
+            onResilienceChange(event.target.value)
+          }
+          options={provider.resilienceOptions}
+        />
+
+        <BeeijaSelect
+          label="Frequent-access storage class"
+          value={plan.hotClassId}
+          onChange={(event) =>
+            onChange("hotClassId", event.target.value)
+          }
+          options={provider.hotClasses}
+        />
+
+        <BeeijaSelect
+          label="Infrequent-access storage class"
+          value={plan.coolClassId}
+          onChange={(event) =>
+            onChange("coolClassId", event.target.value)
+          }
+          options={provider.coolClasses}
+        />
+
+        <BeeijaSelect
+          label="Archive storage class"
+          value={plan.archiveClassId}
+          onChange={(event) =>
+            onChange("archiveClassId", event.target.value)
+          }
+          options={
+            isAzureArchiveUnsupported(plan)
+              ? provider.archiveClasses.filter(
+                  (option) => option.value === "not-used",
+                )
+              : provider.archiveClasses
+          }
+        />
+      </div>
+
+      {isAzureArchiveUnsupported(plan) ? (
+        <div className="mt-5 rounded-xl border-l-4 border-[#F2C94C] bg-[#FFFBEA] px-4 py-3 text-sm text-gray-700">
+          Azure Archive is not available with the selected
+          zone-redundant setup, so Archive has been set to Not used.
+        </div>
+      ) : null}
+
+      <div className="mt-7">
+        <h4 className="font-semibold text-gray-950">
+          Enter Current Prices for This Configuration
+        </h4>
+
+        <p className="mt-2 text-sm text-gray-600">
+          {getRegionLabel(plan, provider)} ·{" "}
+          {getObjectStorageOptionLabel(
+            provider.resilienceOptions,
+            plan.resilienceId,
+          )}
+        </p>
+      </div>
+
+      <div className="mt-5 grid gap-5 md:grid-cols-2">
         <BeeijaNumberField
-          label="Standard storage per GB-month"
+          label={`${classes.hot} price per GB-month`}
           value={plan.standardStoragePrice}
           onChange={(value) =>
             onChange("standardStoragePrice", value)
@@ -1035,16 +1295,27 @@ function PlanEditor({
         />
 
         <BeeijaNumberField
-          label="Cool storage per GB-month"
+          label={
+            coolEnabled
+              ? `${classes.cool} price per GB-month`
+              : "Infrequent-access storage price"
+          }
           value={plan.coolStoragePrice}
-          onChange={(value) => onChange("coolStoragePrice", value)}
+          onChange={(value) =>
+            onChange("coolStoragePrice", value)
+          }
           min="0"
           step="0.000001"
           prefix="$"
+          disabled={!coolEnabled}
         />
 
         <BeeijaNumberField
-          label="Archive storage per GB-month"
+          label={
+            archiveEnabled
+              ? `${classes.archive} price per GB-month`
+              : "Archive storage price"
+          }
           value={plan.archiveStoragePrice}
           onChange={(value) =>
             onChange("archiveStoragePrice", value)
@@ -1052,6 +1323,7 @@ function PlanEditor({
           min="0"
           step="0.000001"
           prefix="$"
+          disabled={!archiveEnabled}
         />
 
         <BeeijaNumberField
@@ -1099,7 +1371,11 @@ function PlanEditor({
         />
 
         <BeeijaNumberField
-          label="Cool-tier retrieval per GB"
+          label={
+            coolEnabled
+              ? `${classes.cool} retrieval price per GB`
+              : "Cool-tier retrieval price per GB"
+          }
           value={plan.coolRetrievalPricePerGb}
           onChange={(value) =>
             onChange("coolRetrievalPricePerGb", value)
@@ -1107,10 +1383,15 @@ function PlanEditor({
           min="0"
           step="0.0001"
           prefix="$"
+          disabled={!coolEnabled}
         />
 
         <BeeijaNumberField
-          label="Archive retrieval or restore per GB"
+          label={
+            archiveEnabled
+              ? `${classes.archive} retrieval or restore per GB`
+              : "Archive retrieval or restore per GB"
+          }
           value={plan.archiveRetrievalPricePerGb}
           onChange={(value) =>
             onChange("archiveRetrievalPricePerGb", value)
@@ -1118,12 +1399,15 @@ function PlanEditor({
           min="0"
           step="0.0001"
           prefix="$"
+          disabled={!archiveEnabled}
         />
 
         <BeeijaNumberField
           label="Effective egress price per GB"
           value={plan.egressPricePerGb}
-          onChange={(value) => onChange("egressPricePerGb", value)}
+          onChange={(value) =>
+            onChange("egressPricePerGb", value)
+          }
           min="0"
           step="0.0001"
           prefix="$"
@@ -1165,7 +1449,9 @@ function PlanEditor({
         <BeeijaNumberField
           label="Other fixed monthly storage services"
           value={plan.fixedMonthlyCost}
-          onChange={(value) => onChange("fixedMonthlyCost", value)}
+          onChange={(value) =>
+            onChange("fixedMonthlyCost", value)
+          }
           min="0"
           step="1"
           prefix="$"
@@ -1253,7 +1539,9 @@ function ResultStat({
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 font-semibold text-gray-950">
+        {value}
+      </p>
     </div>
   );
 }
@@ -1273,7 +1561,9 @@ function BreakdownRow({
     <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
       <div>
         <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
+        <p className="mt-1 text-sm text-gray-500">
+          {detail}
+        </p>
       </div>
 
       <p className="font-semibold text-gray-950">
@@ -1296,7 +1586,7 @@ function ComparisonTable({ rows }: { rows: PlanResult[] }) {
             <thead className="bg-white">
               <tr>
                 <th className="px-4 py-3 font-semibold text-gray-700">
-                  Plan
+                  Configuration
                 </th>
                 <th className="px-4 py-3 font-semibold text-gray-700">
                   Storage
@@ -1313,19 +1603,27 @@ function ComparisonTable({ rows }: { rows: PlanResult[] }) {
             <tbody className="divide-y divide-gray-200 bg-white">
               {rows.map((row, index) => (
                 <tr key={row.id}>
-                  <td className="px-4 py-4 align-top">
+                  <td className="min-w-64 px-4 py-4 align-top">
                     <p className="font-medium text-gray-900">
                       {row.configured && index === 0
                         ? "Lowest configured · "
                         : ""}
-                      {row.provider || "Cloud provider"}
+                      {row.serviceName}
                     </p>
 
                     <p className="mt-1 text-gray-600">
-                      {row.planName || "Object storage plan"}
+                      {row.regionLabel}
                     </p>
 
                     <p className="mt-1 text-xs text-gray-500">
+                      {row.resilienceLabel}
+                    </p>
+
+                    <p className="mt-1 text-xs text-gray-500">
+                      {row.classSummary}
+                    </p>
+
+                    <p className="mt-2 text-xs text-gray-500">
                       {row.configured
                         ? `${row.enteredPriceCount} price inputs entered`
                         : "Enter at least one storage-tier price"}
