@@ -232,6 +232,8 @@ export default function ToolClient() {
 
   const [plans, setPlans] = useState<PlanInput[]>(initialPlans);
   const [selectedPlanId, setSelectedPlanId] = useState("plan-a");
+  const [activeEditorPlanId, setActiveEditorPlanId] =
+    useState("plan-a");
 
   const updatePlan = (
     planId: string,
@@ -685,6 +687,17 @@ export default function ToolClient() {
     label: `Plan ${index + 1}: ${getDisplayName(plan)}`,
   }));
 
+  const activeEditorPlan =
+    plans.find((plan) => plan.id === activeEditorPlanId) ??
+    plans[0];
+  const activeEditorPlanNumber =
+    plans.findIndex((plan) => plan.id === activeEditorPlan.id) + 1;
+
+  const openPlanEditor = (planId: string) => {
+    setActiveEditorPlanId(planId);
+    setSelectedPlanId(planId);
+  };
+
   const reset = () => {
     setAverageStoredDataGb("10240");
     setMonthlyNewDataGb("1000");
@@ -704,6 +717,7 @@ export default function ToolClient() {
     setMonthlyBudget("");
     setPlans(initialPlans.map((plan) => ({ ...plan })));
     setSelectedPlanId("plan-a");
+    setActiveEditorPlanId("plan-a");
   };
 
   return (
@@ -929,23 +943,73 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-6 space-y-6">
-          {plans.map((plan, index) => (
+        <div className="mt-6">
+          <div
+            className="grid gap-2 sm:grid-cols-3"
+            role="tablist"
+            aria-label="Object storage comparison plans"
+          >
+            {plans.map((plan, index) => {
+              const isActive = plan.id === activeEditorPlanId;
+              const provider = getObjectStorageProvider(
+                plan.providerId,
+              );
+
+              return (
+                <button
+                  key={plan.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => openPlanEditor(plan.id)}
+                  className={`rounded-xl border px-4 py-3 text-left transition ${
+                    isActive
+                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
+                      : "border-gray-200 bg-white hover:border-[var(--green)]"
+                  }`}
+                >
+                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
+                    Plan {index + 1}
+                  </span>
+                  <span className="mt-1 block font-semibold text-gray-950">
+                    {provider.serviceName}
+                  </span>
+                  <span className="mt-1 block text-xs text-gray-500">
+                    {getRegionLabel(plan, provider)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            className="mt-5"
+            role="tabpanel"
+            aria-label={`Comparison plan ${activeEditorPlanNumber}`}
+          >
             <PlanEditor
-              key={plan.id}
-              planNumber={index + 1}
-              plan={plan}
+              key={activeEditorPlan.id}
+              planNumber={activeEditorPlanNumber}
+              plan={activeEditorPlan}
               onChange={(field, value) =>
-                updatePlan(plan.id, field, value)
+                updatePlan(activeEditorPlan.id, field, value)
               }
               onProviderChange={(providerId) =>
-                changeProvider(plan.id, providerId)
+                changeProvider(activeEditorPlan.id, providerId)
               }
               onResilienceChange={(resilienceId) =>
-                changeResilience(plan.id, resilienceId)
+                changeResilience(
+                  activeEditorPlan.id,
+                  resilienceId,
+                )
               }
             />
-          ))}
+          </div>
+
+          <p className="mt-3 text-sm text-gray-500">
+            Select Plan 1, 2, or 3 above to edit it. All three plans
+            remain included in the ranked comparison.
+          </p>
         </div>
 
         <button
