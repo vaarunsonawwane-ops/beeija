@@ -1191,7 +1191,7 @@ function PlanEditor({
         </h3>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid items-start gap-5 md:grid-cols-2 md:[&>div>label:first-child]:flex md:[&>div>label:first-child]:min-h-[2.7rem] md:[&>div>label:first-child]:items-end md:[&>label>span:first-child]:flex md:[&>label>span:first-child]:min-h-[2.7rem] md:[&>label>span:first-child]:items-end">
         <BeeijaSelect
           label="Object storage provider"
           value={plan.providerId}
@@ -1282,7 +1282,7 @@ function PlanEditor({
         </p>
       </div>
 
-      <div className="mt-5 grid gap-5 md:grid-cols-2">
+      <div className="mt-5 grid items-start gap-5 md:grid-cols-2 md:[&>label>span:first-child]:flex md:[&>label>span:first-child]:min-h-[2.7rem] md:[&>label>span:first-child]:items-end">
         <BeeijaNumberField
           label={`${classes.hot} price per GB-month`}
           value={plan.standardStoragePrice}
