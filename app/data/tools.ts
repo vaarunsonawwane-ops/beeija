@@ -307,6 +307,17 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
   },
   
+  {
+  title: "Cloud PostgreSQL Cost Comparison Calculator",
+  description:
+    "Compare Amazon RDS for PostgreSQL, Azure Database for PostgreSQL Flexible Server, and Google Cloud SQL using compute, HA, replicas, storage, IOPS, backups, transfer, support, and migration cost.",
+  href: "/tools/cloud-postgresql-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+  },
+
+  
+  
+  
   
   
   
