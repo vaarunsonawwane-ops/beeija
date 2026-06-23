@@ -1163,8 +1163,10 @@ function PlanEditor({
         />
       </div>
 
-      <div className="mt-5 rounded-xl border-l-4 border-[#F2C94C] bg-[#FFFBEA] px-4 py-3 text-sm text-gray-700">
-        {availability.description} The workload adds read replicas separately.
+      <div className="mt-5 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+        <p className="text-sm text-gray-700">
+          {availability.description} The workload adds read replicas separately.
+        </p>
       </div>
 
       <div className="mt-7">
