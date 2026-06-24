@@ -771,7 +771,7 @@ export default function ToolClient() {
         </FieldSection>
 
         <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
+          <p className="font-semibold text-gray-900">
             Shared workload before provider availability settings
           </p>
 
@@ -1173,8 +1173,8 @@ function PlanEditor({
         />
       </div>
 
-      <div className="mt-5 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-        <p className="text-sm text-gray-700">
+      <div className="mt-5 rounded-xl border-l-4 border-[#F2C94C] bg-[#FFF8E8] px-5 py-4 shadow-sm">
+        <p className="text-sm leading-6 text-gray-700">
           {availability.description} The workload adds read replicas separately.
         </p>
       </div>
