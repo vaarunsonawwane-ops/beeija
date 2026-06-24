@@ -1,6 +1,11 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import {
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+} from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
@@ -133,7 +138,9 @@ function clampPercent(value: string) {
   return Math.min(100, Math.max(0, toNumber(value)));
 }
 
-function formatMoney(value: number) {
+// Always show the complete currency value. Zero-width break points after
+// commas allow very large amounts to wrap without abbreviating any digit.
+function formatVisibleMoney(value: number) {
   if (!Number.isFinite(value)) return "$0.00";
   if (value > 0 && value < 0.01) return `$${value.toFixed(6)}`;
 
@@ -142,7 +149,9 @@ function formatMoney(value: number) {
     currency: "USD",
     minimumFractionDigits: 2,
     maximumFractionDigits: 4,
-  }).format(value);
+  })
+    .format(value)
+    .replace(/,/g, ",\u200B");
 }
 
 function formatNumber(value: number) {
@@ -591,7 +600,7 @@ export default function ToolClient() {
     },
     {
       label: "Amortised migration",
-      detail: `${formatMoney(
+      detail: `${formatVisibleMoney(
         selectedResult.oneTimeMigrationCost,
       )} spread across ${formatInteger(
         Math.max(
@@ -639,8 +648,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter the Shared PostgreSQL Workload
@@ -859,13 +868,14 @@ export default function ToolClient() {
         </button>
       </section>
 
-      <BeeijaCalculatorResultPanel
+      <div className="min-w-0 overflow-hidden">
+        <BeeijaCalculatorResultPanel
         title="Managed PostgreSQL Cost Comparison"
         description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
         primaryLabel="Selected monthly planning cost"
         primaryValue={
           selectedResult.configured
-            ? formatMoney(selectedResult.monthlyPlanningCost)
+            ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
             : "Enter compute or storage prices"
         }
         stats={
@@ -874,7 +884,7 @@ export default function ToolClient() {
               label="Cost per node-hour"
               value={
                 selectedResult.configured
-                  ? formatMoney(selectedResult.costPerNodeHour)
+                  ? formatVisibleMoney(selectedResult.costPerNodeHour)
                   : "—"
               }
             />
@@ -883,7 +893,7 @@ export default function ToolClient() {
               label="Cost per stored TB"
               value={
                 selectedResult.configured
-                  ? formatMoney(selectedResult.costPerStoredTb)
+                  ? formatVisibleMoney(selectedResult.costPerStoredTb)
                   : "—"
               }
             />
@@ -892,7 +902,7 @@ export default function ToolClient() {
               label="First-year cost"
               value={
                 selectedResult.configured
-                  ? formatMoney(selectedResult.firstYearCost)
+                  ? formatVisibleMoney(selectedResult.firstYearCost)
                   : "—"
               }
             />
@@ -938,7 +948,7 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Selected plan:{" "}
               <span className="font-medium text-gray-900">
@@ -971,7 +981,7 @@ export default function ToolClient() {
               Compute saving from entered commitment:{" "}
               <span className="font-semibold text-[var(--green)]">
                 {selectedResult.configured
-                  ? formatMoney(selectedResult.commitmentSaving)
+                  ? formatVisibleMoney(selectedResult.commitmentSaving)
                   : "—"}
               </span>
             </p>
@@ -994,7 +1004,7 @@ export default function ToolClient() {
               All-in cost per vCPU-hour:{" "}
               <span className="font-medium text-gray-900">
                 {selectedResult.configured && result.vcpu > 0
-                  ? formatMoney(selectedResult.costPerVcpuHour)
+                  ? formatVisibleMoney(selectedResult.costPerVcpuHour)
                   : "—"}
               </span>
             </p>
@@ -1003,7 +1013,7 @@ export default function ToolClient() {
               Lowest configured plan:{" "}
               <span className="font-medium text-gray-900">
                 {result.cheapest
-                  ? `${result.cheapest.displayName} at ${formatMoney(
+                  ? `${result.cheapest.displayName} at ${formatVisibleMoney(
                       result.cheapest.monthlyPlanningCost,
                     )} per month`
                   : "Enter at least one compute or storage price"}
@@ -1014,7 +1024,7 @@ export default function ToolClient() {
               Possible monthly saving against selected plan:{" "}
               <span className="font-semibold text-[var(--green)]">
                 {selectedResult.configured && result.cheapest
-                  ? formatMoney(result.monthlySavingVsSelected)
+                  ? formatVisibleMoney(result.monthlySavingVsSelected)
                   : "—"}
               </span>
             </p>
@@ -1023,7 +1033,7 @@ export default function ToolClient() {
               Possible first-year saving:{" "}
               <span className="font-semibold text-[var(--green)]">
                 {selectedResult.configured && result.cheapest
-                  ? formatMoney(result.firstYearSavingVsSelected)
+                  ? formatVisibleMoney(result.firstYearSavingVsSelected)
                   : "—"}
               </span>
             </p>
@@ -1051,10 +1061,10 @@ export default function ToolClient() {
                   : !selectedResult.configured
                     ? "Enter current prices"
                     : selectedResult.budgetDifference >= 0
-                      ? `${formatMoney(
+                      ? `${formatVisibleMoney(
                           selectedResult.budgetDifference,
                         )} remaining`
-                      : `${formatMoney(
+                      : `${formatVisibleMoney(
                           Math.abs(selectedResult.budgetDifference),
                         )} over budget`}
               </span>
@@ -1065,7 +1075,7 @@ export default function ToolClient() {
         excludedCosts="taxes, support plans, private connectivity, NAT gateways, connection proxies, cross-zone application traffic, log ingestion, database administration labour, negotiated credits, and services not entered"
         noticeText="No provider price is hardcoded. Enter current effective prices for the exact region, availability mode, compute tier, storage type, commitment, currency, and billing agreement. Provider configuration options were checked against official documentation in June 2026, but availability can change. Blank optional price fields are treated as zero."
       />
-    </div>
+      </div>    </div>
   );
 }
 
@@ -1380,7 +1390,9 @@ function TextField({
       <input
         type="text"
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+          onChange(event.target.value)
+        }
         className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
       />
     </label>
@@ -1395,11 +1407,13 @@ function ResultStat({
   value: string;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -1416,13 +1430,13 @@ function BreakdownRow({
   entered: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{label}</p>
         <p className="mt-1 text-sm text-gray-500">{detail}</p>
       </div>
-      <p className="font-semibold text-gray-950">
-        {entered ? formatMoney(value) : "—"}
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {entered ? formatVisibleMoney(value) : "—"}
       </p>
     </div>
   );
@@ -1430,12 +1444,12 @@ function BreakdownRow({
 
 function ComparisonTable({ rows }: { rows: PlanResult[] }) {
   return (
-    <div>
+    <div className="min-w-0">
       <h3 className="font-semibold text-gray-950">
         Ranked provider comparison
       </h3>
 
-      <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+      <div className="mt-3 min-w-0 overflow-hidden rounded-xl border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
             <thead className="bg-white">
@@ -1487,12 +1501,12 @@ function ComparisonTable({ rows }: { rows: PlanResult[] }) {
 
                   <td className="whitespace-nowrap px-4 py-4 font-semibold text-gray-950">
                     {row.configured
-                      ? formatMoney(row.monthlyPlanningCost)
+                      ? formatVisibleMoney(row.monthlyPlanningCost)
                       : "—"}
                   </td>
 
                   <td className="whitespace-nowrap px-4 py-4 text-gray-900">
-                    {row.configured ? formatMoney(row.firstYearCost) : "—"}
+                    {row.configured ? formatVisibleMoney(row.firstYearCost) : "—"}
                   </td>
                 </tr>
               ))}
