@@ -6,1051 +6,1644 @@ import {
   type ChangeEvent,
   type ReactNode,
 } from "react";
-import Link from "next/link";
-import ToolShell from "@/app/components/ToolShell";
+import BeeijaSelect from "@/app/components/BeeijaSelect";
+import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
-type ProviderKey = "aws" | "azure" | "gcp";
-type DeploymentMode = "single" | "ha";
-
-type Workload = {
-  hoursPerMonth: number;
-  primaryStorageGb: number;
-  backupStorageGb: number;
-  monthlyIoMillion: number;
-  monthlyEgressGb: number;
-  readReplicas: number;
-  deploymentMode: DeploymentMode;
-  planningMonths: number;
+type Option = {
+  value: string;
+  label: string;
 };
 
-type ProviderPricing = {
+type AvailabilityOption = Option & {
+  copies: number;
+};
+
+type ProviderDefinition = {
+  id: string;
   providerName: string;
-  shortName: string;
   serviceName: string;
-  referenceConfiguration: string;
-  region: string;
-  computeHourly: number;
-  storagePerGbMonth: number;
-  backupPerGbMonth: number;
-  ioPerMillion: number;
-  egressPerGb: number;
-  computeDiscountPercent: number;
-  additionalMonthlyCost: number;
-  includedBackupMultiplier: number;
+  regions: Option[];
+  editions: Option[];
+  availabilityOptions: AvailabilityOption[];
+  defaults: {
+    regionId: string;
+    editionId: string;
+    availabilityId: string;
+    backupAllowanceMode: BackupAllowanceMode;
+  };
 };
 
-type CostBreakdown = {
-  provider: ProviderKey;
-  shortName: string;
+type BackupAllowanceMode = "none" | "primary" | "custom";
+
+type PlanInput = {
+  id: string;
+  providerId: string;
+  regionId: string;
+  customRegion: string;
+  editionId: string;
+  availabilityId: string;
+  machineLabel: string;
+  deploymentComputePricePerHour: string;
+  replicaComputePricePerHour: string;
+  deploymentStoragePricePerGbMonth: string;
+  replicaStoragePricePerGbMonth: string;
+  backupAllowanceMode: BackupAllowanceMode;
+  customIncludedBackupGb: string;
+  backupPricePerGbMonth: string;
+  deploymentIopsPricePerIopsMonth: string;
+  replicaIopsPricePerIopsMonth: string;
+  paidIoPricePerMillion: string;
+  egressPricePerGb: string;
+  extendedSupportPricePerVcpuHour: string;
+  computeDiscountPercent: string;
+  fixedMonthlyCost: string;
+  oneTimeMigrationCost: string;
+  migrationAmortizationMonths: string;
+};
+
+type PlanResult = {
+  id: string;
+  providerId: string;
+  providerName: string;
   serviceName: string;
+  displayName: string;
+  regionLabel: string;
+  editionLabel: string;
+  availabilityLabel: string;
+  machineLabel: string;
+  configured: boolean;
   databaseCopies: number;
+  billableVcpus: number;
+  includedBackupGb: number;
   chargeableBackupGb: number;
-  compute: number;
-  storage: number;
-  backup: number;
-  io: number;
-  egress: number;
-  additional: number;
-  monthly: number;
-  annual: number;
-  planningPeriod: number;
+  computeBeforeDiscount: number;
+  computeDiscountAmount: number;
+  computeCost: number;
+  storageCost: number;
+  provisionedIopsCost: number;
+  paidIoCost: number;
+  backupCost: number;
+  egressCost: number;
+  extendedSupportCost: number;
+  fixedMonthlyCost: number;
+  monthlyOperatingCost: number;
+  amortizedMigrationCost: number;
+  monthlyPlanningCost: number;
+  oneTimeMigrationCost: number;
+  firstYearCost: number;
+  costPerBillableVcpu: number;
+  costPerPrimaryStorageGb: number;
+  budgetDifference: number;
+  enteredPriceCount: number;
 };
 
-const PRICING_CHECKED_DATE = "June 24, 2026";
-
-const PROVIDER_ORDER: ProviderKey[] = ["aws", "azure", "gcp"];
-
-const DEFAULT_WORKLOAD: Workload = {
-  hoursPerMonth: 730,
-  primaryStorageGb: 100,
-  backupStorageGb: 100,
-  monthlyIoMillion: 0,
-  monthlyEgressGb: 0,
-  readReplicas: 0,
-  deploymentMode: "single",
-  planningMonths: 12,
+type CostRow = {
+  label: string;
+  detail: string;
+  value: number;
+  entered: boolean;
 };
 
-const DEFAULT_PRICING: Record<ProviderKey, ProviderPricing> = {
-  aws: {
+const backupAllowanceOptions: Option[] = [
+  {
+    value: "none",
+    label: "No included backup allowance",
+  },
+  {
+    value: "primary",
+    label: "Allowance equals primary storage",
+  },
+  {
+    value: "custom",
+    label: "Custom included backup amount",
+  },
+];
+
+const providers: ProviderDefinition[] = [
+  {
+    id: "aws",
     providerName: "Amazon Web Services",
-    shortName: "AWS",
     serviceName: "Amazon RDS for MySQL",
-    referenceConfiguration:
-      "db.r5.large reference: 2 vCPUs and 16 GiB memory, Single-AZ",
-    region: "US East (N. Virginia)",
-    computeHourly: 0.1386,
-    storagePerGbMonth: 0.115,
-    backupPerGbMonth: 0.095,
-    ioPerMillion: 0,
-    egressPerGb: 0,
-    computeDiscountPercent: 0,
-    additionalMonthlyCost: 0,
-    includedBackupMultiplier: 1,
+    regions: [
+      { value: "us-east-1", label: "US East (N. Virginia)" },
+      { value: "us-east-2", label: "US East (Ohio)" },
+      { value: "us-west-2", label: "US West (Oregon)" },
+      { value: "eu-west-1", label: "Europe (Ireland)" },
+      { value: "eu-central-1", label: "Europe (Frankfurt)" },
+      { value: "ap-south-1", label: "Asia Pacific (Mumbai)" },
+      { value: "ap-south-2", label: "Asia Pacific (Hyderabad)" },
+      { value: "ap-southeast-1", label: "Asia Pacific (Singapore)" },
+      { value: "other", label: "Other AWS region" },
+    ],
+    editions: [
+      { value: "general", label: "General-purpose DB instance" },
+      { value: "memory", label: "Memory-optimized DB instance" },
+      { value: "burstable", label: "Burstable DB instance" },
+      { value: "custom", label: "Other RDS instance family" },
+    ],
+    availabilityOptions: [
+      { value: "single", label: "Single-AZ DB instance", copies: 1 },
+      {
+        value: "multi-az-instance",
+        label: "Multi-AZ DB instance with one standby",
+        copies: 2,
+      },
+      {
+        value: "multi-az-cluster",
+        label: "Multi-AZ DB cluster with two readable standbys",
+        copies: 3,
+      },
+    ],
+    defaults: {
+      regionId: "us-east-1",
+      editionId: "general",
+      availabilityId: "single",
+      backupAllowanceMode: "primary",
+    },
   },
-  azure: {
+  {
+    id: "azure",
     providerName: "Microsoft Azure",
-    shortName: "Azure",
     serviceName: "Azure Database for MySQL Flexible Server",
-    referenceConfiguration:
-      "E2ds v6 reference: 2 vCores and 16 GiB memory, Memory Optimized",
-    region: "Central US",
-    computeHourly: 0.298,
-    storagePerGbMonth: 0.115,
-    backupPerGbMonth: 0.095,
-    ioPerMillion: 0.2,
-    egressPerGb: 0,
-    computeDiscountPercent: 0,
-    additionalMonthlyCost: 0,
-    includedBackupMultiplier: 1,
+    regions: [
+      { value: "east-us", label: "East US" },
+      { value: "east-us-2", label: "East US 2" },
+      { value: "central-us", label: "Central US" },
+      { value: "west-us-2", label: "West US 2" },
+      { value: "north-europe", label: "North Europe" },
+      { value: "west-europe", label: "West Europe" },
+      { value: "central-india", label: "Central India" },
+      { value: "south-india", label: "South India" },
+      { value: "southeast-asia", label: "Southeast Asia" },
+      { value: "other", label: "Other Azure region" },
+    ],
+    editions: [
+      { value: "burstable", label: "Burstable" },
+      { value: "general", label: "General Purpose" },
+      { value: "memory", label: "Memory Optimized" },
+      { value: "custom", label: "Other Flexible Server tier" },
+    ],
+    availabilityOptions: [
+      { value: "single", label: "Without high availability", copies: 1 },
+      {
+        value: "local-ha",
+        label: "Local-redundant high availability",
+        copies: 2,
+      },
+      {
+        value: "zone-ha",
+        label: "Zone-redundant high availability",
+        copies: 2,
+      },
+    ],
+    defaults: {
+      regionId: "central-india",
+      editionId: "general",
+      availabilityId: "single",
+      backupAllowanceMode: "primary",
+    },
   },
-  gcp: {
+  {
+    id: "gcp",
     providerName: "Google Cloud",
-    shortName: "Google Cloud",
     serviceName: "Cloud SQL for MySQL",
-    referenceConfiguration:
-      "Enterprise custom reference: 2 vCPUs and 16 GiB memory",
-    region: "Iowa (us-central1)",
-    computeHourly: 0.1946,
-    storagePerGbMonth: 0.17,
-    backupPerGbMonth: 0.08,
-    ioPerMillion: 0,
-    egressPerGb: 0,
-    computeDiscountPercent: 0,
-    additionalMonthlyCost: 0,
-    includedBackupMultiplier: 0,
+    regions: [
+      { value: "us-central1", label: "Iowa (us-central1)" },
+      { value: "us-east1", label: "South Carolina (us-east1)" },
+      { value: "us-west1", label: "Oregon (us-west1)" },
+      { value: "europe-west1", label: "Belgium (europe-west1)" },
+      { value: "europe-west4", label: "Netherlands (europe-west4)" },
+      { value: "asia-south1", label: "Mumbai (asia-south1)" },
+      { value: "asia-south2", label: "Delhi (asia-south2)" },
+      { value: "asia-southeast1", label: "Singapore (asia-southeast1)" },
+      { value: "other", label: "Other Google Cloud region" },
+    ],
+    editions: [
+      { value: "enterprise", label: "Cloud SQL Enterprise" },
+      { value: "enterprise-plus", label: "Cloud SQL Enterprise Plus" },
+      { value: "shared-core", label: "Shared-core or predefined machine" },
+      { value: "custom", label: "Other Cloud SQL machine configuration" },
+    ],
+    availabilityOptions: [
+      { value: "zonal", label: "Zonal instance", copies: 1 },
+      { value: "regional", label: "Regional high availability", copies: 2 },
+    ],
+    defaults: {
+      regionId: "asia-south1",
+      editionId: "enterprise",
+      availabilityId: "zonal",
+      backupAllowanceMode: "none",
+    },
   },
-};
+  {
+    id: "custom",
+    providerName: "Custom Provider",
+    serviceName: "Custom Managed MySQL Plan",
+    regions: [{ value: "other", label: "Custom region" }],
+    editions: [{ value: "custom", label: "Custom service tier" }],
+    availabilityOptions: [
+      { value: "one-copy", label: "One database copy", copies: 1 },
+      { value: "two-copies", label: "Two database copies", copies: 2 },
+      { value: "three-copies", label: "Three database copies", copies: 3 },
+    ],
+    defaults: {
+      regionId: "other",
+      editionId: "custom",
+      availabilityId: "one-copy",
+      backupAllowanceMode: "none",
+    },
+  },
+];
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-function formatMoney(value: number) {
-  return currencyFormatter.format(Number.isFinite(value) ? value : 0);
-}
-
-function clamp(
-  value: number,
-  minimum = 0,
-  maximum = Number.MAX_SAFE_INTEGER,
-) {
-  if (!Number.isFinite(value)) return minimum;
-  return Math.min(Math.max(value, minimum), maximum);
-}
-
-function calculateProviderCost(
-  provider: ProviderKey,
-  workload: Workload,
-  pricing: ProviderPricing,
-): CostBreakdown {
-  const highAvailabilityCopies = workload.deploymentMode === "ha" ? 2 : 1;
-  const databaseCopies = highAvailabilityCopies + workload.readReplicas;
-  const discountMultiplier =
-    1 - clamp(pricing.computeDiscountPercent, 0, 100) / 100;
-
-  const compute =
-    pricing.computeHourly *
-    workload.hoursPerMonth *
-    databaseCopies *
-    discountMultiplier;
-
-  const storage =
-    pricing.storagePerGbMonth *
-    workload.primaryStorageGb *
-    databaseCopies;
-
-  const includedBackupGb =
-    workload.primaryStorageGb * pricing.includedBackupMultiplier;
-
-  const chargeableBackupGb = Math.max(
-    workload.backupStorageGb - includedBackupGb,
-    0,
+function getProvider(providerId: string) {
+  return (
+    providers.find((provider) => provider.id === providerId) ??
+    providers[0]
   );
+}
 
-  const backup = chargeableBackupGb * pricing.backupPerGbMonth;
-  const io = workload.monthlyIoMillion * pricing.ioPerMillion;
-  const egress = workload.monthlyEgressGb * pricing.egressPerGb;
-  const additional = pricing.additionalMonthlyCost;
-  const monthly = compute + storage + backup + io + egress + additional;
+function getOptionLabel(options: Option[], value: string) {
+  return (
+    options.find((option) => option.value === value)?.label ??
+    "Not selected"
+  );
+}
+
+function getAvailability(
+  provider: ProviderDefinition,
+  availabilityId: string,
+) {
+  return (
+    provider.availabilityOptions.find(
+      (option) => option.value === availabilityId,
+    ) ?? provider.availabilityOptions[0]
+  );
+}
+
+function createPlan(id: string, providerId: string): PlanInput {
+  const provider = getProvider(providerId);
 
   return {
-    provider,
-    shortName: pricing.shortName,
-    serviceName: pricing.serviceName,
-    databaseCopies,
-    chargeableBackupGb,
-    compute,
-    storage,
-    backup,
-    io,
-    egress,
-    additional,
-    monthly,
-    annual: monthly * 12,
-    planningPeriod: monthly * workload.planningMonths,
+    id,
+    providerId: provider.id,
+    regionId: provider.defaults.regionId,
+    customRegion: "",
+    editionId: provider.defaults.editionId,
+    availabilityId: provider.defaults.availabilityId,
+    machineLabel: "",
+    deploymentComputePricePerHour: "",
+    replicaComputePricePerHour: "",
+    deploymentStoragePricePerGbMonth: "",
+    replicaStoragePricePerGbMonth: "",
+    backupAllowanceMode: provider.defaults.backupAllowanceMode,
+    customIncludedBackupGb: "",
+    backupPricePerGbMonth: "",
+    deploymentIopsPricePerIopsMonth: "",
+    replicaIopsPricePerIopsMonth: "",
+    paidIoPricePerMillion: "",
+    egressPricePerGb: "",
+    extendedSupportPricePerVcpuHour: "",
+    computeDiscountPercent: "",
+    fixedMonthlyCost: "",
+    oneTimeMigrationCost: "",
+    migrationAmortizationMonths: "12",
   };
 }
 
-function SectionCard({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="mb-5">
-        <h2 className="text-lg font-semibold text-gray-950">{title}</h2>
-        {description ? (
-          <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
-        ) : null}
-      </div>
-      {children}
-    </section>
-  );
+const initialPlans: PlanInput[] = [
+  createPlan("plan-a", "aws"),
+  createPlan("plan-b", "azure"),
+  createPlan("plan-c", "gcp"),
+];
+
+function toNumber(value: string) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
-function NumberField({
-  label,
-  value,
-  onChange,
-  suffix,
-  help,
-  min = 0,
-  max,
-  step = 1,
-}: {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-  suffix?: string;
-  help?: string;
-  min?: number;
-  max?: number;
-  step?: number;
-}) {
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextValue = Number(event.target.value);
-    onChange(
-      clamp(
-        nextValue,
-        min,
-        typeof max === "number" ? max : Number.MAX_SAFE_INTEGER,
+function clampPercent(value: string) {
+  return Math.min(100, Math.max(0, toNumber(value)));
+}
+
+function formatMoney(value: number) {
+  if (!Number.isFinite(value)) return "$0.00";
+  if (value > 0 && value < 0.01) return `$${value.toFixed(6)}`;
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  }).format(value);
+}
+
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function formatInteger(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function getRegionLabel(plan: PlanInput, provider: ProviderDefinition) {
+  if (plan.regionId === "other") {
+    return plan.customRegion.trim() || "Other region";
+  }
+
+  return getOptionLabel(provider.regions, plan.regionId);
+}
+
+function getDisplayName(plan: PlanInput) {
+  const provider = getProvider(plan.providerId);
+  return `${provider.serviceName} — ${getRegionLabel(plan, provider)}`;
+}
+
+export default function ToolClient() {
+  const [runningHours, setRunningHours] = useState("730");
+  const [vcpusPerDatabase, setVcpusPerDatabase] = useState("2");
+  const [memoryGbPerDatabase, setMemoryGbPerDatabase] = useState("8");
+  const [primaryStorageGb, setPrimaryStorageGb] = useState("100");
+  const [backupStorageGb, setBackupStorageGb] = useState("100");
+  const [provisionedIops, setProvisionedIops] = useState("0");
+  const [billableIoMillions, setBillableIoMillions] = useState("0");
+  const [internetEgressGb, setInternetEgressGb] = useState("0");
+  const [readReplicaCount, setReadReplicaCount] = useState("0");
+  const [monthlyBudget, setMonthlyBudget] = useState("");
+
+  const [plans, setPlans] = useState<PlanInput[]>(initialPlans);
+  const [selectedPlanId, setSelectedPlanId] = useState("plan-a");
+  const [activeEditorPlanId, setActiveEditorPlanId] =
+    useState("plan-a");
+
+  const updatePlan = (
+    planId: string,
+    field: keyof PlanInput,
+    value: string,
+  ) => {
+    setPlans((current) =>
+      current.map((plan) =>
+        plan.id === planId ? { ...plan, [field]: value } : plan,
       ),
     );
   };
 
+  const changeProvider = (planId: string, providerId: string) => {
+    const provider = getProvider(providerId);
+
+    setPlans((current) =>
+      current.map((plan) =>
+        plan.id === planId
+          ? {
+              ...plan,
+              providerId: provider.id,
+              regionId: provider.defaults.regionId,
+              customRegion: "",
+              editionId: provider.defaults.editionId,
+              availabilityId: provider.defaults.availabilityId,
+              backupAllowanceMode:
+                provider.defaults.backupAllowanceMode,
+            }
+          : plan,
+      ),
+    );
+  };
+
+  const result = useMemo(() => {
+    const hours = toNumber(runningHours);
+    const vcpus = toNumber(vcpusPerDatabase);
+    const memoryGb = toNumber(memoryGbPerDatabase);
+    const primaryGb = toNumber(primaryStorageGb);
+    const backupGb = toNumber(backupStorageGb);
+    const provisionedIopsValue = toNumber(provisionedIops);
+    const ioMillions = toNumber(billableIoMillions);
+    const egressGb = toNumber(internetEgressGb);
+    const replicas = Math.floor(toNumber(readReplicaCount));
+    const budget = toNumber(monthlyBudget);
+
+    const rows: PlanResult[] = plans.map((plan) => {
+      const provider = getProvider(plan.providerId);
+      const availability = getAvailability(
+        provider,
+        plan.availabilityId,
+      );
+      const databaseCopies = availability.copies + replicas;
+      const billableVcpus = vcpus * databaseCopies;
+
+      const deploymentComputePrice = toNumber(
+        plan.deploymentComputePricePerHour,
+      );
+      const replicaComputePrice = toNumber(
+        plan.replicaComputePricePerHour,
+      );
+      const deploymentStoragePrice = toNumber(
+        plan.deploymentStoragePricePerGbMonth,
+      );
+      const replicaStoragePrice = toNumber(
+        plan.replicaStoragePricePerGbMonth,
+      );
+      const backupPrice = toNumber(plan.backupPricePerGbMonth);
+      const deploymentIopsPrice = toNumber(
+        plan.deploymentIopsPricePerIopsMonth,
+      );
+      const replicaIopsPrice = toNumber(
+        plan.replicaIopsPricePerIopsMonth,
+      );
+      const paidIoPrice = toNumber(plan.paidIoPricePerMillion);
+      const egressPrice = toNumber(plan.egressPricePerGb);
+      const extendedSupportPrice = toNumber(
+        plan.extendedSupportPricePerVcpuHour,
+      );
+      const discountPercent = clampPercent(
+        plan.computeDiscountPercent,
+      );
+      const fixedMonthlyCost = toNumber(plan.fixedMonthlyCost);
+      const oneTimeMigrationCost = toNumber(
+        plan.oneTimeMigrationCost,
+      );
+      const migrationMonths = Math.max(
+        1,
+        toNumber(plan.migrationAmortizationMonths),
+      );
+
+      const includedBackupGb =
+        plan.backupAllowanceMode === "primary"
+          ? primaryGb
+          : plan.backupAllowanceMode === "custom"
+            ? toNumber(plan.customIncludedBackupGb)
+            : 0;
+
+      const chargeableBackupGb = Math.max(
+        0,
+        backupGb - includedBackupGb,
+      );
+
+      const computeBeforeDiscount =
+        deploymentComputePrice * hours +
+        replicaComputePrice * hours * replicas;
+      const computeDiscountAmount =
+        computeBeforeDiscount * (discountPercent / 100);
+      const computeCost =
+        computeBeforeDiscount - computeDiscountAmount;
+
+      const storageCost =
+        deploymentStoragePrice * primaryGb +
+        replicaStoragePrice * primaryGb * replicas;
+      const provisionedIopsCost =
+        deploymentIopsPrice * provisionedIopsValue +
+        replicaIopsPrice * provisionedIopsValue * replicas;
+      const paidIoCost = paidIoPrice * ioMillions;
+      const backupCost = backupPrice * chargeableBackupGb;
+      const egressCost = egressPrice * egressGb;
+      const extendedSupportCost =
+        extendedSupportPrice * billableVcpus * hours;
+      const amortizedMigrationCost =
+        oneTimeMigrationCost / migrationMonths;
+
+      const monthlyOperatingCost =
+        computeCost +
+        storageCost +
+        provisionedIopsCost +
+        paidIoCost +
+        backupCost +
+        egressCost +
+        extendedSupportCost +
+        fixedMonthlyCost;
+
+      const monthlyPlanningCost =
+        monthlyOperatingCost + amortizedMigrationCost;
+      const firstYearCost =
+        monthlyOperatingCost * 12 + oneTimeMigrationCost;
+
+      const enteredPriceFields = [
+        plan.deploymentComputePricePerHour,
+        plan.replicaComputePricePerHour,
+        plan.deploymentStoragePricePerGbMonth,
+        plan.replicaStoragePricePerGbMonth,
+        plan.backupPricePerGbMonth,
+        plan.deploymentIopsPricePerIopsMonth,
+        plan.replicaIopsPricePerIopsMonth,
+        plan.paidIoPricePerMillion,
+        plan.egressPricePerGb,
+        plan.extendedSupportPricePerVcpuHour,
+        plan.fixedMonthlyCost,
+        plan.oneTimeMigrationCost,
+      ];
+
+      const enteredPriceCount = enteredPriceFields.filter(
+        (value) => value.trim() !== "",
+      ).length;
+
+      const configured = enteredPriceCount > 0;
+
+      return {
+        id: plan.id,
+        providerId: plan.providerId,
+        providerName: provider.providerName,
+        serviceName: provider.serviceName,
+        displayName: getDisplayName(plan),
+        regionLabel: getRegionLabel(plan, provider),
+        editionLabel: getOptionLabel(
+          provider.editions,
+          plan.editionId,
+        ),
+        availabilityLabel: availability.label,
+        machineLabel:
+          plan.machineLabel.trim() || "Machine size not entered",
+        configured,
+        databaseCopies,
+        billableVcpus,
+        includedBackupGb,
+        chargeableBackupGb,
+        computeBeforeDiscount,
+        computeDiscountAmount,
+        computeCost,
+        storageCost,
+        provisionedIopsCost,
+        paidIoCost,
+        backupCost,
+        egressCost,
+        extendedSupportCost,
+        fixedMonthlyCost,
+        monthlyOperatingCost,
+        amortizedMigrationCost,
+        monthlyPlanningCost,
+        oneTimeMigrationCost,
+        firstYearCost,
+        costPerBillableVcpu:
+          billableVcpus > 0
+            ? monthlyPlanningCost / billableVcpus
+            : 0,
+        costPerPrimaryStorageGb:
+          primaryGb > 0 ? monthlyPlanningCost / primaryGb : 0,
+        budgetDifference: budget - monthlyPlanningCost,
+        enteredPriceCount,
+      };
+    });
+
+    const comparisonRows = [...rows].sort((first, second) => {
+      if (first.configured && !second.configured) return -1;
+      if (!first.configured && second.configured) return 1;
+      return first.monthlyPlanningCost - second.monthlyPlanningCost;
+    });
+
+    const selected =
+      rows.find((row) => row.id === selectedPlanId) ?? rows[0];
+    const cheapest =
+      comparisonRows.find((row) => row.configured) ?? null;
+
+    const monthlySavingVsSelected =
+      selected.configured && cheapest
+        ? Math.max(
+            0,
+            selected.monthlyPlanningCost -
+              cheapest.monthlyPlanningCost,
+          )
+        : 0;
+
+    const firstYearSavingVsSelected =
+      selected.configured && cheapest
+        ? Math.max(0, selected.firstYearCost - cheapest.firstYearCost)
+        : 0;
+
+    return {
+      hours,
+      vcpus,
+      memoryGb,
+      primaryGb,
+      backupGb,
+      provisionedIopsValue,
+      ioMillions,
+      egressGb,
+      replicas,
+      budget,
+      hasBudget: monthlyBudget.trim() !== "",
+      rows,
+      comparisonRows,
+      selected,
+      cheapest,
+      monthlySavingVsSelected,
+      firstYearSavingVsSelected,
+    };
+  }, [
+    backupStorageGb,
+    billableIoMillions,
+    internetEgressGb,
+    memoryGbPerDatabase,
+    monthlyBudget,
+    plans,
+    primaryStorageGb,
+    provisionedIops,
+    readReplicaCount,
+    runningHours,
+    selectedPlanId,
+    vcpusPerDatabase,
+  ]);
+
+  const selectedPlanInput =
+    plans.find((plan) => plan.id === selectedPlanId) ?? plans[0];
+  const selectedResult = result.selected;
+
+  const selectedRows: CostRow[] = [
+    {
+      label: "Database compute",
+      detail: `${formatNumber(
+        result.hours,
+      )} hours for the selected deployment plus ${formatInteger(
+        result.replicas,
+      )} read replicas before the entered compute discount`,
+      value: selectedResult.computeCost,
+      entered:
+        selectedPlanInput.deploymentComputePricePerHour.trim() !== "" ||
+        selectedPlanInput.replicaComputePricePerHour.trim() !== "",
+    },
+    {
+      label: "Database storage",
+      detail: `${formatNumber(
+        result.primaryGb,
+      )} GB for the selected deployment plus ${formatInteger(
+        result.replicas,
+      )} read replicas`,
+      value: selectedResult.storageCost,
+      entered:
+        selectedPlanInput.deploymentStoragePricePerGbMonth.trim() !== "" ||
+        selectedPlanInput.replicaStoragePricePerGbMonth.trim() !== "",
+    },
+    {
+      label: "Provisioned IOPS",
+      detail: `${formatInteger(
+        result.provisionedIopsValue,
+      )} IOPS for the selected deployment plus ${formatInteger(
+        result.replicas,
+      )} read replicas`,
+      value: selectedResult.provisionedIopsCost,
+      entered:
+        selectedPlanInput.deploymentIopsPricePerIopsMonth.trim() !== "" ||
+        selectedPlanInput.replicaIopsPricePerIopsMonth.trim() !== "",
+    },
+    {
+      label: "Paid or request-based I/O",
+      detail: `${formatNumber(
+        result.ioMillions,
+      )} million billable I/O requests across the deployment`,
+      value: selectedResult.paidIoCost,
+      entered:
+        selectedPlanInput.paidIoPricePerMillion.trim() !== "",
+    },
+    {
+      label: "Backup storage",
+      detail: `${formatNumber(
+        selectedResult.chargeableBackupGb,
+      )} GB charged after ${formatNumber(
+        selectedResult.includedBackupGb,
+      )} GB included`,
+      value: selectedResult.backupCost,
+      entered: selectedPlanInput.backupPricePerGbMonth.trim() !== "",
+    },
+    {
+      label: "Data transfer out",
+      detail: `${formatNumber(result.egressGb)} GB`,
+      value: selectedResult.egressCost,
+      entered: selectedPlanInput.egressPricePerGb.trim() !== "",
+    },
+    {
+      label: "Extended support",
+      detail: `${formatNumber(
+        selectedResult.billableVcpus,
+      )} billable vCPUs × ${formatNumber(result.hours)} hours`,
+      value: selectedResult.extendedSupportCost,
+      entered:
+        selectedPlanInput.extendedSupportPricePerVcpuHour.trim() !== "",
+    },
+    {
+      label: "Other fixed monthly services",
+      detail: "Monitoring, proxy, accelerated logs, IP, or another fixed charge",
+      value: selectedResult.fixedMonthlyCost,
+      entered: selectedPlanInput.fixedMonthlyCost.trim() !== "",
+    },
+    {
+      label: "Amortized migration cost",
+      detail: `${formatMoney(
+        selectedResult.oneTimeMigrationCost,
+      )} spread across ${formatInteger(
+        Math.max(
+          1,
+          toNumber(selectedPlanInput.migrationAmortizationMonths),
+        ),
+      )} months`,
+      value: selectedResult.amortizedMigrationCost,
+      entered: selectedPlanInput.oneTimeMigrationCost.trim() !== "",
+    },
+  ];
+
+  const planOptions = plans.map((plan, index) => ({
+    value: plan.id,
+    label: `Plan ${index + 1}: ${getDisplayName(plan)}`,
+  }));
+
+  const activeEditorPlan =
+    plans.find((plan) => plan.id === activeEditorPlanId) ?? plans[0];
+  const activeEditorPlanNumber =
+    plans.findIndex((plan) => plan.id === activeEditorPlan.id) + 1;
+
+  const openPlanEditor = (planId: string) => {
+    setActiveEditorPlanId(planId);
+    setSelectedPlanId(planId);
+  };
+
+  const reset = () => {
+    setRunningHours("730");
+    setVcpusPerDatabase("2");
+    setMemoryGbPerDatabase("8");
+    setPrimaryStorageGb("100");
+    setBackupStorageGb("100");
+    setProvisionedIops("0");
+    setBillableIoMillions("0");
+    setInternetEgressGb("0");
+    setReadReplicaCount("0");
+    setMonthlyBudget("");
+    setPlans(initialPlans.map((plan) => ({ ...plan })));
+    setSelectedPlanId("plan-a");
+    setActiveEditorPlanId("plan-a");
+  };
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Enter the Shared MySQL Workload
+          </h2>
+
+          <p className="mt-3 leading-relaxed text-gray-600">
+            Use the same database size, storage, I/O, transfer, and
+            replica workload for every provider plan.
+          </p>
+        </div>
+
+        <FieldSection title="Database Size and Running Time">
+          <BeeijaNumberField
+            label="Database running time per month"
+            value={runningHours}
+            onChange={setRunningHours}
+            min="0"
+            max="744"
+            step="1"
+            suffix="hours"
+          />
+
+          <BeeijaNumberField
+            label="vCPUs per database copy"
+            value={vcpusPerDatabase}
+            onChange={setVcpusPerDatabase}
+            min="0"
+            step="1"
+            suffix="vCPU"
+          />
+
+          <BeeijaNumberField
+            label="Memory per database copy"
+            value={memoryGbPerDatabase}
+            onChange={setMemoryGbPerDatabase}
+            min="0"
+            step="0.5"
+            suffix="GB"
+          />
+
+          <BeeijaNumberField
+            label="Read replicas"
+            value={readReplicaCount}
+            onChange={setReadReplicaCount}
+            min="0"
+            step="1"
+          />
+        </FieldSection>
+
+        <FieldSection title="Storage, IOPS, and Backup">
+          <BeeijaNumberField
+            label="Primary database storage"
+            value={primaryStorageGb}
+            onChange={setPrimaryStorageGb}
+            min="0"
+            step="1"
+            suffix="GB"
+          />
+
+          <BeeijaNumberField
+            label="Total backup storage used"
+            value={backupStorageGb}
+            onChange={setBackupStorageGb}
+            min="0"
+            step="1"
+            suffix="GB"
+          />
+
+          <BeeijaNumberField
+            label="Provisioned IOPS per database copy"
+            value={provisionedIops}
+            onChange={setProvisionedIops}
+            min="0"
+            step="1"
+            suffix="IOPS"
+          />
+
+          <BeeijaNumberField
+            label="Total billable I/O across deployment"
+            value={billableIoMillions}
+            onChange={setBillableIoMillions}
+            min="0"
+            step="0.1"
+            suffix="million"
+          />
+        </FieldSection>
+
+        <FieldSection title="Transfer and Budget">
+          <BeeijaNumberField
+            label="Internet or cross-region data transfer out"
+            value={internetEgressGb}
+            onChange={setInternetEgressGb}
+            min="0"
+            step="1"
+            suffix="GB"
+          />
+
+          <BeeijaNumberField
+            label="Target monthly managed MySQL budget"
+            value={monthlyBudget}
+            onChange={setMonthlyBudget}
+            min="0"
+            step="1"
+            prefix="$"
+          />
+        </FieldSection>
+
+        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+          <p className="font-medium text-gray-900">
+            Shared workload summary
+          </p>
+
+          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+            <p>
+              Running time: {formatNumber(result.hours)} hours
+            </p>
+
+            <p>
+              Database size: {formatNumber(result.vcpus)} vCPU and{" "}
+              {formatNumber(result.memoryGb)} GB memory
+            </p>
+
+            <p>
+              Primary storage: {formatNumber(result.primaryGb)} GB
+            </p>
+
+            <p>
+              Backup usage: {formatNumber(result.backupGb)} GB
+            </p>
+
+            <p>
+              Provisioned IOPS:{" "}
+              {formatInteger(result.provisionedIopsValue)}
+            </p>
+
+            <p>
+              Billable I/O: {formatNumber(result.ioMillions)} million
+            </p>
+
+            <p>
+              Data transfer out: {formatNumber(result.egressGb)} GB
+            </p>
+
+            <p>Read replicas per plan: {formatInteger(result.replicas)}</p>
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Select Provider Configurations and Enter Prices
+          </h2>
+
+          <p className="mt-3 leading-relaxed text-gray-600">
+            Choose the provider, region, service tier, availability
+            setup, and machine size. Current prices remain blank so you
+            can enter the exact effective rates for each selected plan.
+          </p>
+        </div>
+
+        <div className="mt-6">
+          <div
+            className="grid gap-2 sm:grid-cols-3"
+            role="tablist"
+            aria-label="Managed MySQL comparison plans"
+          >
+            {plans.map((plan, index) => {
+              const isActive = plan.id === activeEditorPlanId;
+              const provider = getProvider(plan.providerId);
+
+              return (
+                <button
+                  key={plan.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => openPlanEditor(plan.id)}
+                  className={`rounded-xl border px-4 py-3 text-left transition ${
+                    isActive
+                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
+                      : "border-gray-200 bg-white hover:border-[var(--green)]"
+                  }`}
+                >
+                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
+                    Plan {index + 1}
+                  </span>
+                  <span className="mt-1 block font-semibold text-gray-950">
+                    {provider.serviceName}
+                  </span>
+                  <span className="mt-1 block text-xs text-gray-500">
+                    {getRegionLabel(plan, provider)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            className="mt-5"
+            role="tabpanel"
+            aria-label={`Comparison plan ${activeEditorPlanNumber}`}
+          >
+            <PlanEditor
+              key={activeEditorPlan.id}
+              planNumber={activeEditorPlanNumber}
+              plan={activeEditorPlan}
+              onChange={(field, value) =>
+                updatePlan(activeEditorPlan.id, field, value)
+              }
+              onProviderChange={(providerId) =>
+                changeProvider(activeEditorPlan.id, providerId)
+              }
+            />
+          </div>
+
+          <p className="mt-3 text-sm text-gray-500">
+            Select Plan 1, 2, or 3 above to edit it. All three plans
+            remain included in the ranked comparison.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={reset}
+          className="beeija-btn-outline mt-7"
+        >
+          Reset values
+        </button>
+      </section>
+
+      <BeeijaCalculatorResultPanel
+        title="Managed MySQL Cost Comparison"
+        description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
+        primaryLabel="Selected monthly planning cost"
+        primaryValue={
+          selectedResult.configured
+            ? formatMoney(selectedResult.monthlyPlanningCost)
+            : "Enter provider prices"
+        }
+        stats={
+          <div className="grid gap-4 sm:grid-cols-3">
+            <ResultStat
+              label="Cost per billable vCPU"
+              value={
+                selectedResult.configured
+                  ? formatMoney(selectedResult.costPerBillableVcpu)
+                  : "—"
+              }
+            />
+
+            <ResultStat
+              label="Cost per primary storage GB"
+              value={
+                selectedResult.configured
+                  ? formatMoney(
+                      selectedResult.costPerPrimaryStorageGb,
+                    )
+                  : "—"
+              }
+            />
+
+            <ResultStat
+              label="First-year cost"
+              value={
+                selectedResult.configured
+                  ? formatMoney(selectedResult.firstYearCost)
+                  : "—"
+              }
+            />
+          </div>
+        }
+        breakdown={
+          <div className="space-y-6">
+            <BeeijaSelect
+              label="Detailed plan"
+              value={selectedPlanId}
+              onChange={(event) =>
+                setSelectedPlanId(event.target.value)
+              }
+              options={planOptions}
+            />
+
+            <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+              <p className="font-medium text-gray-900">
+                {selectedResult.displayName}
+              </p>
+              <p className="mt-1">
+                {selectedResult.editionLabel} ·{" "}
+                {selectedResult.machineLabel}
+              </p>
+              <p className="mt-1">
+                {selectedResult.availabilityLabel} ·{" "}
+                {selectedResult.databaseCopies} database copies
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {selectedRows.map((row) => (
+                <BreakdownRow
+                  key={row.label}
+                  label={row.label}
+                  detail={row.detail}
+                  value={row.value}
+                  entered={row.entered}
+                />
+              ))}
+            </div>
+
+            <ComparisonTable rows={result.comparisonRows} />
+          </div>
+        }
+        totals={
+          <div className="text-sm leading-relaxed text-gray-600">
+            <p>
+              Selected plan:{" "}
+              <span className="font-medium text-gray-900">
+                {selectedResult.displayName}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Configuration:{" "}
+              <span className="font-medium text-gray-900">
+                {selectedResult.editionLabel} ·{" "}
+                {selectedResult.availabilityLabel}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Billable database copies:{" "}
+              <span className="font-medium text-gray-900">
+                {formatInteger(selectedResult.databaseCopies)}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Monthly operating cost:{" "}
+              <span className="font-medium text-gray-900">
+                {selectedResult.configured
+                  ? formatMoney(selectedResult.monthlyOperatingCost)
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Monthly migration allocation:{" "}
+              <span className="font-medium text-gray-900">
+                {selectedResult.configured
+                  ? formatMoney(selectedResult.amortizedMigrationCost)
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Lowest configured plan:{" "}
+              <span className="font-medium text-gray-900">
+                {result.cheapest
+                  ? `${result.cheapest.displayName} at ${formatMoney(
+                      result.cheapest.monthlyPlanningCost,
+                    )} per month`
+                  : "Enter at least one provider price"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Possible monthly saving against selected plan:{" "}
+              <span className="font-semibold text-[var(--green)]">
+                {selectedResult.configured && result.cheapest
+                  ? formatMoney(result.monthlySavingVsSelected)
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Possible first-year saving:{" "}
+              <span className="font-semibold text-[var(--green)]">
+                {selectedResult.configured && result.cheapest
+                  ? formatMoney(result.firstYearSavingVsSelected)
+                  : "—"}
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Selected plan price inputs entered:{" "}
+              <span className="font-medium text-gray-900">
+                {selectedResult.enteredPriceCount} of 12
+              </span>
+            </p>
+
+            <p className="mt-2">
+              Budget status:{" "}
+              <span
+                className={`font-semibold ${
+                  result.hasBudget &&
+                  selectedResult.configured &&
+                  selectedResult.budgetDifference < 0
+                    ? "text-red-700"
+                    : "text-[var(--green)]"
+                }`}
+              >
+                {!result.hasBudget
+                  ? "Add a budget to compare"
+                  : !selectedResult.configured
+                    ? "Enter the selected provider prices"
+                    : selectedResult.budgetDifference >= 0
+                      ? `${formatMoney(
+                          selectedResult.budgetDifference,
+                        )} remaining`
+                      : `${formatMoney(
+                          Math.abs(selectedResult.budgetDifference),
+                        )} over budget`}
+              </span>
+            </p>
+          </div>
+        }
+        provider="Amazon RDS for MySQL, Microsoft Azure Database for MySQL Flexible Server, Google Cloud SQL for MySQL, and custom managed MySQL plans"
+        excludedCosts="taxes, support plans, private connectivity, monitoring, DNS, public IP addresses, cross-region replication, backup exports, encryption key requests, migration labour, negotiated credits, and services not entered"
+        noticeText="Provider, region, service-tier, availability, and machine selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Pricing structures and official billing guidance were checked on June 24, 2026. Blank optional price fields are treated as zero."
+      />
+    </div>
+  );
+}
+
+function PlanEditor({
+  planNumber,
+  plan,
+  onChange,
+  onProviderChange,
+}: {
+  planNumber: number;
+  plan: PlanInput;
+  onChange: (field: keyof PlanInput, value: string) => void;
+  onProviderChange: (providerId: string) => void;
+}) {
+  const provider = getProvider(plan.providerId);
+
+  const providerOptions = providers.map((item) => ({
+    value: item.id,
+    label: item.serviceName,
+  }));
+
+  const availabilityOptions = provider.availabilityOptions.map(
+    (option) => ({
+      value: option.value,
+      label: `${option.label} (${option.copies} ${
+        option.copies === 1 ? "copy" : "copies"
+      })`,
+    }),
+  );
+
+  const showCustomBackup =
+    plan.backupAllowanceMode === "custom";
+
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-[#F9FBFA] p-5 md:p-6">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
+          Plan {planNumber}
+        </p>
+        <h3 className="mt-1 text-xl font-semibold text-gray-950">
+          {provider.serviceName}
+        </h3>
+      </div>
+
+      <FieldSection title="Provider Configuration">
+        <BeeijaSelect
+          label="Managed MySQL provider"
+          value={plan.providerId}
+          onChange={(event) =>
+            onProviderChange(event.target.value)
+          }
+          options={providerOptions}
+        />
+
+        <BeeijaSelect
+          label="Region"
+          value={plan.regionId}
+          onChange={(event) =>
+            onChange("regionId", event.target.value)
+          }
+          options={provider.regions}
+        />
+
+        {plan.regionId === "other" ? (
+          <TextField
+            label="Custom region name"
+            value={plan.customRegion}
+            onChange={(value) => onChange("customRegion", value)}
+          />
+        ) : null}
+
+        <BeeijaSelect
+          label="Service tier or edition"
+          value={plan.editionId}
+          onChange={(event) =>
+            onChange("editionId", event.target.value)
+          }
+          options={provider.editions}
+        />
+
+        <BeeijaSelect
+          label="Availability configuration"
+          value={plan.availabilityId}
+          onChange={(event) =>
+            onChange("availabilityId", event.target.value)
+          }
+          options={availabilityOptions}
+        />
+
+        <TextField
+          label="Machine or instance name"
+          value={plan.machineLabel}
+          onChange={(value) => onChange("machineLabel", value)}
+        />
+      </FieldSection>
+
+      <FieldSection title="Compute, Storage, and Backup Prices">
+        <BeeijaNumberField
+          label="Selected deployment compute price per hour"
+          value={plan.deploymentComputePricePerHour}
+          onChange={(value) =>
+            onChange("deploymentComputePricePerHour", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Read replica compute price per replica per hour"
+          value={plan.replicaComputePricePerHour}
+          onChange={(value) =>
+            onChange("replicaComputePricePerHour", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Selected deployment storage price per primary GB-month"
+          value={plan.deploymentStoragePricePerGbMonth}
+          onChange={(value) =>
+            onChange("deploymentStoragePricePerGbMonth", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Read replica storage price per replica per GB-month"
+          value={plan.replicaStoragePricePerGbMonth}
+          onChange={(value) =>
+            onChange("replicaStoragePricePerGbMonth", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaSelect
+          label="Included backup allowance"
+          value={plan.backupAllowanceMode}
+          onChange={(event) =>
+            onChange(
+              "backupAllowanceMode",
+              event.target.value as BackupAllowanceMode,
+            )
+          }
+          options={backupAllowanceOptions}
+        />
+
+        {showCustomBackup ? (
+          <BeeijaNumberField
+            label="Custom included backup storage"
+            value={plan.customIncludedBackupGb}
+            onChange={(value) =>
+              onChange("customIncludedBackupGb", value)
+            }
+            min="0"
+            step="1"
+            suffix="GB"
+          />
+        ) : null}
+
+        <BeeijaNumberField
+          label="Backup storage price per charged GB-month"
+          value={plan.backupPricePerGbMonth}
+          onChange={(value) =>
+            onChange("backupPricePerGbMonth", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Selected deployment IOPS price per IOPS-month"
+          value={plan.deploymentIopsPricePerIopsMonth}
+          onChange={(value) =>
+            onChange("deploymentIopsPricePerIopsMonth", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Read replica IOPS price per replica per IOPS-month"
+          value={plan.replicaIopsPricePerIopsMonth}
+          onChange={(value) =>
+            onChange("replicaIopsPricePerIopsMonth", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Paid I/O price per million requests"
+          value={plan.paidIoPricePerMillion}
+          onChange={(value) =>
+            onChange("paidIoPricePerMillion", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+      </FieldSection>
+
+      <FieldSection title="Transfer, Support, Discounts, and Migration">
+        <BeeijaNumberField
+          label="Effective data transfer-out price per GB"
+          value={plan.egressPricePerGb}
+          onChange={(value) => onChange("egressPricePerGb", value)}
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Extended-support price per vCPU-hour"
+          value={plan.extendedSupportPricePerVcpuHour}
+          onChange={(value) =>
+            onChange("extendedSupportPricePerVcpuHour", value)
+          }
+          min="0"
+          step="0.000001"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Effective compute discount"
+          value={plan.computeDiscountPercent}
+          onChange={(value) =>
+            onChange("computeDiscountPercent", value)
+          }
+          min="0"
+          max="100"
+          step="0.1"
+          suffix="%"
+        />
+
+        <BeeijaNumberField
+          label="Other fixed monthly database services"
+          value={plan.fixedMonthlyCost}
+          onChange={(value) =>
+            onChange("fixedMonthlyCost", value)
+          }
+          min="0"
+          step="1"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="One-time migration cost"
+          value={plan.oneTimeMigrationCost}
+          onChange={(value) =>
+            onChange("oneTimeMigrationCost", value)
+          }
+          min="0"
+          step="1"
+          prefix="$"
+        />
+
+        <BeeijaNumberField
+          label="Migration amortisation period"
+          value={plan.migrationAmortizationMonths}
+          onChange={(value) =>
+            onChange("migrationAmortizationMonths", value)
+          }
+          min="1"
+          step="1"
+          suffix="mo"
+        />
+      </FieldSection>
+    </div>
+  );
+}
+
+function FieldSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="mt-8">
+      <h3 className="text-lg font-semibold text-gray-950">
+        {title}
+      </h3>
+      <div className="mt-5 grid gap-5 md:grid-cols-2">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function TextField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-gray-900">
+      <span className="mb-2 block text-sm font-medium text-gray-700">
         {label}
       </span>
 
-      <div className="relative">
-        <input
-          type="number"
-          inputMode="decimal"
-          value={value}
-          min={min}
-          max={max}
-          step={step}
-          onChange={handleChange}
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pr-20 text-sm text-gray-950 outline-none transition focus:border-[#165A31] focus:ring-2 focus:ring-[#165A31]/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-        />
-        {suffix ? (
-          <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-xs text-gray-500">
-            {suffix}
-          </span>
-        ) : null}
-      </div>
-
-      {help ? (
-        <span className="mt-1.5 block text-xs leading-5 text-gray-500">
-          {help}
-        </span>
-      ) : null}
+      <input
+        type="text"
+        value={value}
+        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+          onChange(event.target.value)
+        }
+        className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
+      />
     </label>
   );
 }
 
-function RateField({
+function ResultStat({
   label,
   value,
-  onChange,
-  suffix,
-  step = 0.001,
-  help,
 }: {
   label: string;
-  value: number;
-  onChange: (value: number) => void;
-  suffix: string;
-  step?: number;
-  help?: string;
+  value: string;
 }) {
   return (
-    <NumberField
-      label={label}
-      value={value}
-      onChange={onChange}
-      suffix={suffix}
-      step={step}
-      min={0}
-      help={help}
-    />
+    <div>
+      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+        {label}
+      </p>
+      <p className="mt-1 font-semibold text-gray-950">
+        {value}
+      </p>
+    </div>
   );
 }
 
-export default function ToolClient() {
-  const [workload, setWorkload] = useState<Workload>(DEFAULT_WORKLOAD);
-  const [pricing, setPricing] =
-    useState<Record<ProviderKey, ProviderPricing>>(DEFAULT_PRICING);
-  const [copyStatus, setCopyStatus] = useState("");
-
-  const results = useMemo(
-    () =>
-      PROVIDER_ORDER.map((provider) =>
-        calculateProviderCost(provider, workload, pricing[provider]),
-      ),
-    [pricing, workload],
-  );
-
-  const rankedResults = useMemo(
-    () => [...results].sort((first, second) => first.monthly - second.monthly),
-    [results],
-  );
-
-  const lowestResult = rankedResults[0];
-  const highestResult = rankedResults[rankedResults.length - 1];
-  const monthlyDifference = Math.max(
-    highestResult.monthly - lowestResult.monthly,
-    0,
-  );
-
-  const updateWorkload = <Key extends keyof Workload>(
-    key: Key,
-    value: Workload[Key],
-  ) => {
-    setWorkload((current) => ({ ...current, [key]: value }));
-  };
-
-  const updateProviderPricing = (
-    provider: ProviderKey,
-    key: keyof ProviderPricing,
-    value: number,
-  ) => {
-    setPricing((current) => ({
-      ...current,
-      [provider]: {
-        ...current[provider],
-        [key]: clamp(value),
-      },
-    }));
-  };
-
-  const resetCalculator = () => {
-    setWorkload(DEFAULT_WORKLOAD);
-    setPricing(DEFAULT_PRICING);
-    setCopyStatus("");
-  };
-
-  const copyComparison = async () => {
-    const lines = [
-      "Cloud MySQL Cost Comparison",
-      `Pricing checked: ${PRICING_CHECKED_DATE}`,
-      `Running time: ${workload.hoursPerMonth} hours/month`,
-      `Primary storage: ${workload.primaryStorageGb} GiB`,
-      `Backup storage used: ${workload.backupStorageGb} GiB`,
-      `High availability: ${
-        workload.deploymentMode === "ha" ? "Enabled" : "Not enabled"
-      }`,
-      `Read replicas: ${workload.readReplicas}`,
-      `Planning period: ${workload.planningMonths} months`,
-      "",
-      ...rankedResults.map(
-        (result, index) =>
-          `${index + 1}. ${result.serviceName}: ${formatMoney(
-            result.monthly,
-          )}/month, ${formatMoney(result.planningPeriod)} over ${
-            workload.planningMonths
-          } months`,
-      ),
-      "",
-      `Lowest estimate: ${lowestResult.serviceName}`,
-      `Monthly difference between lowest and highest: ${formatMoney(
-        monthlyDifference,
-      )}`,
-      "",
-      "Planning estimate only. Replace the reference rates with the exact region, SKU, contract, storage, networking, and feature prices for your account.",
-    ];
-
-    try {
-      await navigator.clipboard.writeText(lines.join("\n"));
-      setCopyStatus("Comparison copied");
-    } catch {
-      setCopyStatus("Unable to copy");
-    }
-  };
-
+function BreakdownRow({
+  label,
+  detail,
+  value,
+  entered,
+}: {
+  label: string;
+  detail: string;
+  value: number;
+  entered: boolean;
+}) {
   return (
-    <ToolShell
-      title="Cloud MySQL Cost Comparison Calculator"
-      description="Compare estimated monthly costs for Amazon RDS for MySQL, Azure Database for MySQL Flexible Server, and Google Cloud SQL for MySQL."
-    >
-      <div className="space-y-6">
-        <div className="border-l-4 border-[#F2C94C] bg-[#FFFDF5] px-4 py-3 text-sm leading-6 text-gray-700">
-          <strong>Pricing checked on {PRICING_CHECKED_DATE}.</strong> The
-          calculator starts with editable USD reference rates for similar
-          2-vCPU, 16-GiB managed MySQL configurations. The providers do not
-          offer identical hardware or performance. Replace the defaults with
-          the exact prices for your region and account before making a purchase
-          decision.
-        </div>
-
-        <SectionCard
-          title="1. Enter the MySQL workload"
-          description="The same workload is applied to all three providers for a consistent cost comparison."
-        >
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberField
-              label="Running time"
-              value={workload.hoursPerMonth}
-              onChange={(value) =>
-                updateWorkload("hoursPerMonth", clamp(value, 0, 744))
-              }
-              suffix="hours"
-              min={0}
-              max={744}
-              help="730 hours is a common full-month estimate."
-            />
-
-            <NumberField
-              label="Primary database storage"
-              value={workload.primaryStorageGb}
-              onChange={(value) =>
-                updateWorkload("primaryStorageGb", value)
-              }
-              suffix="GiB"
-            />
-
-            <NumberField
-              label="Backup storage used"
-              value={workload.backupStorageGb}
-              onChange={(value) =>
-                updateWorkload("backupStorageGb", value)
-              }
-              suffix="GiB"
-              help="Enter total backup storage used, not only the extra amount."
-            />
-
-            <NumberField
-              label="Monthly billable I/O"
-              value={workload.monthlyIoMillion}
-              onChange={(value) =>
-                updateWorkload("monthlyIoMillion", value)
-              }
-              suffix="million"
-              step={0.1}
-              help="Enter total billable I/O for the deployment. Keep zero when the selected storage includes I/O."
-            />
-
-            <NumberField
-              label="Internet data transfer out"
-              value={workload.monthlyEgressGb}
-              onChange={(value) => updateWorkload("monthlyEgressGb", value)}
-              suffix="GiB"
-              help="Network rates default to zero because routes and free allowances vary."
-            />
-
-            <NumberField
-              label="Read replicas"
-              value={workload.readReplicas}
-              onChange={(value) =>
-                updateWorkload(
-                  "readReplicas",
-                  Math.floor(clamp(value, 0, 20)),
-                )
-              }
-              suffix="replicas"
-              min={0}
-              max={20}
-            />
-
-            <NumberField
-              label="Planning period"
-              value={workload.planningMonths}
-              onChange={(value) =>
-                updateWorkload(
-                  "planningMonths",
-                  Math.floor(clamp(value, 1, 60)),
-                )
-              }
-              suffix="months"
-              min={1}
-              max={60}
-            />
-
-            <div className="sm:col-span-2">
-              <span className="mb-2 block text-sm font-medium text-gray-900">
-                Deployment type
-              </span>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => updateWorkload("deploymentMode", "single")}
-                  aria-pressed={workload.deploymentMode === "single"}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    workload.deploymentMode === "single"
-                      ? "border-[#165A31] bg-[#165A31]/5"
-                      : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
-                >
-                  <span className="block text-sm font-semibold text-gray-950">
-                    Single database
-                  </span>
-                  <span className="mt-1 block text-xs leading-5 text-gray-500">
-                    One primary database before read replicas.
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => updateWorkload("deploymentMode", "ha")}
-                  aria-pressed={workload.deploymentMode === "ha"}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    workload.deploymentMode === "ha"
-                      ? "border-[#165A31] bg-[#165A31]/5"
-                      : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
-                >
-                  <span className="block text-sm font-semibold text-gray-950">
-                    High availability
-                  </span>
-                  <span className="mt-1 block text-xs leading-5 text-gray-500">
-                    Adds one standby copy with compute and storage.
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </SectionCard>
-
-        <SectionCard
-          title="2. Review the provider pricing"
-          description="Every default is editable so the calculator can match your region, database size, discount, and billing agreement."
-        >
-          <div className="grid gap-5 xl:grid-cols-3">
-            {PROVIDER_ORDER.map((provider) => {
-              const providerPricing = pricing[provider];
-
-              return (
-                <article
-                  key={provider}
-                  className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5"
-                >
-                  <div className="mb-5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[#165A31]">
-                      {providerPricing.providerName}
-                    </p>
-                    <h3 className="mt-1 text-base font-semibold text-gray-950">
-                      {providerPricing.serviceName}
-                    </h3>
-                    <p className="mt-2 text-xs leading-5 text-gray-600">
-                      {providerPricing.referenceConfiguration}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      {providerPricing.region}
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <RateField
-                      label="Compute"
-                      value={providerPricing.computeHourly}
-                      onChange={(value) =>
-                        updateProviderPricing(
-                          provider,
-                          "computeHourly",
-                          value,
-                        )
-                      }
-                      suffix="$/hour"
-                      step={0.0001}
-                    />
-
-                    <RateField
-                      label="Database storage"
-                      value={providerPricing.storagePerGbMonth}
-                      onChange={(value) =>
-                        updateProviderPricing(
-                          provider,
-                          "storagePerGbMonth",
-                          value,
-                        )
-                      }
-                      suffix="$/GiB-mo"
-                      step={0.001}
-                    />
-
-                    <RateField
-                      label="Backup storage"
-                      value={providerPricing.backupPerGbMonth}
-                      onChange={(value) =>
-                        updateProviderPricing(
-                          provider,
-                          "backupPerGbMonth",
-                          value,
-                        )
-                      }
-                      suffix="$/GiB-mo"
-                      step={0.001}
-                    />
-
-                    <RateField
-                      label="Billable I/O"
-                      value={providerPricing.ioPerMillion}
-                      onChange={(value) =>
-                        updateProviderPricing(
-                          provider,
-                          "ioPerMillion",
-                          value,
-                        )
-                      }
-                      suffix="$/million"
-                      step={0.01}
-                    />
-
-                    <RateField
-                      label="Data transfer out"
-                      value={providerPricing.egressPerGb}
-                      onChange={(value) =>
-                        updateProviderPricing(provider, "egressPerGb", value)
-                      }
-                      suffix="$/GiB"
-                      step={0.001}
-                    />
-
-                    <RateField
-                      label="Compute discount"
-                      value={providerPricing.computeDiscountPercent}
-                      onChange={(value) =>
-                        updateProviderPricing(
-                          provider,
-                          "computeDiscountPercent",
-                          clamp(value, 0, 100),
-                        )
-                      }
-                      suffix="%"
-                      step={0.1}
-                      help="Use the effective reserved, committed-use, savings-plan, or negotiated discount."
-                    />
-
-                    <RateField
-                      label="Other monthly cost"
-                      value={providerPricing.additionalMonthlyCost}
-                      onChange={(value) =>
-                        updateProviderPricing(
-                          provider,
-                          "additionalMonthlyCost",
-                          value,
-                        )
-                      }
-                      suffix="$/month"
-                      step={0.01}
-                      help="Add monitoring, extended support, extra IOPS, IP, or another fixed charge."
-                    />
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="mt-5 border-l-4 border-[#F2C94C] bg-[#FFFDF5] px-4 py-3 text-xs leading-5 text-gray-600">
-            AWS and Azure include backup storage up to the primary provisioned
-            storage amount in the default logic. Google Cloud backup usage is
-            charged from the first GiB. Network transfer remains zero until an
-            exact route-specific rate is entered.
-          </div>
-        </SectionCard>
-
-        <SectionCard
-          title="3. Compare the estimated cost"
-          description="The cards are ranked automatically from the lowest to the highest monthly estimate."
-        >
-          <div className="grid gap-4 lg:grid-cols-3">
-            {rankedResults.map((result, index) => {
-              const isLowest = index === 0;
-
-              return (
-                <article
-                  key={result.provider}
-                  className={`rounded-2xl border p-5 ${
-                    isLowest
-                      ? "border-[#165A31] bg-[#165A31]/5"
-                      : "border-gray-200 bg-white"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        {isLowest ? "Lowest estimate" : `Rank ${index + 1}`}
-                      </p>
-                      <h3 className="mt-1 text-base font-semibold text-gray-950">
-                        {result.shortName}
-                      </h3>
-                    </div>
-                    <span className="rounded-full bg-[#F2C94C]/25 px-2.5 py-1 text-xs font-semibold text-gray-800">
-                      {result.databaseCopies}{" "}
-                      {result.databaseCopies === 1 ? "copy" : "copies"}
-                    </span>
-                  </div>
-
-                  <p className="mt-5 text-3xl font-bold tracking-tight text-[#165A31]">
-                    {formatMoney(result.monthly)}
-                  </p>
-                  <p className="mt-1 text-sm text-gray-600">per month</p>
-
-                  <div className="mt-5 space-y-2 border-t border-gray-200 pt-4 text-sm">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-gray-600">Annual estimate</span>
-                      <span className="font-semibold text-gray-950">
-                        {formatMoney(result.annual)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-gray-600">
-                        {workload.planningMonths}-month estimate
-                      </span>
-                      <span className="font-semibold text-gray-950">
-                        {formatMoney(result.planningPeriod)}
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200">
-            <table className="w-full min-w-[820px] border-collapse text-left text-sm">
-              <thead className="bg-gray-50 text-gray-700">
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Cost item</th>
-                  {results.map((result) => (
-                    <th
-                      key={result.provider}
-                      className="px-4 py-3 text-right font-semibold"
-                    >
-                      {result.shortName}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 bg-white">
-                {[
-                  ["Compute", "compute"],
-                  ["Database storage", "storage"],
-                  ["Backup storage", "backup"],
-                  ["Billable I/O", "io"],
-                  ["Data transfer out", "egress"],
-                  ["Other monthly cost", "additional"],
-                  ["Monthly total", "monthly"],
-                  ["Annual total", "annual"],
-                ].map(([label, key]) => (
-                  <tr
-                    key={key}
-                    className={
-                      key === "monthly" || key === "annual"
-                        ? "bg-[#FFFDF5] font-semibold"
-                        : ""
-                    }
-                  >
-                    <td className="px-4 py-3 text-gray-700">{label}</td>
-                    {results.map((result) => (
-                      <td
-                        key={result.provider}
-                        className="px-4 py-3 text-right text-gray-950"
-                      >
-                        {formatMoney(
-                          result[key as keyof CostBreakdown] as number,
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <div className="border-l-4 border-[#F2C94C] bg-[#FFFDF5] px-5 py-4">
-              <p className="text-sm text-gray-600">Lowest current estimate</p>
-              <p className="mt-1 text-lg font-semibold text-gray-950">
-                {lowestResult.serviceName}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-gray-700">
-                {formatMoney(lowestResult.monthly)} per month with the values
-                currently entered.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-gray-200 bg-white px-5 py-4">
-              <p className="text-sm text-gray-600">
-                Difference between lowest and highest
-              </p>
-              <p className="mt-1 text-lg font-semibold text-gray-950">
-                {formatMoney(monthlyDifference)} per month
-              </p>
-              <p className="mt-2 text-sm leading-6 text-gray-700">
-                {formatMoney(monthlyDifference * workload.planningMonths)} over
-                the selected planning period.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={copyComparison}
-              className="rounded-xl bg-[#165A31] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-            >
-              Copy comparison
-            </button>
-            <button
-              type="button"
-              onClick={resetCalculator}
-              className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-800 transition hover:border-gray-300 hover:bg-gray-50"
-            >
-              Reset calculator
-            </button>
-            {copyStatus ? (
-              <span
-                className="self-center text-sm text-gray-600"
-                aria-live="polite"
-              >
-                {copyStatus}
-              </span>
-            ) : null}
-          </div>
-        </SectionCard>
-
-        <section className="space-y-10 pt-6 text-gray-700">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-950">
-              Planning a managed MySQL database across three clouds
-            </h2>
-            <p className="mt-4 leading-7">
-              The database server price is only one part of a managed MySQL
-              bill. Storage, backup retention, high availability, read
-              replicas, I/O, data transfer, and commitment discounts can
-              materially change the monthly total. This calculator keeps those
-              cost parts visible and lets you replace every reference rate.
-            </p>
-            <p className="mt-4 leading-7">
-              The default configurations have the same listed vCPU and memory
-              amounts, but they are not performance guarantees. CPU generation,
-              storage latency, connection limits, failover behavior, and
-              managed features vary. Compare cost together with a benchmark
-              that resembles your application.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-950">
-              Cost parts included in the comparison
-            </h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {[
-                [
-                  "Database compute",
-                  "Hourly compute multiplied by running hours, database copies, and the provider-specific compute discount.",
-                ],
-                [
-                  "High availability",
-                  "One standby copy is added for compute and database storage.",
-                ],
-                [
-                  "Read replicas",
-                  "Every replica adds another full compute and storage copy using the selected reference size.",
-                ],
-                [
-                  "Storage and backups",
-                  "Provisioned database storage and chargeable backup usage are calculated separately.",
-                ],
-                [
-                  "I/O and data transfer",
-                  "Optional usage costs are included when provider-specific rates are entered.",
-                ],
-                [
-                  "Other monthly charges",
-                  "A flexible field covers extended support, extra IOPS, monitoring, IP addresses, or another fixed cost.",
-                ],
-              ].map(([title, text]) => (
-                <div
-                  key={title}
-                  className="rounded-2xl border border-gray-200 bg-white p-5"
-                >
-                  <h3 className="font-semibold text-gray-950">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-gray-600">{text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-950">
-              How to compare the providers accurately
-            </h2>
-            <ol className="mt-4 space-y-4">
-              {[
-                "Choose a similar CPU and memory size in each provider account. Use measured performance rather than assuming equal listed resources are equal.",
-                "Enter monthly running hours, primary storage, backup usage, read replicas, and the required availability setup.",
-                "Replace the reference compute and storage rates with prices from the exact provider region you plan to use.",
-                "Add provider-specific reserved, savings-plan, or committed-use discounts under each pricing card.",
-                "Enter network egress only after checking the source, destination, free allowance, and route.",
-                "Compare the result with migration effort, reliability, MySQL version support, operational features, and application latency.",
-              ].map((step, index) => (
-                <li key={step} className="flex gap-4">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F2C94C]/30 text-sm font-semibold text-gray-900">
-                    {index + 1}
-                  </span>
-                  <p className="pt-1 leading-7">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-950">
-              Check more than the monthly price
-            </h2>
-            <p className="mt-4 leading-7">
-              Review supported MySQL versions, maintenance controls, failover
-              behavior, backup recovery options, private networking, read
-              replica limits, monitoring, storage scaling, connection
-              management, regional availability, and the services already used
-              by your application.
-            </p>
-            <p className="mt-4 leading-7">
-              Also confirm the standard-support window for the selected MySQL
-              version. Running an old major version can add extended-support
-              charges that are not part of the normal compute price.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-950">
-              Official pricing sources
-            </h2>
-            <p className="mt-4 leading-7">
-              The reference rates and billing rules were checked on{" "}
-              {PRICING_CHECKED_DATE}. Provider pricing pages remain the final
-              source for current prices, regions, discounts, and billing
-              conditions.
-            </p>
-            <div className="mt-4 flex flex-col gap-3 text-sm">
-              <a
-                href="https://aws.amazon.com/rds/mysql/pricing/"
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-[#165A31] underline decoration-[#F2C94C] decoration-2 underline-offset-4"
-              >
-                Amazon RDS for MySQL pricing
-              </a>
-              <a
-                href="https://azure.microsoft.com/en-us/pricing/details/mysql/"
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-[#165A31] underline decoration-[#F2C94C] decoration-2 underline-offset-4"
-              >
-                Azure Database for MySQL pricing
-              </a>
-              <a
-                href="https://cloud.google.com/sql/pricing"
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-[#165A31] underline decoration-[#F2C94C] decoration-2 underline-offset-4"
-              >
-                Google Cloud SQL pricing
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-950">
-              Frequently asked questions
-            </h2>
-            <div className="mt-4 divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-white px-5">
-              {[
-                [
-                  "Does this calculator show the final cloud bill?",
-                  "No. It creates a planning estimate from the workload and pricing values entered. Taxes, support plans, private networking, monitoring, free credits, contract pricing, and other services can change the final bill.",
-                ],
-                [
-                  "Are the reference database configurations exactly equal?",
-                  "No. They have the same listed vCPU and memory amounts, but processor type, storage behavior, performance, maintenance, and managed features differ. Test your real workload before choosing a provider.",
-                ],
-                [
-                  "How does the calculator estimate high availability?",
-                  "High availability adds one standby database copy. The calculator therefore doubles compute and database storage before adding any read replicas.",
-                ],
-                [
-                  "How are read replicas priced?",
-                  "Each read replica adds another database compute and storage copy. The calculator uses the same selected reference size for every replica.",
-                ],
-                [
-                  "How is backup storage estimated?",
-                  "The AWS and Azure defaults include backup usage up to the primary database storage amount. Google Cloud backup usage is charged from the first GiB in the default estimate. Every backup rate remains editable.",
-                ],
-                [
-                  "Can committed-use or reserved pricing be compared?",
-                  "Yes. Enter each provider's effective compute discount percentage. The discount applies only to compute because storage, backup, I/O, networking, and other charges are normally billed separately.",
-                ],
-              ].map(([question, answer]) => (
-                <details key={question} className="group py-5">
-                  <summary className="cursor-pointer list-none pr-8 font-semibold text-gray-950">
-                    {question}
-                  </summary>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">
-                    {answer}
-                  </p>
-                </details>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-l-4 border-[#F2C94C] bg-[#FFFDF5] px-5 py-4">
-            <h2 className="text-lg font-semibold text-gray-950">
-              Continue comparing managed database costs
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-gray-700">
-              Compare managed PostgreSQL pricing with the related calculator,
-              or return to the complete Beeija tools directory.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Link
-                href="/tools/cloud-postgresql-cost-comparison-calculator"
-                className="rounded-xl bg-[#165A31] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-              >
-                Cloud PostgreSQL Cost Comparison Calculator
-              </Link>
-              <Link
-                href="/tools"
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 transition hover:border-gray-300"
-              >
-                Browse all tools
-              </Link>
-            </div>
-          </div>
-        </section>
+    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div>
+        <p className="font-medium text-gray-900">{label}</p>
+        <p className="mt-1 text-sm text-gray-500">
+          {detail}
+        </p>
       </div>
-    </ToolShell>
+
+      <p className="font-semibold text-gray-950">
+        {entered ? formatMoney(value) : "—"}
+      </p>
+    </div>
+  );
+}
+
+function ComparisonTable({ rows }: { rows: PlanResult[] }) {
+  return (
+    <div>
+      <h3 className="font-semibold text-gray-950">
+        Ranked provider comparison
+      </h3>
+
+      <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
+            <thead className="bg-white">
+              <tr>
+                <th className="px-4 py-3 font-semibold text-gray-700">
+                  Configuration
+                </th>
+                <th className="px-4 py-3 font-semibold text-gray-700">
+                  Copies
+                </th>
+                <th className="px-4 py-3 font-semibold text-gray-700">
+                  Monthly total
+                </th>
+                <th className="px-4 py-3 font-semibold text-gray-700">
+                  First year
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {rows.map((row, index) => (
+                <tr key={row.id}>
+                  <td className="min-w-64 px-4 py-4 align-top">
+                    <p className="font-medium text-gray-900">
+                      {row.configured && index === 0
+                        ? "Lowest configured · "
+                        : ""}
+                      {row.serviceName}
+                    </p>
+
+                    <p className="mt-1 text-gray-600">
+                      {row.regionLabel}
+                    </p>
+
+                    <p className="mt-1 text-xs text-gray-500">
+                      {row.editionLabel}
+                    </p>
+
+                    <p className="mt-1 text-xs text-gray-500">
+                      {row.availabilityLabel}
+                    </p>
+
+                    <p className="mt-2 text-xs text-gray-500">
+                      {row.configured
+                        ? `${row.enteredPriceCount} price inputs entered`
+                        : "Enter at least one provider price"}
+                    </p>
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-4 text-gray-900">
+                    {formatInteger(row.databaseCopies)}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-4 font-semibold text-gray-950">
+                    {row.configured
+                      ? formatMoney(row.monthlyPlanningCost)
+                      : "—"}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-4 text-gray-900">
+                    {row.configured
+                      ? formatMoney(row.firstYearCost)
+                      : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }

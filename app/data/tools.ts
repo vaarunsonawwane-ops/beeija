@@ -318,10 +318,11 @@ export const tools: BeeijaTool[] = [
   {
   title: "Cloud MySQL Cost Comparison Calculator",
   description:
-    "Compare Amazon RDS for MySQL, Azure Database for MySQL Flexible Server, and Google Cloud SQL using compute, HA, replicas, storage, I/O, backups, transfer, discounts, and other monthly costs.",
+    "Compare Amazon RDS for MySQL, Azure Database for MySQL Flexible Server, and Google Cloud SQL using compute, HA, replicas, storage, IOPS, backups, transfer, extended support, and migration cost.",
   href: "/tools/cloud-mysql-cost-comparison-calculator",
   category: "Cloud Cost Calculators",
   },
+
   
   
   
