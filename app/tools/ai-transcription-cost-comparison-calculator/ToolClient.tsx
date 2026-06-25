@@ -511,72 +511,56 @@ export default function ToolClient() {
           </div>
         }
         breakdown={
-          <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-gray-200">
-            <div className="max-w-full overflow-hidden">
-              <table className="w-full table-fixed divide-y divide-gray-200 text-left text-sm">
-                <colgroup>
-                  <col className="w-[43%]" />
-                  <col className="w-[19%]" />
-                  <col className="w-[19%]" />
-                  <col className="w-[19%]" />
-                </colgroup>
+          <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <div className="hidden grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 2xl:grid">
+              <span>Provider and model</span>
+              <span>Per hour</span>
+              <span>Monthly</span>
+              <span>Yearly</span>
+            </div>
 
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 py-3 font-semibold text-gray-700">
-                      Provider and model
-                    </th>
-                    <th className="px-3 py-3 font-semibold text-gray-700">
-                      Per hour
-                    </th>
-                    <th className="px-3 py-3 font-semibold text-gray-700">
-                      Monthly
-                    </th>
-                    <th className="px-3 py-3 font-semibold text-gray-700">
-                      Yearly
-                    </th>
-                  </tr>
-                </thead>
+            <div className="divide-y divide-gray-200">
+              {results.rows.map((row, index) => (
+                <div
+                  key={row.id}
+                  className="grid min-w-0 gap-4 px-4 py-4 2xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] 2xl:items-start"
+                >
+                  <div className="min-w-0">
+                    <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                      {index === 0 ? "Best price · " : ""}
+                      {row.provider}
+                    </p>
 
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {results.rows.map((row, index) => (
-                    <tr key={row.id}>
-                      <td className="min-w-0 px-3 py-4 align-top">
-                        <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                          {index === 0 ? "Best price · " : ""}
-                          {row.provider}
-                        </p>
-                        <p className="mt-1 break-words text-gray-600 [overflow-wrap:anywhere]">
-                          {row.model}
-                        </p>
-                        {row.note ? (
-                          <p className="mt-1 break-words text-xs text-gray-500 [overflow-wrap:anywhere]">
-                            {row.note}
-                          </p>
-                        ) : null}
-                      </td>
+                    <p className="mt-1 break-words text-sm text-gray-600 [overflow-wrap:anywhere]">
+                      {row.model}
+                    </p>
 
-                      <td className="min-w-0 px-3 py-4 align-top font-medium text-gray-900">
-                        <span className="block break-words [overflow-wrap:anywhere]">
-                          {formatVisibleMoney(row.effectiveRatePerHour)}
-                        </span>
-                      </td>
+                    {row.note ? (
+                      <p className="mt-1 break-words text-xs text-gray-500 [overflow-wrap:anywhere]">
+                        {row.note}
+                      </p>
+                    ) : null}
+                  </div>
 
-                      <td className="min-w-0 px-3 py-4 align-top font-semibold text-gray-950">
-                        <span className="block break-words [overflow-wrap:anywhere]">
-                          {formatVisibleMoney(row.monthlyCost)}
-                        </span>
-                      </td>
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-3 2xl:contents">
+                    <ComparisonValue
+                      label="Per hour"
+                      value={formatVisibleMoney(row.effectiveRatePerHour)}
+                    />
 
-                      <td className="min-w-0 px-3 py-4 align-top text-gray-700">
-                        <span className="block break-words [overflow-wrap:anywhere]">
-                          {formatVisibleMoney(row.yearlyCost)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    <ComparisonValue
+                      label="Monthly"
+                      value={formatVisibleMoney(row.monthlyCost)}
+                      emphasis
+                    />
+
+                    <ComparisonValue
+                      label="Yearly"
+                      value={formatVisibleMoney(row.yearlyCost)}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         }
@@ -610,6 +594,34 @@ export default function ToolClient() {
         pricingCheckedDate="June 19, 2026"
         excludedCosts="speaker diarization, redaction, medical mode, keyterm prompting, storage, network transfer, support plans, compliance fees, taxes, negotiated discounts, and other services"
       />
+    </div>
+  );
+}
+
+function ComparisonValue({
+  label,
+  value,
+  emphasis = false,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <div className="min-w-0 rounded-lg bg-gray-50 px-3 py-3 2xl:rounded-none 2xl:bg-transparent 2xl:px-0 2xl:py-0">
+      <p className="text-xs font-medium uppercase tracking-wide text-gray-500 2xl:hidden">
+        {label}
+      </p>
+
+      <p
+        className={`mt-1 break-words [overflow-wrap:anywhere] 2xl:mt-0 ${
+          emphasis
+            ? "font-semibold text-gray-950"
+            : "font-medium text-gray-900"
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }
