@@ -48,7 +48,7 @@ export default function BeeijaCalculatorResultPanel({
 
   return (
     <section
-      className={`rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
+      className={`w-full min-w-0 max-w-full rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
     >
       <h2 className="text-2xl font-semibold text-gray-950">{title}</h2>
 
@@ -56,23 +56,37 @@ export default function BeeijaCalculatorResultPanel({
         <p className="mt-3 leading-relaxed text-gray-600">{description}</p>
       ) : null}
 
-      <div className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+      <div className="mt-7 min-w-0 max-w-full rounded-2xl bg-white p-6 shadow-sm">
         <p className="text-sm font-medium text-gray-500">{primaryLabel}</p>
 
-        <div className="mt-2 break-words text-4xl font-bold tracking-tight text-[var(--green)]">
+        <div className="mt-2 min-w-0 max-w-full whitespace-normal break-words text-4xl font-bold tracking-tight text-[var(--green)] tabular-nums [overflow-wrap:anywhere]">
           {primaryValue}
         </div>
 
-        {stats ? <div className="mt-6">{stats}</div> : null}
+        {stats ? (
+          <div className="mt-6 min-w-0 max-w-full [&>*]:min-w-0">
+            {stats}
+          </div>
+        ) : null}
       </div>
 
-      {breakdown ? <div className="mt-6">{breakdown}</div> : null}
-
-      {totals ? (
-        <div className="mt-6 border-t border-gray-200 pt-5">{totals}</div>
+      {breakdown ? (
+        <div className="mt-6 min-w-0 max-w-full overflow-x-auto [&>*]:min-w-0">
+          {breakdown}
+        </div>
       ) : null}
 
-      {children ? <div className="mt-6">{children}</div> : null}
+      {totals ? (
+        <div className="mt-6 min-w-0 max-w-full break-words border-t border-gray-200 pt-5 [overflow-wrap:anywhere] [&>*]:min-w-0">
+          {totals}
+        </div>
+      ) : null}
+
+      {children ? (
+        <div className="mt-6 min-w-0 max-w-full overflow-x-auto [&>*]:min-w-0">
+          {children}
+        </div>
+      ) : null}
 
       {noticeText || defaultNotice ? (
         <BeeijaNotice>{noticeText ?? defaultNotice}</BeeijaNotice>
