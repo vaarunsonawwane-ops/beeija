@@ -1652,7 +1652,10 @@ function PlanEditor({
         />
       </FieldSection>
 
-      <FieldSection title="Transfer, Logging, Discounts, and Migration">
+      <FieldSection
+        title="Transfer, Logging, Discounts, and Migration"
+        alignLabels
+      >
         <BeeijaNumberField
           label="Outbound transfer price per GB"
           value={plan.egressPricePerGb}
@@ -1742,9 +1745,11 @@ function flattenFieldChildren(children: ReactNode): ReactNode[] {
 function FieldSection({
   title,
   children,
+  alignLabels = false,
 }: {
   title: string;
   children: ReactNode;
+  alignLabels?: boolean;
 }) {
   const fields = flattenFieldChildren(children);
 
@@ -1756,7 +1761,14 @@ function FieldSection({
 
       <div className="mt-5 grid min-w-0 grid-cols-1 items-start gap-5 md:grid-cols-2">
         {fields.map((child, index) => (
-          <div key={`field-${index}`} className="min-w-0">
+          <div
+            key={`field-${index}`}
+            className={`min-w-0 ${
+              alignLabels
+                ? "md:[&>label>span:first-child]:min-h-10"
+                : ""
+            }`}
+          >
             {child}
           </div>
         ))}
