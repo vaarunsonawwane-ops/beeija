@@ -51,6 +51,10 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -156,8 +160,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your DeepSeek API Usage
@@ -261,10 +265,27 @@ export default function ToolClient() {
           <p className="font-medium text-gray-900">
             Price used per 1 million tokens
           </p>
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-3">
-            <p>Cache hit: {formatMoney(effectivePrices.cacheHitInput)}</p>
-            <p>Cache miss: {formatMoney(effectivePrices.cacheMissInput)}</p>
-            <p>Output: {formatMoney(effectivePrices.output)}</p>
+          <div className="mt-3 grid min-w-0 gap-3 text-sm text-gray-700 sm:grid-cols-3">
+            <p className="min-w-0">
+              <span className="block">Cache hit:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.cacheHitInput)}
+              </span>
+            </p>
+
+            <p className="min-w-0">
+              <span className="block">Cache miss:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.cacheMissInput)}
+              </span>
+            </p>
+
+            <p className="min-w-0">
+              <span className="block">Output:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.output)}
+              </span>
+            </p>
           </div>
         </div>
 
@@ -277,12 +298,12 @@ export default function ToolClient() {
         title="Estimated DeepSeek API Cost"
         description="This estimate covers the token charges entered above."
         primaryLabel="Estimated monthly cost"
-        primaryValue={formatMoney(result.monthlyCost)}
+        primaryValue={formatVisibleMoney(result.monthlyCost)}
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ResultStat label="Per request" value={formatMoney(result.costPerRequest)} />
-            <ResultStat label="Per day" value={formatMoney(result.dailyCost)} />
-            <ResultStat label="Per year" value={formatMoney(result.yearlyCost)} />
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+            <ResultStat label="Per request" value={formatVisibleMoney(result.costPerRequest)} />
+            <ResultStat label="Per day" value={formatVisibleMoney(result.dailyCost)} />
+            <ResultStat label="Per year" value={formatVisibleMoney(result.yearlyCost)} />
           </div>
         }
         breakdown={
@@ -290,22 +311,22 @@ export default function ToolClient() {
             <CostRow
               label="Cache-hit input cost"
               detail={`${formatNumber(result.cacheHitTokens)} tokens`}
-              value={formatMoney(result.cacheHitCost)}
+              value={formatVisibleMoney(result.cacheHitCost)}
             />
             <CostRow
               label="Cache-miss input cost"
               detail={`${formatNumber(result.cacheMissTokens)} tokens`}
-              value={formatMoney(result.cacheMissCost)}
+              value={formatVisibleMoney(result.cacheMissCost)}
             />
             <CostRow
               label="Output cost"
               detail={`${formatNumber(result.totalOutputTokens)} tokens`}
-              value={formatMoney(result.outputCost)}
+              value={formatVisibleMoney(result.outputCost)}
             />
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Requests:{" "}
               <span className="font-medium text-gray-900">
@@ -336,11 +357,13 @@ export default function ToolClient() {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -355,12 +378,15 @@ function CostRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{label}</p>
         <p className="mt-1 text-sm text-gray-500">{detail}</p>
       </div>
-      <p className="font-semibold text-gray-950">{value}</p>
+
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
