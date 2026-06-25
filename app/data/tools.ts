@@ -347,6 +347,16 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
   },
 
+  {
+  title: "Cloud Serverless Functions Cost Comparison Calculator",
+  description:
+    "Compare AWS Lambda, Azure Functions, and Google Cloud Run functions using requests, execution time, memory, vCPU, warm capacity, storage, transfer, logging, discounts, and migration cost.",
+  href: "/tools/cloud-serverless-functions-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+  },
+
+
+
   
   
   
