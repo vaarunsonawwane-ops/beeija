@@ -331,6 +331,14 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
   },
 
+  {
+  title: "Cloud SQL Server Cost Comparison Calculator",
+  description:
+    "Compare Amazon RDS for SQL Server, Azure SQL Managed Instance, and Google Cloud SQL using compute, licensing, HA, storage, IOPS, backups, transfer, discounts, and migration cost.",
+  href: "/tools/cloud-sql-server-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+  },
+
   
   
   
