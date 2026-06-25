@@ -305,7 +305,7 @@ export default function ToolClient() {
           <p className="text-sm font-semibold text-gray-900">
             Per-minute stack rates
           </p>
-          <div className="mt-4 grid gap-5 md:grid-cols-2">
+          <div className="mt-4 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0 [&_input]:min-w-0 [&_input]:w-full [&_input]:overflow-hidden [&_input]:text-ellipsis [&_input]:whitespace-nowrap [&_input]:pr-16">
             <BeeijaNumberField
               label="Speech-to-text rate"
               value={sttCostPerMinute}
