@@ -2,6 +2,8 @@
 
 import {
   Children,
+  Fragment,
+  isValidElement,
   useMemo,
   useState,
   type ChangeEvent,
@@ -1717,6 +1719,26 @@ function PlanEditor({
   );
 }
 
+function flattenFieldChildren(children: ReactNode): ReactNode[] {
+  const flattened: ReactNode[] = [];
+
+  Children.forEach(children, (child) => {
+    if (
+      isValidElement<{ children?: ReactNode }>(child) &&
+      child.type === Fragment
+    ) {
+      flattened.push(...flattenFieldChildren(child.props.children));
+      return;
+    }
+
+    if (child !== null && child !== undefined && child !== false) {
+      flattened.push(child);
+    }
+  });
+
+  return flattened;
+}
+
 function FieldSection({
   title,
   children,
@@ -1724,24 +1746,25 @@ function FieldSection({
   title: string;
   children: ReactNode;
 }) {
+  const fields = flattenFieldChildren(children);
+
   return (
-    <div className="mt-8 min-w-0">
-      <h3 className="text-lg font-semibold text-gray-950">
+    <section className="mt-10 min-w-0 first:mt-8">
+      <h3 className="relative z-10 bg-[#F9FBFA] pb-1 text-lg font-semibold leading-7 text-gray-950">
         {title}
       </h3>
-      <div className="mt-5 grid min-w-0 items-stretch gap-x-5 gap-y-5 md:grid-cols-2">
-        {Children.map(children, (child, index) =>
-          child ? (
-            <div
-              key={`field-${index}`}
-              className="min-w-0 [&>label]:flex [&>label]:h-full [&>label]:min-w-0 [&>label]:flex-col md:[&>label>span:first-child]:min-h-14"
-            >
-              {child}
-            </div>
-          ) : null,
-        )}
+
+      <div className="mt-5 grid min-w-0 items-stretch gap-x-5 gap-y-6 md:grid-cols-2">
+        {fields.map((child, index) => (
+          <div
+            key={`field-${index}`}
+            className="min-w-0 [&>label]:flex [&>label]:h-full [&>label]:min-w-0 [&>label]:flex-col md:[&>label>span:first-child]:min-h-14"
+          >
+            {child}
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
 
