@@ -230,7 +230,7 @@ export default function CohereApiCostCalculatorPage() {
               ),
             },
             {
-              title: "Explore More AI Cost Tools",
+              title: "Explore Related AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
                   <Link
@@ -255,6 +255,13 @@ export default function CohereApiCostCalculatorPage() {
                   </Link>
 
                   <Link
+                    href="/tools/deepseek-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    DeepSeek API Cost Calculator
+                  </Link>
+
+                  <Link
                     href="/tools/mistral-api-cost-calculator"
                     className="beeija-btn-outline"
                   >
@@ -262,10 +269,17 @@ export default function CohereApiCostCalculatorPage() {
                   </Link>
 
                   <Link
-                    href="/tools/perplexity-api-cost-calculator"
+                    href="/tools/ai-token-cost-calculator"
                     className="beeija-btn-outline"
                   >
-                    Perplexity API Cost Calculator
+                    AI Token Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
                   </Link>
 
                   <Link
