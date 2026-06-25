@@ -58,6 +58,75 @@ export default function BeeijaCalculatorResultPanel({
     const panel = panelRef.current;
     if (!panel) return;
 
+    let calculatorGrid: HTMLElement | null = panel.parentElement;
+
+    while (
+      calculatorGrid &&
+      window.getComputedStyle(calculatorGrid).display !== "grid"
+    ) {
+      calculatorGrid = calculatorGrid.parentElement;
+    }
+
+    const findDirectGridChild = (
+      element: HTMLElement,
+      grid: HTMLElement,
+    ) => {
+      let current = element;
+
+      while (current.parentElement && current.parentElement !== grid) {
+        current = current.parentElement;
+      }
+
+      return current;
+    };
+
+    const applyStableCalculatorColumns = () => {
+      if (!calculatorGrid || calculatorGrid.children.length < 2) return;
+
+      const gridWidth = calculatorGrid.getBoundingClientRect().width;
+      const resultColumn = findDirectGridChild(panel, calculatorGrid);
+      const inputColumn = calculatorGrid.firstElementChild;
+
+      calculatorGrid.style.setProperty("width", "100%", "important");
+      calculatorGrid.style.setProperty("min-width", "0", "important");
+      calculatorGrid.style.setProperty("max-width", "100%", "important");
+
+      if (gridWidth >= 900) {
+        calculatorGrid.style.setProperty(
+          "grid-template-columns",
+          "minmax(18rem, 0.9fr) minmax(0, 1.1fr)",
+          "important",
+        );
+      } else {
+        calculatorGrid.style.setProperty(
+          "grid-template-columns",
+          "minmax(0, 1fr)",
+          "important",
+        );
+      }
+
+      if (inputColumn instanceof HTMLElement) {
+        inputColumn.style.setProperty("min-width", "0", "important");
+        inputColumn.style.setProperty("max-width", "100%", "important");
+      }
+
+      resultColumn.style.setProperty("width", "100%", "important");
+      resultColumn.style.setProperty("min-width", "0", "important");
+      resultColumn.style.setProperty("max-width", "100%", "important");
+      resultColumn.style.setProperty("overflow", "hidden", "important");
+    };
+
+    applyStableCalculatorColumns();
+
+    const layoutObserver =
+      typeof ResizeObserver !== "undefined" && calculatorGrid
+        ? new ResizeObserver(applyStableCalculatorColumns)
+        : null;
+
+    if (calculatorGrid && layoutObserver) {
+      layoutObserver.observe(calculatorGrid);
+    }
+
     const forceFullValueWrapping = (container: HTMLElement | null) => {
       if (!container) return;
 
@@ -96,7 +165,7 @@ export default function BeeijaCalculatorResultPanel({
       suppliedStatsGrid.style.setProperty("display", "grid", "important");
       suppliedStatsGrid.style.setProperty(
         "grid-template-columns",
-        "repeat(auto-fit, minmax(min(100%, 14rem), 1fr))",
+        "minmax(0, 1fr)",
         "important",
       );
       suppliedStatsGrid.style.setProperty("gap", "1rem", "important");
@@ -107,12 +176,22 @@ export default function BeeijaCalculatorResultPanel({
       Array.from(suppliedStatsGrid.children).forEach((child) => {
         if (!(child instanceof HTMLElement)) return;
 
+        child.style.setProperty("display", "block", "important");
         child.style.setProperty("width", "100%", "important");
         child.style.setProperty("min-width", "0", "important");
         child.style.setProperty("max-width", "100%", "important");
         child.style.setProperty("overflow", "hidden", "important");
+        child.style.setProperty(
+          "padding-bottom",
+          "0.75rem",
+          "important",
+        );
       });
     }
+
+    return () => {
+      layoutObserver?.disconnect();
+    };
   }, [primaryValue, stats, totals]);
 
   return (
@@ -120,8 +199,8 @@ export default function BeeijaCalculatorResultPanel({
       ref={panelRef}
       className={`beeija-result-panel w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
       style={{
-        width: 0,
-        minWidth: "100%",
+        width: "100%",
+        minWidth: 0,
         maxWidth: "100%",
         overflow: "hidden",
         contain: "inline-size layout paint",
@@ -157,8 +236,8 @@ export default function BeeijaCalculatorResultPanel({
             style={{
               minWidth: 0,
               maxWidth: "100%",
-              overflowX: "auto",
-              overflowY: "hidden",
+              overflowX: "hidden",
+              overflowY: "visible",
             }}
           >
             {stats}
