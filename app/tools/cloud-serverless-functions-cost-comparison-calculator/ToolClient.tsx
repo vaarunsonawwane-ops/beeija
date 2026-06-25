@@ -1749,17 +1749,14 @@ function FieldSection({
   const fields = flattenFieldChildren(children);
 
   return (
-    <section className="mt-10 min-w-0 first:mt-8">
-      <h3 className="relative z-10 bg-[#F9FBFA] pb-1 text-lg font-semibold leading-7 text-gray-950">
+    <section className="mt-8 min-w-0">
+      <h3 className="text-lg font-semibold leading-7 text-gray-950">
         {title}
       </h3>
 
-      <div className="mt-5 grid min-w-0 items-stretch gap-x-5 gap-y-6 md:grid-cols-2">
+      <div className="mt-5 grid min-w-0 grid-cols-1 items-start gap-5 md:grid-cols-2">
         {fields.map((child, index) => (
-          <div
-            key={`field-${index}`}
-            className="min-w-0 [&>label]:flex [&>label]:h-full [&>label]:min-w-0 [&>label]:flex-col md:[&>label>span:first-child]:min-h-14"
-          >
+          <div key={`field-${index}`} className="min-w-0">
             {child}
           </div>
         ))}
@@ -1778,8 +1775,8 @@ function TextField({
   onChange: (value: string) => void;
 }) {
   return (
-    <label className="flex h-full min-w-0 flex-col">
-      <span className="mb-2 block text-sm font-medium text-gray-700 md:min-h-14">
+    <label className="block min-w-0">
+      <span className="mb-2 block text-sm font-medium text-gray-700">
         {label}
       </span>
       <input
