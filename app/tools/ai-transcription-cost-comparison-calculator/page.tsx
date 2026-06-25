@@ -261,21 +261,14 @@ export default function AiTranscriptionCostComparisonCalculatorPage() {
               ),
             },
             {
-              title: "Explore More AI Cost Tools",
+              title: "Explore Related AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
                   <Link
-                    href="/tools/ai-token-cost-calculator"
+                    href="/tools/ai-voice-agent-cost-calculator"
                     className="beeija-btn-outline"
                   >
-                    AI Token Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-image-generation-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Image Generation Cost Calculator
+                    AI Voice Agent Cost Calculator
                   </Link>
 
                   <Link
@@ -286,10 +279,24 @@ export default function AiTranscriptionCostComparisonCalculatorPage() {
                   </Link>
 
                   <Link
-                    href="/tools/ai-voice-agent-cost-calculator"
+                    href="/tools/gemini-api-cost-calculator"
                     className="beeija-btn-outline"
                   >
-                    AI Voice Agent Cost Calculator
+                    Gemini API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-token-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Token Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-batch-api-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Batch API Savings Calculator
                   </Link>
 
                   <Link

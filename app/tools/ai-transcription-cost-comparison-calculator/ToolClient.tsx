@@ -161,6 +161,10 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -324,8 +328,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Transcription Workload
@@ -481,11 +485,11 @@ export default function ToolClient() {
         primaryLabel="Lowest estimated monthly cost"
         primaryValue={
           results.cheapest
-            ? formatMoney(results.cheapest.monthlyCost)
+            ? formatVisibleMoney(results.cheapest.monthlyCost)
             : "$0.00"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Lowest-cost option"
               value={
@@ -497,18 +501,18 @@ export default function ToolClient() {
 
             <ResultStat
               label="Monthly saving"
-              value={formatMoney(results.monthlySavings)}
+              value={formatVisibleMoney(results.monthlySavings)}
             />
 
             <ResultStat
               label="Yearly saving"
-              value={formatMoney(results.yearlySavings)}
+              value={formatVisibleMoney(results.yearlySavings)}
             />
           </div>
         }
         breakdown={
-          <div className="overflow-hidden rounded-xl border border-gray-200">
-            <div className="overflow-x-auto">
+          <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-gray-200">
+            <div className="max-w-full overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
                 <thead className="bg-gray-50">
                   <tr>
@@ -562,7 +566,7 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Billable audio:{" "}
               <span className="font-medium text-gray-900">
@@ -581,7 +585,7 @@ export default function ToolClient() {
               Highest estimated monthly cost:{" "}
               <span className="font-medium text-gray-900">
                 {results.mostExpensive
-                  ? formatMoney(results.mostExpensive.monthlyCost)
+                  ? formatVisibleMoney(results.mostExpensive.monthlyCost)
                   : "$0.00"}
               </span>
             </p>
@@ -597,12 +601,12 @@ export default function ToolClient() {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
 
-      <p className="mt-1 text-sm font-semibold leading-snug text-gray-950">
+      <p className="mt-1 break-words text-sm font-semibold leading-snug text-gray-950 [overflow-wrap:anywhere]">
         {value}
       </p>
     </div>
