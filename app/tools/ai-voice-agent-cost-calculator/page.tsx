@@ -220,24 +220,42 @@ export default function AiVoiceAgentCostCalculatorPage() {
                   >
                     AI Transcription Cost Comparison
                   </Link>
+
                   <Link
                     href="/tools/ai-token-cost-calculator"
                     className="beeija-btn-outline"
                   >
                     AI Token Cost Calculator
                   </Link>
-                  <Link
-                    href="/tools/ai-image-generation-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Image Generation Cost Calculator
-                  </Link>
+
                   <Link
                     href="/tools/openai-api-cost-calculator"
                     className="beeija-btn-outline"
                   >
                     OpenAI API Cost Calculator
                   </Link>
+
+                  <Link
+                    href="/tools/claude-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    Claude API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/gemini-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    Gemini API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
+                  </Link>
+
                   <Link
                     href="/categories/ai-cost-calculators"
                     className="beeija-btn-outline"
@@ -246,7 +264,7 @@ export default function AiVoiceAgentCostCalculatorPage() {
                   </Link>
                 </div>
               ),
-            },
+            }
           ]}
         />
       </div>

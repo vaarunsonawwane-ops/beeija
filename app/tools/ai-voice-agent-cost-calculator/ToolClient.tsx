@@ -33,6 +33,10 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -241,8 +245,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Voice Agent Usage
@@ -439,11 +443,19 @@ export default function ToolClient() {
           <p className="font-medium text-gray-900">
             Usage used for this estimate
           </p>
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Planned minutes: {formatNumber(result.plannedMinutes)}</p>
-            <p>Billable minutes: {formatNumber(result.billableMinutes)}</p>
-            <p>LLM input tokens: {formatNumber(result.totalInputTokens)}</p>
-            <p>LLM output tokens: {formatNumber(result.totalOutputTokens)}</p>
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2">
+            <p className="min-w-0 break-words [overflow-wrap:anywhere]">
+              Planned minutes: {formatNumber(result.plannedMinutes)}
+            </p>
+            <p className="min-w-0 break-words [overflow-wrap:anywhere]">
+              Billable minutes: {formatNumber(result.billableMinutes)}
+            </p>
+            <p className="min-w-0 break-words [overflow-wrap:anywhere]">
+              LLM input tokens: {formatNumber(result.totalInputTokens)}
+            </p>
+            <p className="min-w-0 break-words [overflow-wrap:anywhere]">
+              LLM output tokens: {formatNumber(result.totalOutputTokens)}
+            </p>
           </div>
         </div>
 
@@ -461,21 +473,21 @@ export default function ToolClient() {
         description="Costs not entered are treated as zero, so complete every relevant rate before making a purchase decision."
         primaryLabel="Estimated monthly cost"
         primaryValue={
-          result.hasAnyEnteredCost ? formatMoney(result.monthlyCost) : "Enter prices"
+          result.hasAnyEnteredCost ? formatVisibleMoney(result.monthlyCost) : "Enter prices"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per call"
               value={
-                result.hasAnyEnteredCost ? formatMoney(result.costPerCall) : "—"
+                result.hasAnyEnteredCost ? formatVisibleMoney(result.costPerCall) : "—"
               }
             />
             <ResultStat
               label="Per billable minute"
               value={
                 result.hasAnyEnteredCost
-                  ? formatMoney(result.costPerBillableMinute)
+                  ? formatVisibleMoney(result.costPerBillableMinute)
                   : "—"
               }
             />
@@ -483,7 +495,7 @@ export default function ToolClient() {
               label="Per 1,000 calls"
               value={
                 result.hasAnyEnteredCost
-                  ? formatMoney(result.costPerThousandCalls)
+                  ? formatVisibleMoney(result.costPerThousandCalls)
                   : "—"
               }
             />
@@ -497,12 +509,12 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Variable stack rate per minute:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasAnyEnteredCost
-                  ? formatMoney(result.variableRatePerMinute)
+                  ? formatVisibleMoney(result.variableRatePerMinute)
                   : "—"}
               </span>
             </p>
@@ -510,7 +522,7 @@ export default function ToolClient() {
               Estimated yearly cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasAnyEnteredCost
-                  ? formatMoney(result.yearlyCost)
+                  ? formatVisibleMoney(result.yearlyCost)
                   : "—"}
               </span>
             </p>
@@ -522,8 +534,8 @@ export default function ToolClient() {
                   : !result.hasAnyEnteredCost
                     ? "Enter current prices to compare"
                     : result.budgetDifference >= 0
-                      ? `${formatMoney(result.budgetDifference)} remaining`
-                      : `${formatMoney(
+                      ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                      : `${formatVisibleMoney(
                           Math.abs(result.budgetDifference),
                         )} over budget`}
               </span>
@@ -538,24 +550,28 @@ export default function ToolClient() {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
 
 function CostRow({ row }: { row: CostRowData }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{row.label}</p>
-        <p className="mt-1 text-sm text-gray-500">{row.detail}</p>
+        <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+          {row.detail}
+        </p>
       </div>
-      <p className="font-semibold text-gray-950">
-        {row.entered ? formatMoney(row.value) : "—"}
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {row.entered ? formatVisibleMoney(row.value) : "—"}
       </p>
     </div>
   );
