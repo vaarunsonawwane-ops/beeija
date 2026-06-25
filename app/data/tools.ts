@@ -323,6 +323,16 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
   },  
   
+  {
+  title: "Cloud Redis Cost Comparison Calculator",
+  description:
+    "Compare Amazon ElastiCache, Azure Managed Redis, and Google Cloud Memorystore using node, serverless, memory, request, backup, transfer, support, and migration costs.",
+  href: "/tools/cloud-redis-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+  },
+
+  
+  
   
   
   
