@@ -512,20 +512,27 @@ export default function ToolClient() {
         }
         breakdown={
           <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-gray-200">
-            <div className="max-w-full overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
+            <div className="max-w-full overflow-hidden">
+              <table className="w-full table-fixed divide-y divide-gray-200 text-left text-sm">
+                <colgroup>
+                  <col className="w-[43%]" />
+                  <col className="w-[19%]" />
+                  <col className="w-[19%]" />
+                  <col className="w-[19%]" />
+                </colgroup>
+
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
+                    <th className="px-3 py-3 font-semibold text-gray-700">
                       Provider and model
                     </th>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
+                    <th className="px-3 py-3 font-semibold text-gray-700">
                       Per hour
                     </th>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
+                    <th className="px-3 py-3 font-semibold text-gray-700">
                       Monthly
                     </th>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
+                    <th className="px-3 py-3 font-semibold text-gray-700">
                       Yearly
                     </th>
                   </tr>
@@ -534,29 +541,37 @@ export default function ToolClient() {
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {results.rows.map((row, index) => (
                     <tr key={row.id}>
-                      <td className="px-4 py-4 align-top">
-                        <p className="font-medium text-gray-900">
+                      <td className="min-w-0 px-3 py-4 align-top">
+                        <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
                           {index === 0 ? "Best price · " : ""}
                           {row.provider}
                         </p>
-                        <p className="mt-1 text-gray-600">{row.model}</p>
+                        <p className="mt-1 break-words text-gray-600 [overflow-wrap:anywhere]">
+                          {row.model}
+                        </p>
                         {row.note ? (
-                          <p className="mt-1 text-xs text-gray-500">
+                          <p className="mt-1 break-words text-xs text-gray-500 [overflow-wrap:anywhere]">
                             {row.note}
                           </p>
                         ) : null}
                       </td>
 
-                      <td className="whitespace-nowrap px-4 py-4 font-medium text-gray-900">
-                        {formatMoney(row.effectiveRatePerHour)}
+                      <td className="min-w-0 px-3 py-4 align-top font-medium text-gray-900">
+                        <span className="block break-words [overflow-wrap:anywhere]">
+                          {formatVisibleMoney(row.effectiveRatePerHour)}
+                        </span>
                       </td>
 
-                      <td className="whitespace-nowrap px-4 py-4 font-semibold text-gray-950">
-                        {formatMoney(row.monthlyCost)}
+                      <td className="min-w-0 px-3 py-4 align-top font-semibold text-gray-950">
+                        <span className="block break-words [overflow-wrap:anywhere]">
+                          {formatVisibleMoney(row.monthlyCost)}
+                        </span>
                       </td>
 
-                      <td className="whitespace-nowrap px-4 py-4 text-gray-700">
-                        {formatMoney(row.yearlyCost)}
+                      <td className="min-w-0 px-3 py-4 align-top text-gray-700">
+                        <span className="block break-words [overflow-wrap:anywhere]">
+                          {formatVisibleMoney(row.yearlyCost)}
+                        </span>
                       </td>
                     </tr>
                   ))}
