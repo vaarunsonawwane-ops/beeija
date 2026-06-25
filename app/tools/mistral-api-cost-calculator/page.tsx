@@ -207,25 +207,69 @@ export default function MistralApiCostCalculatorPage() {
               ),
             },
             {
-              title: "Explore More AI Cost Tools",
+              title: "Explore Related AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
-                  <Link href="/tools/openai-api-cost-calculator" className="beeija-btn-outline">
+                  <Link
+                    href="/tools/openai-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
                     OpenAI API Cost Calculator
                   </Link>
-                  <Link href="/tools/claude-api-cost-calculator" className="beeija-btn-outline">
+
+                  <Link
+                    href="/tools/claude-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
                     Claude API Cost Calculator
                   </Link>
-                  <Link href="/tools/gemini-api-cost-calculator" className="beeija-btn-outline">
+
+                  <Link
+                    href="/tools/gemini-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
                     Gemini API Cost Calculator
                   </Link>
-                  <Link href="/tools/deepseek-api-cost-calculator" className="beeija-btn-outline">
+
+                  <Link
+                    href="/tools/deepseek-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
                     DeepSeek API Cost Calculator
                   </Link>
-                  <Link href="/tools/grok-api-cost-calculator" className="beeija-btn-outline">
+
+                  <Link
+                    href="/tools/grok-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
                     Grok API Cost Calculator
                   </Link>
-                  <Link href="/categories/ai-cost-calculators" className="beeija-btn-outline">
+
+                  <Link
+                    href="/tools/ai-token-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Token Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-batch-api-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Batch API Savings Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
+                  </Link>
+
+                  <Link
+                    href="/categories/ai-cost-calculators"
+                    className="beeija-btn-outline"
+                  >
                     AI Cost Calculators
                   </Link>
                 </div>
