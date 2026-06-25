@@ -65,6 +65,10 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -310,10 +314,27 @@ export default function ToolClient() {
             Price used per 1 million tokens
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-3">
-            <p>Input: {formatMoney(effectivePrices.input)}</p>
-            <p>Cached: {formatMoney(effectivePrices.cachedInput)}</p>
-            <p>Output: {formatMoney(effectivePrices.output)}</p>
+          <div className="mt-3 grid min-w-0 gap-3 text-sm text-gray-700 sm:grid-cols-3">
+            <p className="min-w-0">
+              <span className="block">Input:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.input)}
+              </span>
+            </p>
+
+            <p className="min-w-0">
+              <span className="block">Cached:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.cachedInput)}
+              </span>
+            </p>
+
+            <p className="min-w-0">
+              <span className="block">Output:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.output)}
+              </span>
+            </p>
           </div>
         </div>
 
