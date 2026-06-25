@@ -262,6 +262,20 @@ export default function RagCostCalculatorPage() {
                   </Link>
 
                   <Link
+                    href="/tools/ai-prompt-caching-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Prompt Caching Savings Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
+                  </Link>
+
+                  <Link
                     href="/categories/ai-cost-calculators"
                     className="beeija-btn-outline"
                   >
