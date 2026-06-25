@@ -50,7 +50,7 @@ export default function BeeijaCalculatorResultPanel({
 
   return (
     <section
-      className={`beeija-result-panel w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
+      className={`beeija-result-panel w-full min-w-0 max-w-full overflow-hidden overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
     >
       <h2 className="min-w-0 break-words text-2xl font-semibold text-gray-950">
         {title}
@@ -143,7 +143,7 @@ export default function BeeijaCalculatorResultPanel({
 
         .beeija-result-stats > * {
           display: grid !important;
-          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          grid-template-columns: minmax(0, 1fr) !important;
           gap: 1rem !important;
           width: 100% !important;
           min-width: 0 !important;
@@ -155,6 +155,13 @@ export default function BeeijaCalculatorResultPanel({
           min-width: 0 !important;
           max-width: 100% !important;
           overflow: hidden !important;
+          border-top: 1px solid #e5e7eb;
+          padding-top: 0.875rem;
+        }
+
+        .beeija-result-stats > * > *:first-child {
+          border-top: 0;
+          padding-top: 0;
         }
 
         .beeija-result-stats p,
@@ -170,17 +177,33 @@ export default function BeeijaCalculatorResultPanel({
           min-width: 100%;
         }
 
-        @container (max-width: 760px) {
-          .beeija-result-stats > * {
-            grid-template-columns: minmax(0, 1fr) !important;
+
+        /*
+         * Stabilise every calculator that places the shared result panel in a
+         * two-column grid. Long result values must never change column widths.
+         */
+        @media (min-width: 1024px) {
+          .grid:has(> .beeija-result-panel),
+          .grid:has(> * > .beeija-result-panel) {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+            align-items: start !important;
+          }
+
+          .grid:has(> .beeija-result-panel) > *,
+          .grid:has(> * > .beeija-result-panel) > * {
+            min-width: 0 !important;
+            max-width: 100% !important;
+          }
+
+          .grid:has(> .beeija-result-panel) > .beeija-result-panel,
+          .grid:has(> * > .beeija-result-panel) > *:has(> .beeija-result-panel) {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
           }
         }
 
-        @container (min-width: 761px) and (max-width: 980px) {
-          .beeija-result-stats > * {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          }
-        }
       `}</style>
     </section>
   );
