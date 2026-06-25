@@ -50,11 +50,11 @@ export default function BeeijaCalculatorResultPanel({
     <section
       className={`beeija-result-panel w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
       style={{
-        width: "100%",
-        minWidth: 0,
+        width: 0,
+        minWidth: "100%",
         maxWidth: "100%",
         overflow: "hidden",
-        contain: "inline-size",
+        contain: "inline-size layout paint",
       }}
     >
       <h2 className="text-2xl font-semibold text-gray-950">{title}</h2>
@@ -73,7 +73,7 @@ export default function BeeijaCalculatorResultPanel({
             maxWidth: "100%",
             whiteSpace: "normal",
             overflowWrap: "anywhere",
-            wordBreak: "break-word",
+            wordBreak: "break-all",
           }}
         >
           {primaryValue}
@@ -102,7 +102,7 @@ export default function BeeijaCalculatorResultPanel({
             minWidth: 0,
             maxWidth: "100%",
             overflowWrap: "anywhere",
-            wordBreak: "break-word",
+            wordBreak: "break-all",
           }}
         >
           {totals}
@@ -128,8 +128,7 @@ export default function BeeijaCalculatorResultPanel({
         .beeija-result-primary,
         .beeija-result-primary *,
         .beeija-result-stats,
-        .beeija-result-stats > *,
-        .beeija-result-stats > * > *,
+        .beeija-result-stats *,
         .beeija-result-totals,
         .beeija-result-totals * {
           min-width: 0 !important;
@@ -138,15 +137,23 @@ export default function BeeijaCalculatorResultPanel({
 
         .beeija-result-primary,
         .beeija-result-primary *,
-        .beeija-result-stats p,
-        .beeija-result-stats span,
-        .beeija-result-stats div,
+        .beeija-result-stats *,
         .beeija-result-totals,
-        .beeija-result-totals p,
-        .beeija-result-totals span {
+        .beeija-result-totals * {
           white-space: normal !important;
           overflow-wrap: anywhere !important;
-          word-break: break-word !important;
+          word-break: break-all !important;
+        }
+
+        .beeija-result-stats > * {
+          width: 100% !important;
+          min-width: 0 !important;
+          max-width: 100% !important;
+        }
+
+        .beeija-result-stats [class*="grid"] {
+          min-width: 0 !important;
+          max-width: 100% !important;
         }
       `}</style>
     </section>
