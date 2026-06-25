@@ -537,14 +537,14 @@ export default function ToolClient() {
         }
         breakdown={
           <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white">
-            <div className="hidden grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 2xl:grid">
+            <div className="sticky top-0 z-10 hidden grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 2xl:grid">
               <span>Provider and model</span>
               <span>Per second</span>
               <span>Per usable clip</span>
               <span>Monthly</span>
             </div>
 
-            <div className="divide-y divide-gray-200">
+            <div className="max-h-[44rem] divide-y divide-gray-200 overflow-y-auto overscroll-contain">
               {result.rows.map((row, index) => (
                 <div
                   key={row.id}
