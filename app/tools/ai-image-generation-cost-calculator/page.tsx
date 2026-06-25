@@ -209,16 +209,9 @@ export default function AiImageGenerationCostCalculatorPage() {
               ),
             },
             {
-              title: "Explore More AI Cost Tools",
+              title: "Explore Related AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/ai-token-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Token Cost Calculator
-                  </Link>
-
                   <Link
                     href="/tools/openai-api-cost-calculator"
                     className="beeija-btn-outline"
@@ -231,6 +224,27 @@ export default function AiImageGenerationCostCalculatorPage() {
                     className="beeija-btn-outline"
                   >
                     Gemini API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-token-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Token Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-batch-api-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Batch API Savings Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
                   </Link>
 
                   <Link
