@@ -339,6 +339,14 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
   },
 
+  {
+  title: "Cloud Kubernetes Cost Comparison Calculator",
+  description:
+    "Compare Amazon EKS, Azure Kubernetes Service, and Google Kubernetes Engine using cluster fees, worker or pod compute, storage, load balancers, NAT, transfer, logging, backups, discounts, and migration cost.",
+  href: "/tools/cloud-kubernetes-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+  },
+
   
   
   
