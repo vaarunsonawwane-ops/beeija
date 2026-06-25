@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
-import BeeijaNotice from "@/app/components/BeeijaNotice";
+import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
 type ModelKey = "claude-opus-4.8" | "claude-sonnet-4.6" | "claude-haiku-4.5";
 type CacheMode = "none" | "5m" | "1h";
@@ -83,6 +83,10 @@ function formatMoney(value: number) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 4,
   }).format(value);
+}
+
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
 }
 
 function formatNumber(value: number) {
@@ -254,8 +258,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Claude API Usage
@@ -401,11 +405,34 @@ export default function ToolClient() {
             Price used per 1 million tokens
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Base input: {formatMoney(effectivePrices.input)}</p>
-            <p>Cache write: {formatMoney(effectivePrices.cacheWrite)}</p>
-            <p>Cache read: {formatMoney(effectivePrices.cacheRead)}</p>
-            <p>Output: {formatMoney(effectivePrices.output)}</p>
+          <div className="mt-3 grid min-w-0 gap-3 text-sm text-gray-700 sm:grid-cols-2">
+            <p className="min-w-0">
+              <span className="block">Base input:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.input)}
+              </span>
+            </p>
+
+            <p className="min-w-0">
+              <span className="block">Cache write:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.cacheWrite)}
+              </span>
+            </p>
+
+            <p className="min-w-0">
+              <span className="block">Cache read:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.cacheRead)}
+              </span>
+            </p>
+
+            <p className="min-w-0">
+              <span className="block">Output:</span>
+              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                {formatVisibleMoney(effectivePrices.output)}
+              </span>
+            </p>
           </div>
         </div>
 
@@ -418,108 +445,97 @@ export default function ToolClient() {
         </button>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8">
-        <h2 className="text-2xl font-semibold text-gray-950">
-          Estimated Claude API Cost
-        </h2>
-
-        <p className="mt-3 leading-relaxed text-gray-600">
-          This estimate covers the token charges entered above.
-        </p>
-
-        <div className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-gray-500">
-            Estimated monthly cost
-          </p>
-
-          <p className="mt-2 break-words text-4xl font-bold tracking-tight text-[var(--green)]">
-            {formatMoney(result.monthlyCost)}
-          </p>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <BeeijaCalculatorResultPanel
+        title="Estimated Claude API Cost"
+        description="This estimate covers the token charges entered above."
+        primaryLabel="Estimated monthly cost"
+        primaryValue={formatVisibleMoney(result.monthlyCost)}
+        stats={
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per request"
-              value={formatMoney(result.costPerRequest)}
+              value={formatVisibleMoney(result.costPerRequest)}
             />
             <ResultStat
               label="Per day"
-              value={formatMoney(result.dailyCost)}
+              value={formatVisibleMoney(result.dailyCost)}
             />
             <ResultStat
               label="Per year"
-              value={formatMoney(result.yearlyCost)}
+              value={formatVisibleMoney(result.yearlyCost)}
             />
           </div>
-        </div>
+        }
+        breakdown={
+          <div className="space-y-4">
+            <CostRow
+              label="Base input cost"
+              detail={`${formatNumber(result.totalInput)} tokens`}
+              value={formatVisibleMoney(result.inputCost)}
+            />
 
-        <div className="mt-6 space-y-4">
-          <CostRow
-            label="Base input cost"
-            detail={`${formatNumber(result.totalInput)} tokens`}
-            value={formatMoney(result.inputCost)}
-          />
+            <CostRow
+              label="Cache write cost"
+              detail={`${formatNumber(result.totalCacheWrite)} tokens`}
+              value={formatVisibleMoney(result.cacheWriteCost)}
+            />
 
-          <CostRow
-            label="Cache write cost"
-            detail={`${formatNumber(result.totalCacheWrite)} tokens`}
-            value={formatMoney(result.cacheWriteCost)}
-          />
+            <CostRow
+              label="Cache read cost"
+              detail={`${formatNumber(result.totalCacheRead)} tokens`}
+              value={formatVisibleMoney(result.cacheReadCost)}
+            />
 
-          <CostRow
-            label="Cache read cost"
-            detail={`${formatNumber(result.totalCacheRead)} tokens`}
-            value={formatMoney(result.cacheReadCost)}
-          />
+            <CostRow
+              label="Output cost"
+              detail={`${formatNumber(result.totalOutput)} tokens`}
+              value={formatVisibleMoney(result.outputCost)}
+            />
+          </div>
+        }
+        totals={
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+            <p>
+              Requests:{" "}
+              <span className="font-medium text-gray-900">
+                {formatNumber(result.requests)}
+              </span>
+            </p>
 
-          <CostRow
-            label="Output cost"
-            detail={`${formatNumber(result.totalOutput)} tokens`}
-            value={formatMoney(result.outputCost)}
-          />
-        </div>
+            <p className="mt-2">
+              Total input-related tokens:{" "}
+              <span className="font-medium text-gray-900">
+                {formatNumber(
+                  result.totalInput +
+                    result.totalCacheWrite +
+                    result.totalCacheRead,
+                )}
+              </span>
+            </p>
 
-        <div className="mt-6 border-t border-gray-200 pt-5 text-sm leading-relaxed text-gray-600">
-          <p>
-            Requests:{" "}
-            <span className="font-medium text-gray-900">
-              {formatNumber(result.requests)}
-            </span>
-          </p>
-
-          <p className="mt-2">
-            Total input-related tokens:{" "}
-            <span className="font-medium text-gray-900">
-              {formatNumber(
-                result.totalInput +
-                  result.totalCacheWrite +
-                  result.totalCacheRead,
-              )}
-            </span>
-          </p>
-
-          <p className="mt-2">
-            Total output tokens:{" "}
-            <span className="font-medium text-gray-900">
-              {formatNumber(result.totalOutput)}
-            </span>
-          </p>
-        </div>
-
-        <BeeijaNotice>
-          Built-in rates checked June 19, 2026. Final charges may include other Anthropic services, taxes, discounts, retries, or usage not entered here.
-        </BeeijaNotice>
-      </section>
+            <p className="mt-2">
+              Total output tokens:{" "}
+              <span className="font-medium text-gray-900">
+                {formatNumber(result.totalOutput)}
+              </span>
+            </p>
+          </div>
+        }
+        noticeText="Built-in rates checked June 19, 2026. Final charges may include other Anthropic services, taxes, discounts, retries, or usage not entered here."
+      />
     </div>
   );
 }
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -534,13 +550,15 @@ function CostRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{label}</p>
         <p className="mt-1 text-sm text-gray-500">{detail}</p>
       </div>
 
-      <p className="font-semibold text-gray-950">{value}</p>
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
