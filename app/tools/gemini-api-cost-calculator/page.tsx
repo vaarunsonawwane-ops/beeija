@@ -232,7 +232,7 @@ export default function GeminiApiCostCalculatorPage() {
               ),
             },
             {
-              title: "Explore More AI Cost Tools",
+              title: "Explore Related AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
                   <Link
@@ -249,15 +249,34 @@ export default function GeminiApiCostCalculatorPage() {
                     Claude API Cost Calculator
                   </Link>
 
-                  <Link href="/tools/ai-token-cost-calculator" className="beeija-btn-outline">
+                  <Link
+                    href="/tools/ai-token-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
                     AI Token Cost Calculator
                   </Link>
-                  <Link href="/tools/ai-voice-agent-cost-calculator" className="beeija-btn-outline">
-                    AI Voice Agent Cost Calculator
+
+                  <Link
+                    href="/tools/ai-prompt-caching-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Prompt Caching Savings Calculator
                   </Link>
-                  <Link href="/tools/mistral-api-cost-calculator" className="beeija-btn-outline">
-                    Mistral API Cost Calculator
+
+                  <Link
+                    href="/tools/ai-batch-api-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Batch API Savings Calculator
                   </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
+                  </Link>
+
                   <Link
                     href="/categories/ai-cost-calculators"
                     className="beeija-btn-outline"
