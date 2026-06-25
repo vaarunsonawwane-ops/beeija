@@ -220,7 +220,7 @@ export default function PerplexityApiCostCalculatorPage() {
               ),
             },
             {
-              title: "Explore More AI Cost Tools",
+              title: "Explore Related AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
                   <Link
@@ -245,10 +245,38 @@ export default function PerplexityApiCostCalculatorPage() {
                   </Link>
 
                   <Link
+                    href="/tools/deepseek-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    DeepSeek API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/grok-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    Grok API Cost Calculator
+                  </Link>
+
+                  <Link
                     href="/tools/mistral-api-cost-calculator"
                     className="beeija-btn-outline"
                   >
                     Mistral API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-token-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Token Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
                   </Link>
 
                   <Link
