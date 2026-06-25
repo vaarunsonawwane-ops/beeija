@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
-import BeeijaNotice from "@/app/components/BeeijaNotice";
+import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
 type ModelKey = "gpt-5.5" | "gpt-5.4" | "gpt-5.4-mini";
 
@@ -193,8 +193,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your OpenAI API Usage
@@ -326,25 +326,13 @@ export default function ToolClient() {
         </button>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8">
-        <h2 className="text-2xl font-semibold text-gray-950">
-          Estimated OpenAI API Cost
-        </h2>
-
-        <p className="mt-3 leading-relaxed text-gray-600">
-          This estimate covers text token charges only.
-        </p>
-
-        <div className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-gray-500">
-            Estimated monthly cost
-          </p>
-
-          <p className="mt-2 break-words text-4xl font-bold tracking-tight text-[var(--green)]">
-            {formatMoney(result.monthlyCost)}
-          </p>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <BeeijaCalculatorResultPanel
+        title="Estimated OpenAI API Cost"
+        description="This estimate covers text token charges only."
+        primaryLabel="Estimated monthly cost"
+        primaryValue={formatMoney(result.monthlyCost)}
+        stats={
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per request"
               value={formatMoney(result.costPerRequest)}
@@ -358,66 +346,67 @@ export default function ToolClient() {
               value={formatMoney(result.yearlyCost)}
             />
           </div>
-        </div>
+        }
+        breakdown={
+          <div className="space-y-4">
+            <CostRow
+              label="Uncached input cost"
+              detail={`${formatNumber(result.uncachedInputTokens)} tokens`}
+              value={formatMoney(result.inputCost)}
+            />
 
-        <div className="mt-6 space-y-4">
-          <CostRow
-            label="Uncached input cost"
-            detail={`${formatNumber(result.uncachedInputTokens)} tokens`}
-            value={formatMoney(result.inputCost)}
-          />
+            <CostRow
+              label="Cached input cost"
+              detail={`${formatNumber(result.cachedInputTokens)} tokens`}
+              value={formatMoney(result.cachedInputCost)}
+            />
 
-          <CostRow
-            label="Cached input cost"
-            detail={`${formatNumber(result.cachedInputTokens)} tokens`}
-            value={formatMoney(result.cachedInputCost)}
-          />
+            <CostRow
+              label="Output cost"
+              detail={`${formatNumber(result.totalOutputTokens)} tokens`}
+              value={formatMoney(result.outputCost)}
+            />
+          </div>
+        }
+        totals={
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+            <p>
+              Requests:{" "}
+              <span className="font-medium text-gray-900">
+                {formatNumber(result.requests)}
+              </span>
+            </p>
 
-          <CostRow
-            label="Output cost"
-            detail={`${formatNumber(result.totalOutputTokens)} tokens`}
-            value={formatMoney(result.outputCost)}
-          />
-        </div>
+            <p className="mt-2">
+              Total input tokens:{" "}
+              <span className="font-medium text-gray-900">
+                {formatNumber(result.totalInputTokens)}
+              </span>
+            </p>
 
-        <div className="mt-6 border-t border-gray-200 pt-5 text-sm leading-relaxed text-gray-600">
-          <p>
-            Requests:{" "}
-            <span className="font-medium text-gray-900">
-              {formatNumber(result.requests)}
-            </span>
-          </p>
-
-          <p className="mt-2">
-            Total input tokens:{" "}
-            <span className="font-medium text-gray-900">
-              {formatNumber(result.totalInputTokens)}
-            </span>
-          </p>
-
-          <p className="mt-2">
-            Total output tokens:{" "}
-            <span className="font-medium text-gray-900">
-              {formatNumber(result.totalOutputTokens)}
-            </span>
-          </p>
-        </div>
-
-        <BeeijaNotice>
-          Built-in rates checked June 19, 2026. Final charges may include other OpenAI services, taxes, discounts, retries, or usage not entered here.
-        </BeeijaNotice>
-      </section>
+            <p className="mt-2">
+              Total output tokens:{" "}
+              <span className="font-medium text-gray-900">
+                {formatNumber(result.totalOutputTokens)}
+              </span>
+            </p>
+          </div>
+        }
+        noticeText="Built-in rates checked June 19, 2026. Final charges may include other OpenAI services, taxes, discounts, retries, or usage not entered here."
+      />
     </div>
   );
 }
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -432,13 +421,15 @@ function CostRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{label}</p>
         <p className="mt-1 text-sm text-gray-500">{detail}</p>
       </div>
 
-      <p className="font-semibold text-gray-950">{value}</p>
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
