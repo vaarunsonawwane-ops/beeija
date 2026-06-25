@@ -27,6 +27,55 @@ type BeeijaCalculatorResultPanelProps = {
   className?: string;
 };
 
+function setImportant(
+  element: HTMLElement,
+  property: string,
+  value: string,
+) {
+  element.style.setProperty(property, value, "important");
+}
+
+function findNearestGrid(element: HTMLElement) {
+  let current: HTMLElement | null = element.parentElement;
+
+  while (current) {
+    if (window.getComputedStyle(current).display === "grid") {
+      return current;
+    }
+
+    current = current.parentElement;
+  }
+
+  return null;
+}
+
+function findDirectGridChild(element: HTMLElement, grid: HTMLElement) {
+  let current = element;
+
+  while (current.parentElement && current.parentElement !== grid) {
+    current = current.parentElement;
+  }
+
+  return current;
+}
+
+function forceCompleteNumberWrapping(container: HTMLElement | null) {
+  if (!container) return;
+
+  const elements = [
+    container,
+    ...Array.from(container.querySelectorAll<HTMLElement>("*")),
+  ];
+
+  elements.forEach((element) => {
+    setImportant(element, "min-width", "0");
+    setImportant(element, "max-width", "100%");
+    setImportant(element, "white-space", "normal");
+    setImportant(element, "overflow-wrap", "anywhere");
+    setImportant(element, "word-break", "break-word");
+  });
+}
+
 export default function BeeijaCalculatorResultPanel({
   title,
   description,
@@ -42,6 +91,8 @@ export default function BeeijaCalculatorResultPanel({
   noticeText,
   className = "",
 }: BeeijaCalculatorResultPanelProps) {
+  const panelRef = useRef<HTMLElement>(null);
+
   const defaultNotice =
     provider && pricingCheckedDate ? (
       <>
@@ -52,145 +103,144 @@ export default function BeeijaCalculatorResultPanel({
       </>
     ) : null;
 
-  const panelRef = useRef<HTMLElement>(null);
-
   useLayoutEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
 
-    let calculatorGrid: HTMLElement | null = panel.parentElement;
+    const calculatorGrid = findNearestGrid(panel);
+    const resultGridChild = calculatorGrid
+      ? findDirectGridChild(panel, calculatorGrid)
+      : null;
+    const inputGridChild = calculatorGrid?.firstElementChild;
 
-    while (
-      calculatorGrid &&
-      window.getComputedStyle(calculatorGrid).display !== "grid"
-    ) {
-      calculatorGrid = calculatorGrid.parentElement;
-    }
-
-    const findDirectGridChild = (
-      element: HTMLElement,
-      grid: HTMLElement,
-    ) => {
-      let current = element;
-
-      while (current.parentElement && current.parentElement !== grid) {
-        current = current.parentElement;
-      }
-
-      return current;
-    };
-
-    const applyStableCalculatorColumns = () => {
-      if (!calculatorGrid || calculatorGrid.children.length < 2) return;
-
-      const gridWidth = calculatorGrid.getBoundingClientRect().width;
-      const resultColumn = findDirectGridChild(panel, calculatorGrid);
-      const inputColumn = calculatorGrid.firstElementChild;
-
-      calculatorGrid.style.setProperty("width", "100%", "important");
-      calculatorGrid.style.setProperty("min-width", "0", "important");
-      calculatorGrid.style.setProperty("max-width", "100%", "important");
-
-      if (gridWidth >= 900) {
-        calculatorGrid.style.setProperty(
-          "grid-template-columns",
-          "minmax(18rem, 0.9fr) minmax(0, 1.1fr)",
-          "important",
-        );
-      } else {
-        calculatorGrid.style.setProperty(
-          "grid-template-columns",
-          "minmax(0, 1fr)",
-          "important",
-        );
-      }
-
-      if (inputColumn instanceof HTMLElement) {
-        inputColumn.style.setProperty("min-width", "0", "important");
-        inputColumn.style.setProperty("max-width", "100%", "important");
-      }
-
-      resultColumn.style.setProperty("width", "100%", "important");
-      resultColumn.style.setProperty("min-width", "0", "important");
-      resultColumn.style.setProperty("max-width", "100%", "important");
-      resultColumn.style.setProperty("overflow", "hidden", "important");
-    };
-
-    applyStableCalculatorColumns();
-
-    const layoutObserver =
-      typeof ResizeObserver !== "undefined" && calculatorGrid
-        ? new ResizeObserver(applyStableCalculatorColumns)
-        : null;
-
-    if (calculatorGrid && layoutObserver) {
-      layoutObserver.observe(calculatorGrid);
-    }
-
-    const forceFullValueWrapping = (container: HTMLElement | null) => {
-      if (!container) return;
-
-      container.style.setProperty("min-width", "0", "important");
-      container.style.setProperty("max-width", "100%", "important");
-      container.style.setProperty("white-space", "normal", "important");
-      container.style.setProperty("overflow-wrap", "anywhere", "important");
-      container.style.setProperty("word-break", "break-all", "important");
-
-      container.querySelectorAll<HTMLElement>("*").forEach((element) => {
-        element.style.setProperty("min-width", "0", "important");
-        element.style.setProperty("max-width", "100%", "important");
-        element.style.setProperty("white-space", "normal", "important");
-        element.style.setProperty("overflow-wrap", "anywhere", "important");
-        element.style.setProperty("word-break", "break-all", "important");
-      });
-    };
-
-    const primary = panel.querySelector<HTMLElement>(
+    const primaryContainer = panel.querySelector<HTMLElement>(
       "[data-beeija-result-primary]",
     );
-    const stats = panel.querySelector<HTMLElement>(
+    const statsContainer = panel.querySelector<HTMLElement>(
       "[data-beeija-result-stats]",
     );
-    const totals = panel.querySelector<HTMLElement>(
+    const totalsContainer = panel.querySelector<HTMLElement>(
       "[data-beeija-result-totals]",
     );
 
-    forceFullValueWrapping(primary);
-    forceFullValueWrapping(stats);
-    forceFullValueWrapping(totals);
+    const applyLayout = () => {
+      setImportant(panel, "width", "100%");
+      setImportant(panel, "min-width", "0");
+      setImportant(panel, "max-width", "100%");
+      setImportant(panel, "overflow", "hidden");
 
-    const suppliedStatsGrid = stats?.firstElementChild;
+      if (calculatorGrid && resultGridChild) {
+        const gridWidth = calculatorGrid.getBoundingClientRect().width;
 
-    if (suppliedStatsGrid instanceof HTMLElement) {
-      suppliedStatsGrid.style.setProperty("display", "grid", "important");
-      suppliedStatsGrid.style.setProperty(
-        "grid-template-columns",
-        "minmax(0, 1fr)",
-        "important",
-      );
-      suppliedStatsGrid.style.setProperty("gap", "1rem", "important");
-      suppliedStatsGrid.style.setProperty("width", "100%", "important");
-      suppliedStatsGrid.style.setProperty("min-width", "0", "important");
-      suppliedStatsGrid.style.setProperty("max-width", "100%", "important");
+        setImportant(calculatorGrid, "width", "100%");
+        setImportant(calculatorGrid, "min-width", "0");
+        setImportant(calculatorGrid, "max-width", "100%");
 
-      Array.from(suppliedStatsGrid.children).forEach((child) => {
-        if (!(child instanceof HTMLElement)) return;
+        if (gridWidth >= 900) {
+          setImportant(
+            calculatorGrid,
+            "grid-template-columns",
+            "minmax(20rem, 0.95fr) minmax(0, 1.35fr)",
+          );
+        } else {
+          setImportant(
+            calculatorGrid,
+            "grid-template-columns",
+            "minmax(0, 1fr)",
+          );
+        }
 
-        child.style.setProperty("display", "block", "important");
-        child.style.setProperty("width", "100%", "important");
-        child.style.setProperty("min-width", "0", "important");
-        child.style.setProperty("max-width", "100%", "important");
-        child.style.setProperty("overflow", "hidden", "important");
-        child.style.setProperty(
-          "padding-bottom",
-          "0.75rem",
-          "important",
+        if (inputGridChild instanceof HTMLElement) {
+          setImportant(inputGridChild, "width", "100%");
+          setImportant(inputGridChild, "min-width", "0");
+          setImportant(inputGridChild, "max-width", "100%");
+        }
+
+        setImportant(resultGridChild, "width", "100%");
+        setImportant(resultGridChild, "min-width", "0");
+        setImportant(resultGridChild, "max-width", "100%");
+        setImportant(resultGridChild, "overflow", "hidden");
+      }
+
+      forceCompleteNumberWrapping(primaryContainer);
+      forceCompleteNumberWrapping(statsContainer);
+      forceCompleteNumberWrapping(totalsContainer);
+
+      const suppliedStatsGrid = statsContainer?.firstElementChild;
+
+      if (suppliedStatsGrid instanceof HTMLElement) {
+        const panelWidth = statsContainer?.getBoundingClientRect().width ?? 0;
+        const statItems = Array.from(suppliedStatsGrid.children).filter(
+          (child): child is HTMLElement => child instanceof HTMLElement,
         );
-      });
+
+        const longestValueLength = statItems.reduce((longest, item) => {
+          const valueElement = item.lastElementChild;
+          const text = valueElement?.textContent?.replace(/\s/g, "") ?? "";
+          return Math.max(longest, text.length);
+        }, 0);
+
+        let columns = 3;
+
+        if (longestValueLength > 22 || panelWidth < 520) {
+          columns = 1;
+        } else if (longestValueLength > 14 || panelWidth < 700) {
+          columns = 2;
+        }
+
+        setImportant(suppliedStatsGrid, "display", "grid");
+        setImportant(
+          suppliedStatsGrid,
+          "grid-template-columns",
+          `repeat(${columns}, minmax(0, 1fr))`,
+        );
+        setImportant(suppliedStatsGrid, "gap", "1rem");
+        setImportant(suppliedStatsGrid, "width", "100%");
+        setImportant(suppliedStatsGrid, "min-width", "0");
+        setImportant(suppliedStatsGrid, "max-width", "100%");
+
+        statItems.forEach((item) => {
+          setImportant(item, "width", "100%");
+          setImportant(item, "min-width", "0");
+          setImportant(item, "max-width", "100%");
+          setImportant(item, "overflow", "hidden");
+
+          item.querySelectorAll<HTMLElement>("*").forEach((element) => {
+            setImportant(element, "min-width", "0");
+            setImportant(element, "max-width", "100%");
+            setImportant(element, "white-space", "normal");
+            setImportant(element, "overflow-wrap", "anywhere");
+            setImportant(element, "word-break", "break-word");
+          });
+        });
+      }
+    };
+
+    applyLayout();
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(applyLayout)
+        : null;
+
+    if (resizeObserver) {
+      resizeObserver.observe(panel);
+
+      if (calculatorGrid) {
+        resizeObserver.observe(calculatorGrid);
+      }
     }
 
+    const mutationObserver = new MutationObserver(applyLayout);
+    mutationObserver.observe(panel, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    });
+
     return () => {
-      layoutObserver?.disconnect();
+      resizeObserver?.disconnect();
+      mutationObserver.disconnect();
     };
   }, [primaryValue, stats, totals]);
 
@@ -217,13 +267,13 @@ export default function BeeijaCalculatorResultPanel({
 
         <div
           data-beeija-result-primary
-          className="beeija-result-primary mt-2 block min-w-0 max-w-full whitespace-normal text-4xl font-bold tracking-tight text-[var(--green)] tabular-nums"
+          className="mt-2 block min-w-0 max-w-full whitespace-normal text-4xl font-bold tracking-tight text-[var(--green)] tabular-nums"
           style={{
             minWidth: 0,
             maxWidth: "100%",
             whiteSpace: "normal",
             overflowWrap: "anywhere",
-            wordBreak: "break-all",
+            wordBreak: "break-word",
           }}
         >
           {primaryValue}
@@ -232,13 +282,8 @@ export default function BeeijaCalculatorResultPanel({
         {stats ? (
           <div
             data-beeija-result-stats
-            className="beeija-result-stats mt-6 min-w-0 max-w-full overflow-hidden [&>*]:min-w-0"
-            style={{
-              minWidth: 0,
-              maxWidth: "100%",
-              overflowX: "hidden",
-              overflowY: "visible",
-            }}
+            className="mt-6 min-w-0 max-w-full overflow-hidden"
+            style={{ minWidth: 0, maxWidth: "100%", overflow: "hidden" }}
           >
             {stats}
           </div>
@@ -246,7 +291,7 @@ export default function BeeijaCalculatorResultPanel({
       </div>
 
       {breakdown ? (
-        <div className="mt-6 min-w-0 max-w-full overflow-x-auto [&>*]:min-w-0">
+        <div className="mt-6 min-w-0 max-w-full overflow-x-auto">
           {breakdown}
         </div>
       ) : null}
@@ -254,12 +299,12 @@ export default function BeeijaCalculatorResultPanel({
       {totals ? (
         <div
           data-beeija-result-totals
-          className="beeija-result-totals mt-6 min-w-0 max-w-full border-t border-gray-200 pt-5 [&>*]:min-w-0"
+          className="mt-6 min-w-0 max-w-full border-t border-gray-200 pt-5"
           style={{
             minWidth: 0,
             maxWidth: "100%",
             overflowWrap: "anywhere",
-            wordBreak: "break-all",
+            wordBreak: "break-word",
           }}
         >
           {totals}
@@ -267,7 +312,7 @@ export default function BeeijaCalculatorResultPanel({
       ) : null}
 
       {children ? (
-        <div className="mt-6 min-w-0 max-w-full overflow-x-auto [&>*]:min-w-0">
+        <div className="mt-6 min-w-0 max-w-full overflow-x-auto">
           {children}
         </div>
       ) : null}
@@ -275,44 +320,6 @@ export default function BeeijaCalculatorResultPanel({
       {noticeText || defaultNotice ? (
         <BeeijaNotice>{noticeText ?? defaultNotice}</BeeijaNotice>
       ) : null}
-
-      <style>{`
-        .beeija-result-panel,
-        .beeija-result-panel * {
-          box-sizing: border-box;
-        }
-
-        .beeija-result-primary,
-        .beeija-result-primary *,
-        .beeija-result-stats,
-        .beeija-result-stats *,
-        .beeija-result-totals,
-        .beeija-result-totals * {
-          min-width: 0 !important;
-          max-width: 100% !important;
-        }
-
-        .beeija-result-primary,
-        .beeija-result-primary *,
-        .beeija-result-stats *,
-        .beeija-result-totals,
-        .beeija-result-totals * {
-          white-space: normal !important;
-          overflow-wrap: anywhere !important;
-          word-break: break-all !important;
-        }
-
-        .beeija-result-stats > * {
-          width: 100% !important;
-          min-width: 0 !important;
-          max-width: 100% !important;
-        }
-
-        .beeija-result-stats [class*="grid"] {
-          min-width: 0 !important;
-          max-width: 100% !important;
-        }
-      `}</style>
     </section>
   );
 }
