@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useLayoutEffect,
-  useRef,
-  type ReactNode,
-} from "react";
+import type { ReactNode } from "react";
 import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type BeeijaCalculatorResultPanelProps = {
@@ -27,55 +23,6 @@ type BeeijaCalculatorResultPanelProps = {
   className?: string;
 };
 
-function setImportant(
-  element: HTMLElement,
-  property: string,
-  value: string,
-) {
-  element.style.setProperty(property, value, "important");
-}
-
-function findNearestGrid(element: HTMLElement) {
-  let current: HTMLElement | null = element.parentElement;
-
-  while (current) {
-    if (window.getComputedStyle(current).display === "grid") {
-      return current;
-    }
-
-    current = current.parentElement;
-  }
-
-  return null;
-}
-
-function findDirectGridChild(element: HTMLElement, grid: HTMLElement) {
-  let current = element;
-
-  while (current.parentElement && current.parentElement !== grid) {
-    current = current.parentElement;
-  }
-
-  return current;
-}
-
-function forceCompleteNumberWrapping(container: HTMLElement | null) {
-  if (!container) return;
-
-  const elements = [
-    container,
-    ...Array.from(container.querySelectorAll<HTMLElement>("*")),
-  ];
-
-  elements.forEach((element) => {
-    setImportant(element, "min-width", "0");
-    setImportant(element, "max-width", "100%");
-    setImportant(element, "white-space", "normal");
-    setImportant(element, "overflow-wrap", "anywhere");
-    setImportant(element, "word-break", "break-word");
-  });
-}
-
 export default function BeeijaCalculatorResultPanel({
   title,
   description,
@@ -91,8 +38,6 @@ export default function BeeijaCalculatorResultPanel({
   noticeText,
   className = "",
 }: BeeijaCalculatorResultPanelProps) {
-  const panelRef = useRef<HTMLElement>(null);
-
   const defaultNotice =
     provider && pricingCheckedDate ? (
       <>
@@ -103,178 +48,28 @@ export default function BeeijaCalculatorResultPanel({
       </>
     ) : null;
 
-  useLayoutEffect(() => {
-    const panel = panelRef.current;
-    if (!panel) return;
-
-    const calculatorGrid = findNearestGrid(panel);
-    const resultGridChild = calculatorGrid
-      ? findDirectGridChild(panel, calculatorGrid)
-      : null;
-    const inputGridChild = calculatorGrid?.firstElementChild;
-
-    const primaryContainer = panel.querySelector<HTMLElement>(
-      "[data-beeija-result-primary]",
-    );
-    const statsContainer = panel.querySelector<HTMLElement>(
-      "[data-beeija-result-stats]",
-    );
-    const totalsContainer = panel.querySelector<HTMLElement>(
-      "[data-beeija-result-totals]",
-    );
-
-    const applyLayout = () => {
-      setImportant(panel, "width", "100%");
-      setImportant(panel, "min-width", "0");
-      setImportant(panel, "max-width", "100%");
-      setImportant(panel, "overflow", "hidden");
-
-      if (calculatorGrid && resultGridChild) {
-        const gridWidth = calculatorGrid.getBoundingClientRect().width;
-
-        setImportant(calculatorGrid, "width", "100%");
-        setImportant(calculatorGrid, "min-width", "0");
-        setImportant(calculatorGrid, "max-width", "100%");
-
-        if (gridWidth >= 900) {
-          setImportant(
-            calculatorGrid,
-            "grid-template-columns",
-            "minmax(20rem, 0.95fr) minmax(0, 1.35fr)",
-          );
-        } else {
-          setImportant(
-            calculatorGrid,
-            "grid-template-columns",
-            "minmax(0, 1fr)",
-          );
-        }
-
-        if (inputGridChild instanceof HTMLElement) {
-          setImportant(inputGridChild, "width", "100%");
-          setImportant(inputGridChild, "min-width", "0");
-          setImportant(inputGridChild, "max-width", "100%");
-        }
-
-        setImportant(resultGridChild, "width", "100%");
-        setImportant(resultGridChild, "min-width", "0");
-        setImportant(resultGridChild, "max-width", "100%");
-        setImportant(resultGridChild, "overflow", "hidden");
-      }
-
-      forceCompleteNumberWrapping(primaryContainer);
-      forceCompleteNumberWrapping(statsContainer);
-      forceCompleteNumberWrapping(totalsContainer);
-
-      const suppliedStatsGrid = statsContainer?.firstElementChild;
-
-      if (suppliedStatsGrid instanceof HTMLElement) {
-        const panelWidth = statsContainer?.getBoundingClientRect().width ?? 0;
-        const statItems = Array.from(suppliedStatsGrid.children).filter(
-          (child): child is HTMLElement => child instanceof HTMLElement,
-        );
-
-        const longestValueLength = statItems.reduce((longest, item) => {
-          const valueElement = item.lastElementChild;
-          const text = valueElement?.textContent?.replace(/\s/g, "") ?? "";
-          return Math.max(longest, text.length);
-        }, 0);
-
-        let columns = 3;
-
-        if (longestValueLength > 22 || panelWidth < 520) {
-          columns = 1;
-        } else if (longestValueLength > 14 || panelWidth < 700) {
-          columns = 2;
-        }
-
-        setImportant(suppliedStatsGrid, "display", "grid");
-        setImportant(
-          suppliedStatsGrid,
-          "grid-template-columns",
-          `repeat(${columns}, minmax(0, 1fr))`,
-        );
-        setImportant(suppliedStatsGrid, "gap", "1rem");
-        setImportant(suppliedStatsGrid, "width", "100%");
-        setImportant(suppliedStatsGrid, "min-width", "0");
-        setImportant(suppliedStatsGrid, "max-width", "100%");
-
-        statItems.forEach((item) => {
-          setImportant(item, "width", "100%");
-          setImportant(item, "min-width", "0");
-          setImportant(item, "max-width", "100%");
-          setImportant(item, "overflow", "hidden");
-
-          item.querySelectorAll<HTMLElement>("*").forEach((element) => {
-            setImportant(element, "min-width", "0");
-            setImportant(element, "max-width", "100%");
-            setImportant(element, "white-space", "normal");
-            setImportant(element, "overflow-wrap", "anywhere");
-            setImportant(element, "word-break", "break-word");
-          });
-        });
-      }
-    };
-
-    applyLayout();
-
-    const resizeObserver =
-      typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(applyLayout)
-        : null;
-
-    if (resizeObserver) {
-      resizeObserver.observe(panel);
-
-      if (calculatorGrid) {
-        resizeObserver.observe(calculatorGrid);
-      }
-    }
-
-    const mutationObserver = new MutationObserver(applyLayout);
-    mutationObserver.observe(panel, {
-      subtree: true,
-      childList: true,
-      characterData: true,
-    });
-
-    return () => {
-      resizeObserver?.disconnect();
-      mutationObserver.disconnect();
-    };
-  }, [primaryValue, stats, totals]);
-
   return (
     <section
-      ref={panelRef}
       className={`beeija-result-panel w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
-      style={{
-        width: "100%",
-        minWidth: 0,
-        maxWidth: "100%",
-        overflow: "hidden",
-        contain: "inline-size layout paint",
-      }}
     >
-      <h2 className="text-2xl font-semibold text-gray-950">{title}</h2>
+      <h2 className="min-w-0 break-words text-2xl font-semibold text-gray-950">
+        {title}
+      </h2>
 
       {description ? (
-        <p className="mt-3 leading-relaxed text-gray-600">{description}</p>
+        <p className="mt-3 min-w-0 break-words leading-relaxed text-gray-600">
+          {description}
+        </p>
       ) : null}
 
       <div className="mt-7 min-w-0 max-w-full overflow-hidden rounded-2xl bg-white p-6 shadow-sm">
-        <p className="text-sm font-medium text-gray-500">{primaryLabel}</p>
+        <p className="min-w-0 break-words text-sm font-medium text-gray-500">
+          {primaryLabel}
+        </p>
 
         <div
           data-beeija-result-primary
-          className="mt-2 block min-w-0 max-w-full whitespace-normal text-4xl font-bold tracking-tight text-[var(--green)] tabular-nums"
-          style={{
-            minWidth: 0,
-            maxWidth: "100%",
-            whiteSpace: "normal",
-            overflowWrap: "anywhere",
-            wordBreak: "break-word",
-          }}
+          className="beeija-result-primary mt-2 min-w-0 max-w-full whitespace-normal font-bold tracking-tight text-[var(--green)] tabular-nums"
         >
           {primaryValue}
         </div>
@@ -282,8 +77,7 @@ export default function BeeijaCalculatorResultPanel({
         {stats ? (
           <div
             data-beeija-result-stats
-            className="mt-6 min-w-0 max-w-full overflow-hidden"
-            style={{ minWidth: 0, maxWidth: "100%", overflow: "hidden" }}
+            className="beeija-result-stats mt-6 min-w-0 max-w-full overflow-hidden"
           >
             {stats}
           </div>
@@ -291,7 +85,7 @@ export default function BeeijaCalculatorResultPanel({
       </div>
 
       {breakdown ? (
-        <div className="mt-6 min-w-0 max-w-full overflow-x-auto">
+        <div className="beeija-result-breakdown mt-6 min-w-0 max-w-full overflow-x-auto">
           {breakdown}
         </div>
       ) : null}
@@ -299,13 +93,7 @@ export default function BeeijaCalculatorResultPanel({
       {totals ? (
         <div
           data-beeija-result-totals
-          className="mt-6 min-w-0 max-w-full border-t border-gray-200 pt-5"
-          style={{
-            minWidth: 0,
-            maxWidth: "100%",
-            overflowWrap: "anywhere",
-            wordBreak: "break-word",
-          }}
+          className="beeija-result-totals mt-6 min-w-0 max-w-full border-t border-gray-200 pt-5"
         >
           {totals}
         </div>
@@ -320,6 +108,80 @@ export default function BeeijaCalculatorResultPanel({
       {noticeText || defaultNotice ? (
         <BeeijaNotice>{noticeText ?? defaultNotice}</BeeijaNotice>
       ) : null}
+
+      <style>{`
+        .beeija-result-panel {
+          container-type: inline-size;
+          inline-size: 100%;
+          min-inline-size: 0;
+          max-inline-size: 100%;
+          contain: inline-size;
+        }
+
+        .beeija-result-panel,
+        .beeija-result-panel * {
+          box-sizing: border-box;
+        }
+
+        .beeija-result-primary {
+          font-size: clamp(1.75rem, 5cqi, 2.25rem);
+          line-height: 1.16;
+        }
+
+        .beeija-result-primary,
+        .beeija-result-primary *,
+        .beeija-result-stats,
+        .beeija-result-stats *,
+        .beeija-result-totals,
+        .beeija-result-totals * {
+          min-width: 0 !important;
+          max-width: 100% !important;
+          white-space: normal !important;
+          overflow-wrap: anywhere !important;
+          word-break: break-word !important;
+        }
+
+        .beeija-result-stats > * {
+          display: grid !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          gap: 1rem !important;
+          width: 100% !important;
+          min-width: 0 !important;
+          max-width: 100% !important;
+        }
+
+        .beeija-result-stats > * > * {
+          width: 100% !important;
+          min-width: 0 !important;
+          max-width: 100% !important;
+          overflow: hidden !important;
+        }
+
+        .beeija-result-stats p,
+        .beeija-result-stats span,
+        .beeija-result-stats div {
+          white-space: normal !important;
+          overflow-wrap: anywhere !important;
+          word-break: break-word !important;
+        }
+
+        .beeija-result-breakdown table {
+          width: max-content;
+          min-width: 100%;
+        }
+
+        @container (max-width: 760px) {
+          .beeija-result-stats > * {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
+        }
+
+        @container (min-width: 761px) and (max-width: 980px) {
+          .beeija-result-stats > * {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
