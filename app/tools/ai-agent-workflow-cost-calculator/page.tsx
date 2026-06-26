@@ -270,6 +270,13 @@ export default function AiAgentWorkflowCostCalculatorPage() {
                   </Link>
 
                   <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
+                  </Link>
+
+                  <Link
                     href="/tools/rag-cost-calculator"
                     className="beeija-btn-outline"
                   >
