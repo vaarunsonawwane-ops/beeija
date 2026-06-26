@@ -133,6 +133,14 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -313,8 +321,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Embedding Workload
@@ -325,7 +333,7 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-7 grid gap-5 md:grid-cols-2">
+        <div className="mt-7 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0">
           <div className="md:col-span-2">
             <BeeijaSelect
               label="Selected provider and model"
@@ -417,7 +425,7 @@ export default function ToolClient() {
         </label>
 
         {includeCustom ? (
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
+          <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0">
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-gray-700">
                 Provider name
@@ -462,34 +470,34 @@ export default function ToolClient() {
             Embedding usage used for comparison
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
               Initial document tokens:{" "}
-              {formatInteger(result.initialDocumentTokens)}
+              {formatVisibleInteger(result.initialDocumentTokens)}
             </p>
 
             <p>
               Monthly refresh tokens:{" "}
-              {formatInteger(result.monthlyRefreshTokens)}
+              {formatVisibleInteger(result.monthlyRefreshTokens)}
             </p>
 
             <p>
               Monthly query tokens:{" "}
-              {formatInteger(result.monthlyQueryTokens)}
+              {formatVisibleInteger(result.monthlyQueryTokens)}
             </p>
 
             <p>
               Monthly recurring tokens:{" "}
-              {formatInteger(result.monthlyRecurringTokens)}
+              {formatVisibleInteger(result.monthlyRecurringTokens)}
             </p>
 
             <p>
               First-year embedded tokens:{" "}
-              {formatInteger(result.firstYearTokens)}
+              {formatVisibleInteger(result.firstYearTokens)}
             </p>
 
             <p>
-              Search queries: {formatInteger(result.queries)} per month
+              Search queries: {formatVisibleInteger(result.queries)} per month
             </p>
           </div>
         </div>
@@ -508,15 +516,15 @@ export default function ToolClient() {
         description="The selected model is shown first, followed by a paid list-price comparison for the same workload."
         primaryLabel="Selected model first-year cost"
         primaryValue={
-          result.selected ? formatMoney(result.selected.firstYearCost) : "$0.00"
+          result.selected ? formatVisibleMoney(result.selected.firstYearCost) : "$0.00"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Initial indexing"
               value={
                 result.selected
-                  ? formatMoney(result.selected.initialCost)
+                  ? formatVisibleMoney(result.selected.initialCost)
                   : "$0.00"
               }
             />
@@ -525,7 +533,7 @@ export default function ToolClient() {
               label="Monthly recurring"
               value={
                 result.selected
-                  ? formatMoney(result.selected.monthlyCost)
+                  ? formatVisibleMoney(result.selected.monthlyCost)
                   : "$0.00"
               }
             />
@@ -534,81 +542,74 @@ export default function ToolClient() {
               label="Per 1M documents"
               value={
                 result.selected
-                  ? formatMoney(result.selected.costPerMillionDocuments)
+                  ? formatVisibleMoney(result.selected.costPerMillionDocuments)
                   : "$0.00"
               }
             />
           </div>
         }
         breakdown={
-          <div className="overflow-hidden rounded-xl border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
-                <thead className="bg-white">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Provider and model
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Per 1M tokens
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Initial
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Monthly
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      First year
-                    </th>
-                  </tr>
-                </thead>
+          <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <div className="hidden grid-cols-[minmax(0,1.65fr)_repeat(4,minmax(0,1fr))] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 2xl:grid">
+              <span>Provider and model</span>
+              <span>Per 1M tokens</span>
+              <span>Initial</span>
+              <span>Monthly</span>
+              <span>First year</span>
+            </div>
 
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {result.rows.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={
-                        row.id === result.selected?.id ? "bg-[#F5FAF7]" : ""
-                      }
-                    >
-                      <td className="px-4 py-4 align-top">
-                        <p className="font-medium text-gray-900">
-                          {index === 0 ? "Lowest cost · " : ""}
-                          {row.provider}
-                        </p>
+            <div className="max-h-[44rem] divide-y divide-gray-200 overflow-y-auto overscroll-contain">
+              {result.rows.map((row, index) => (
+                <div
+                  key={row.id}
+                  className={`grid min-w-0 gap-4 px-4 py-4 2xl:grid-cols-[minmax(0,1.65fr)_repeat(4,minmax(0,1fr))] 2xl:items-start ${
+                    row.id === result.selected?.id ? "bg-[#F5FAF7]" : ""
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                      {index === 0 ? "Lowest cost · " : ""}
+                      {row.provider}
+                    </p>
 
-                        <p className="mt-1 text-gray-600">{row.model}</p>
+                    <p className="mt-1 break-words text-sm text-gray-600 [overflow-wrap:anywhere]">
+                      {row.model}
+                    </p>
 
-                        <p className="mt-1 text-xs text-gray-500">
-                          {row.note}
-                        </p>
-                      </td>
+                    <p className="mt-1 break-words text-xs text-gray-500 [overflow-wrap:anywhere]">
+                      {row.note}
+                    </p>
+                  </div>
 
-                      <td className="whitespace-nowrap px-4 py-4 font-medium text-gray-900">
-                        {formatMoney(row.pricePerMillionTokens)}
-                      </td>
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 2xl:contents">
+                    <ComparisonValue
+                      label="Per 1M tokens"
+                      value={formatVisibleMoney(row.pricePerMillionTokens)}
+                    />
 
-                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
-                        {formatMoney(row.initialCost)}
-                      </td>
+                    <ComparisonValue
+                      label="Initial"
+                      value={formatVisibleMoney(row.initialCost)}
+                    />
 
-                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
-                        {formatMoney(row.monthlyCost)}
-                      </td>
+                    <ComparisonValue
+                      label="Monthly"
+                      value={formatVisibleMoney(row.monthlyCost)}
+                    />
 
-                      <td className="whitespace-nowrap px-4 py-4 font-semibold text-gray-950">
-                        {formatMoney(row.firstYearCost)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    <ComparisonValue
+                      label="First year"
+                      value={formatVisibleMoney(row.firstYearCost)}
+                      emphasis
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Selected model:{" "}
               <span className="font-medium text-gray-900">
@@ -630,14 +631,14 @@ export default function ToolClient() {
             <p className="mt-2">
               Possible first-year saving against selected model:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.firstYearSavingVsSelected)}
+                {formatVisibleMoney(result.firstYearSavingVsSelected)}
               </span>
             </p>
 
             <p className="mt-2">
               Possible monthly saving against selected model:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.monthlySavingVsSelected)}
+                {formatVisibleMoney(result.monthlySavingVsSelected)}
               </span>
             </p>
 
@@ -651,8 +652,8 @@ export default function ToolClient() {
                 }`}
               >
                 {result.budgetDifference >= 0
-                  ? `${formatMoney(result.budgetDifference)} remaining`
-                  : `${formatMoney(
+                  ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                  : `${formatVisibleMoney(
                       Math.abs(result.budgetDifference),
                     )} over budget`}
               </span>
@@ -667,14 +668,44 @@ export default function ToolClient() {
   );
 }
 
+function ComparisonValue({
+  label,
+  value,
+  emphasis = false,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <div className="min-w-0 rounded-lg bg-gray-50 px-3 py-3 2xl:rounded-none 2xl:bg-transparent 2xl:px-0 2xl:py-0">
+      <p className="text-xs font-medium uppercase tracking-wide text-gray-500 2xl:hidden">
+        {label}
+      </p>
+
+      <p
+        className={`mt-1 break-words [overflow-wrap:anywhere] 2xl:mt-0 ${
+          emphasis
+            ? "font-semibold text-gray-950"
+            : "font-medium text-gray-900"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
 
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }

@@ -309,6 +309,20 @@ export default function AiEmbeddingCostComparisonCalculatorPage() {
                   </Link>
 
                   <Link
+                    href="/tools/cohere-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    Cohere API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-batch-api-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Batch API Savings Calculator
+                  </Link>
+
+                  <Link
                     href="/categories/ai-cost-calculators"
                     className="beeija-btn-outline"
                   >
