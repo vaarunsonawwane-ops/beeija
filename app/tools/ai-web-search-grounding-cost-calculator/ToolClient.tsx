@@ -93,6 +93,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -363,8 +375,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Web-Grounded AI Workload
@@ -376,7 +388,7 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-7 grid gap-5 md:grid-cols-2">
+        <div className="mt-7 grid min-w-0 gap-5 md:grid-cols-2 md:items-end [&>*]:min-w-0">
           <div className="md:col-span-2">
             <BeeijaSelect
               label="Selected provider and model"
@@ -479,7 +491,7 @@ export default function ToolClient() {
         </label>
 
         {includeCustom ? (
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
+          <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 md:items-end [&>*]:min-w-0">
             <TextField
               label="Provider name"
               value={customProviderName}
@@ -556,24 +568,24 @@ export default function ToolClient() {
             Grounding workload used for comparison
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
               Grounded prompts before retries:{" "}
-              {formatInteger(result.groundedPromptsBeforeRetry)}
+              {formatVisibleInteger(result.groundedPromptsBeforeRetry)}
             </p>
 
             <p>
               Non-grounded prompts before retries:{" "}
-              {formatInteger(result.nonGroundedPromptsBeforeRetry)}
+              {formatVisibleInteger(result.nonGroundedPromptsBeforeRetry)}
             </p>
 
             <p>
               Search queries before free allowances:{" "}
-              {formatInteger(result.searchQueriesBeforeFreeAllowance)}
+              {formatVisibleInteger(result.searchQueriesBeforeFreeAllowance)}
             </p>
 
             <p>
-              Retry overhead: {formatNumber(result.retryPercent)}%
+              Retry overhead: {formatVisibleNumber(result.retryPercent)}%
             </p>
           </div>
         </div>
@@ -593,16 +605,16 @@ export default function ToolClient() {
         primaryLabel="Selected monthly cost"
         primaryValue={
           result.selected
-            ? formatMoney(result.selected.totalMonthlyCost)
+            ? formatVisibleMoney(result.selected.totalMonthlyCost)
             : "$0.00"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Search-tool cost"
               value={
                 result.selected
-                  ? formatMoney(result.selected.searchToolCost)
+                  ? formatVisibleMoney(result.selected.searchToolCost)
                   : "$0.00"
               }
             />
@@ -611,7 +623,7 @@ export default function ToolClient() {
               label="Per grounded prompt"
               value={
                 result.selected
-                  ? formatMoney(result.selected.costPerGroundedPrompt)
+                  ? formatVisibleMoney(result.selected.costPerGroundedPrompt)
                   : "$0.00"
               }
             />
@@ -620,89 +632,76 @@ export default function ToolClient() {
               label="First-year cost"
               value={
                 result.selected
-                  ? formatMoney(result.selected.firstYearCost)
+                  ? formatVisibleMoney(result.selected.firstYearCost)
                   : "$0.00"
               }
             />
           </div>
         }
         breakdown={
-          <div className="overflow-hidden rounded-xl border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
-                <thead className="bg-white">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Provider and model
-                    </th>
+          <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <div className="hidden grid-cols-[minmax(0,1.65fr)_repeat(4,minmax(0,1fr))] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 2xl:grid">
+              <span>Provider and model</span>
+              <span>Billed searches</span>
+              <span>Search fee</span>
+              <span>Model tokens</span>
+              <span>Monthly total</span>
+            </div>
 
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Billed searches
-                    </th>
+            <div className="max-h-[44rem] divide-y divide-gray-200 overflow-y-auto overscroll-contain">
+              {result.rows.map((row, index) => (
+                <div
+                  key={row.id}
+                  className={`grid min-w-0 gap-4 px-4 py-4 2xl:grid-cols-[minmax(0,1.65fr)_repeat(4,minmax(0,1fr))] 2xl:items-start ${
+                    row.id === result.selected?.id ? "bg-[#F5FAF7]" : ""
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+                      {index === 0 ? "Lowest cost · " : ""}
+                      {row.provider}
+                    </p>
 
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Search fee
-                    </th>
+                    <p className="mt-1 break-words text-sm text-gray-600 [overflow-wrap:anywhere]">
+                      {row.model}
+                    </p>
 
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Model tokens
-                    </th>
+                    <p className="mt-1 break-words text-xs text-gray-500 [overflow-wrap:anywhere]">
+                      {row.note}
+                    </p>
+                  </div>
 
-                    <th className="px-4 py-3 font-semibold text-gray-700">
-                      Monthly total
-                    </th>
-                  </tr>
-                </thead>
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 2xl:contents">
+                    <ComparisonValue
+                      label="Billed searches"
+                      value={formatVisibleInteger(row.billedSearchQueries)}
+                    />
 
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {result.rows.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={
-                        row.id === result.selected?.id
-                          ? "bg-[#F5FAF7]"
-                          : ""
-                      }
-                    >
-                      <td className="px-4 py-4 align-top">
-                        <p className="font-medium text-gray-900">
-                          {index === 0 ? "Lowest cost · " : ""}
-                          {row.provider}
-                        </p>
+                    <ComparisonValue
+                      label="Search fee"
+                      value={formatVisibleMoney(row.searchToolCost)}
+                    />
 
-                        <p className="mt-1 text-gray-600">{row.model}</p>
+                    <ComparisonValue
+                      label="Model tokens"
+                      value={formatVisibleMoney(
+                        row.modelInputCost + row.modelOutputCost,
+                      )}
+                    />
 
-                        <p className="mt-1 text-xs text-gray-500">
-                          {row.note}
-                        </p>
-                      </td>
-
-                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
-                        {formatInteger(row.billedSearchQueries)}
-                      </td>
-
-                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
-                        {formatMoney(row.searchToolCost)}
-                      </td>
-
-                      <td className="whitespace-nowrap px-4 py-4 text-gray-900">
-                        {formatMoney(
-                          row.modelInputCost + row.modelOutputCost,
-                        )}
-                      </td>
-
-                      <td className="whitespace-nowrap px-4 py-4 font-semibold text-gray-950">
-                        {formatMoney(row.totalMonthlyCost)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    <ComparisonValue
+                      label="Monthly total"
+                      value={formatVisibleMoney(row.totalMonthlyCost)}
+                      emphasis
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Selected option:{" "}
               <span className="font-medium text-gray-900">
@@ -716,7 +715,7 @@ export default function ToolClient() {
               Selected model input cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.selected
-                  ? formatMoney(result.selected.modelInputCost)
+                  ? formatVisibleMoney(result.selected.modelInputCost)
                   : "—"}
               </span>
             </p>
@@ -725,7 +724,7 @@ export default function ToolClient() {
               Selected model output cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.selected
-                  ? formatMoney(result.selected.modelOutputCost)
+                  ? formatVisibleMoney(result.selected.modelOutputCost)
                   : "—"}
               </span>
             </p>
@@ -742,14 +741,14 @@ export default function ToolClient() {
             <p className="mt-2">
               Possible monthly saving against selected option:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.monthlySavingVsSelected)}
+                {formatVisibleMoney(result.monthlySavingVsSelected)}
               </span>
             </p>
 
             <p className="mt-2">
               Possible first-year saving:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.firstYearSavingVsSelected)}
+                {formatVisibleMoney(result.firstYearSavingVsSelected)}
               </span>
             </p>
 
@@ -757,7 +756,7 @@ export default function ToolClient() {
               Cost per all prompts:{" "}
               <span className="font-medium text-gray-900">
                 {result.selected
-                  ? formatMoney(result.selected.costPerAllPrompt)
+                  ? formatVisibleMoney(result.selected.costPerAllPrompt)
                   : "—"}
               </span>
             </p>
@@ -772,8 +771,8 @@ export default function ToolClient() {
                 }`}
               >
                 {result.budgetDifference >= 0
-                  ? `${formatMoney(result.budgetDifference)} remaining`
-                  : `${formatMoney(
+                  ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                  : `${formatVisibleMoney(
                       Math.abs(result.budgetDifference),
                     )} over budget`}
               </span>
@@ -798,8 +797,8 @@ function TextField({
   onChange: (value: string) => void;
 }) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium text-gray-700">
+    <label className="block min-w-0">
+      <span className="mb-2 block break-words text-sm font-medium text-gray-700 [overflow-wrap:anywhere]">
         {label}
       </span>
 
@@ -807,9 +806,37 @@ function TextField({
         type="text"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
+        className="min-h-12 w-full min-w-0 rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
       />
     </label>
+  );
+}
+
+function ComparisonValue({
+  label,
+  value,
+  emphasis = false,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <div className="min-w-0 rounded-lg bg-gray-50 px-3 py-3 2xl:rounded-none 2xl:bg-transparent 2xl:px-0 2xl:py-0">
+      <p className="text-xs font-medium uppercase tracking-wide text-gray-500 2xl:hidden">
+        {label}
+      </p>
+
+      <p
+        className={`mt-1 break-words [overflow-wrap:anywhere] 2xl:mt-0 ${
+          emphasis
+            ? "font-semibold text-gray-950"
+            : "font-medium text-gray-900"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
   );
 }
 
@@ -821,12 +848,14 @@ function ResultStat({
   value: string;
 }) {
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+    <div className="min-w-0">
+      <p className="break-words text-xs font-medium uppercase tracking-wide text-gray-500 [overflow-wrap:anywhere]">
         {label}
       </p>
 
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
