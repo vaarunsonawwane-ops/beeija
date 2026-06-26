@@ -32,6 +32,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -486,8 +498,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your GPU Inference Plan
@@ -721,43 +733,43 @@ export default function ToolClient() {
             Estimated inference deployment shape
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
-              GPUs required per replica: {result.gpusPerReplica}
+              GPUs required per replica: {formatVisibleInteger(result.gpusPerReplica)}
             </p>
 
             <p>
               Allocated usable GPU memory:{" "}
-              {formatNumber(result.allocatedGpuMemory)} GB
+              {formatVisibleNumber(result.allocatedGpuMemory)} GB
             </p>
 
             <p>
-              Memory headroom: {formatNumber(result.memoryHeadroom)} GB
+              Memory headroom: {formatVisibleNumber(result.memoryHeadroom)} GB
             </p>
 
             <p>
               Effective compute time per request:{" "}
-              {formatNumber(result.effectiveSecondsPerRequest)} seconds
+              {formatVisibleNumber(result.effectiveSecondsPerRequest)} seconds
             </p>
 
             <p>
               Busy replica-hours:{" "}
-              {formatNumber(result.busyReplicaHours)}
+              {formatVisibleNumber(result.busyReplicaHours)}
             </p>
 
             <p>
               Billable replica-hours:{" "}
-              {formatNumber(result.billableReplicaHours)}
+              {formatVisibleNumber(result.billableReplicaHours)}
             </p>
 
             <p>
               Billable GPU-hours:{" "}
-              {formatNumber(result.billableGpuHours)}
+              {formatVisibleNumber(result.billableGpuHours)}
             </p>
 
             <p>
               Average running replicas:{" "}
-              {formatNumber(result.averageRunningReplicas)}
+              {formatVisibleNumber(result.averageRunningReplicas)}
             </p>
           </div>
         </div>
@@ -777,16 +789,16 @@ export default function ToolClient() {
         primaryLabel="Monthly self-hosted planning cost"
         primaryValue={
           result.hasSelfHostedPrices
-            ? formatMoney(result.monthlyPlanningCost)
+            ? formatVisibleMoney(result.monthlyPlanningCost)
             : "Enter prices"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Cost per request"
               value={
                 result.hasSelfHostedPrices
-                  ? formatMoney(result.costPerRequest)
+                  ? formatVisibleMoney(result.costPerRequest)
                   : "—"
               }
             />
@@ -795,14 +807,14 @@ export default function ToolClient() {
               label="Cost per 1M tokens"
               value={
                 result.hasSelfHostedPrices
-                  ? formatMoney(result.costPerMillionTokens)
+                  ? formatVisibleMoney(result.costPerMillionTokens)
                   : "—"
               }
             />
 
             <ResultStat
               label="Effective utilization"
-              value={`${formatNumber(result.effectiveUtilization)}%`}
+              value={`${formatVisibleNumber(result.effectiveUtilization)}%`}
             />
           </div>
         }
@@ -820,12 +832,12 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Monthly operating cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasSelfHostedPrices
-                  ? formatMoney(result.monthlyOperatingCost)
+                  ? formatVisibleMoney(result.monthlyOperatingCost)
                   : "—"}
               </span>
             </p>
@@ -833,7 +845,7 @@ export default function ToolClient() {
             <p className="mt-2">
               Idle replica-hours:{" "}
               <span className="font-medium text-gray-900">
-                {formatNumber(result.idleReplicaHours)}
+                {formatVisibleNumber(result.idleReplicaHours)}
               </span>
             </p>
 
@@ -841,9 +853,9 @@ export default function ToolClient() {
               Extra cost from minimum replica floor:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasSelfHostedPrices
-                  ? `${formatMoney(
+                  ? `${formatVisibleMoney(
                       result.minimumFloorExtraCost,
-                    )} (${formatNumber(
+                    )} (${formatVisibleNumber(
                       result.minimumFloorCostShare,
                     )}% of planning cost)`
                   : "—"}
@@ -853,7 +865,7 @@ export default function ToolClient() {
             <p className="mt-2">
               Estimated request capacity at entered settings:{" "}
               <span className="font-medium text-gray-900">
-                {formatInteger(result.estimatedMonthlyCapacity)} per month
+                {formatVisibleInteger(result.estimatedMonthlyCapacity)} per month
               </span>
             </p>
 
@@ -861,7 +873,7 @@ export default function ToolClient() {
               Managed API monthly baseline:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasApiPrices
-                  ? formatMoney(result.managedApiCost)
+                  ? formatVisibleMoney(result.managedApiCost)
                   : "Enter both API token prices"}
               </span>
             </p>
@@ -889,7 +901,7 @@ export default function ToolClient() {
                   ? "Enter both API token prices"
                   : result.breakEvenRequests === null
                     ? "No break-even under these assumptions"
-                    : `${formatInteger(
+                    : `${formatVisibleInteger(
                         result.breakEvenRequests,
                       )} requests per month`}
               </span>
@@ -904,7 +916,7 @@ export default function ToolClient() {
                     ? "No implementation cost entered"
                     : result.implementationPaybackMonths === null
                       ? "No positive operating payback"
-                      : `${formatNumber(
+                      : `${formatVisibleNumber(
                           result.implementationPaybackMonths,
                         )} months`}
               </span>
@@ -933,8 +945,8 @@ export default function ToolClient() {
                   : !result.hasSelfHostedPrices
                     ? "Enter current prices"
                     : result.budgetDifference >= 0
-                      ? `${formatMoney(result.budgetDifference)} remaining`
-                      : `${formatMoney(
+                      ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                      : `${formatVisibleMoney(
                           Math.abs(result.budgetDifference),
                         )} over budget`}
               </span>
@@ -957,7 +969,7 @@ function FieldSection({
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold text-gray-950">{title}</h3>
-      <div className="mt-5 grid gap-5 md:grid-cols-2">{children}</div>
+      <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 md:items-end [&>*]:min-w-0">{children}</div>
     </div>
   );
 }
@@ -970,11 +982,13 @@ function ResultStat({
   value: string;
 }) {
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+    <div className="min-w-0">
+      <p className="break-words text-xs font-medium uppercase tracking-wide text-gray-500 [overflow-wrap:anywhere]">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -991,14 +1005,18 @@ function BreakdownRow({
   entered: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
-        <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
+        <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+          {label}
+        </p>
+        <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+          {detail}
+        </p>
       </div>
 
-      <p className="font-semibold text-gray-950">
-        {entered ? formatMoney(value) : "—"}
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {entered ? formatVisibleMoney(value) : "—"}
       </p>
     </div>
   );
@@ -1026,8 +1044,8 @@ function ComparisonLine({
         {!ready
           ? "Enter self-hosted and API prices"
           : value >= 0
-            ? `${formatMoney(value)} self-hosted saving`
-            : `${formatMoney(Math.abs(value))} self-hosted premium`}
+            ? `${formatVisibleMoney(value)} self-hosted saving`
+            : `${formatVisibleMoney(Math.abs(value))} self-hosted premium`}
       </span>
     </p>
   );
