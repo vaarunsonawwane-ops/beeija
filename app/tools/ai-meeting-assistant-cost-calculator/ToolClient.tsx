@@ -32,6 +32,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -463,8 +475,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Meeting Assistant Plan
@@ -745,40 +757,40 @@ export default function ToolClient() {
             Estimated monthly meeting workload
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
-              Base audio minutes: {formatInteger(result.baseAudioMinutes)}
+              Base audio minutes: {formatVisibleInteger(result.baseAudioMinutes)}
             </p>
 
             <p>
               Processed audio minutes:{" "}
-              {formatInteger(result.processedAudioMinutes)}
+              {formatVisibleInteger(result.processedAudioMinutes)}
             </p>
 
             <p>
-              Meeting hours: {formatNumber(result.meetingHours)}
+              Meeting hours: {formatVisibleNumber(result.meetingHours)}
             </p>
 
             <p>
-              Participant hours: {formatNumber(result.participantHours)}
+              Participant hours: {formatVisibleNumber(result.participantHours)}
             </p>
 
             <p>
-              Summary jobs: {formatInteger(result.summaryMeetings)}
+              Summary jobs: {formatVisibleInteger(result.summaryMeetings)}
             </p>
 
             <p>
-              Action-item jobs: {formatInteger(result.actionMeetings)}
+              Action-item jobs: {formatVisibleInteger(result.actionMeetings)}
             </p>
 
             <p>
               Human-reviewed meetings:{" "}
-              {formatInteger(result.reviewedMeetings)}
+              {formatVisibleInteger(result.reviewedMeetings)}
             </p>
 
             <p>
               Successful meeting records:{" "}
-              {formatInteger(result.successfulMeetings)}
+              {formatVisibleInteger(result.successfulMeetings)}
             </p>
           </div>
         </div>
@@ -798,16 +810,16 @@ export default function ToolClient() {
         primaryLabel="Monthly meeting-assistant planning cost"
         primaryValue={
           result.hasAnyPrice
-            ? formatMoney(result.monthlyPlanningCost)
+            ? formatVisibleMoney(result.monthlyPlanningCost)
             : "Enter prices"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per meeting"
               value={
                 result.hasAnyPrice
-                  ? formatMoney(result.costPerMeeting)
+                  ? formatVisibleMoney(result.costPerMeeting)
                   : "—"
               }
             />
@@ -816,7 +828,7 @@ export default function ToolClient() {
               label="Per participant hour"
               value={
                 result.hasAnyPrice
-                  ? formatMoney(result.costPerParticipantHour)
+                  ? formatVisibleMoney(result.costPerParticipantHour)
                   : "—"
               }
             />
@@ -825,7 +837,7 @@ export default function ToolClient() {
               label="Per successful meeting"
               value={
                 result.hasAnyPrice
-                  ? formatMoney(result.costPerSuccessfulMeeting)
+                  ? formatVisibleMoney(result.costPerSuccessfulMeeting)
                   : "—"
               }
             />
@@ -845,12 +857,12 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Monthly operating cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasAnyPrice
-                  ? formatMoney(result.monthlyOperatingCost)
+                  ? formatVisibleMoney(result.monthlyOperatingCost)
                   : "—"}
               </span>
             </p>
@@ -859,7 +871,7 @@ export default function ToolClient() {
               Cost per meeting hour:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasAnyPrice
-                  ? formatMoney(result.costPerMeetingHour)
+                  ? formatVisibleMoney(result.costPerMeetingHour)
                   : "—"}
               </span>
             </p>
@@ -868,7 +880,7 @@ export default function ToolClient() {
               Manual note-taking baseline:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasLabourRate
-                  ? formatMoney(result.manualOnlyCost)
+                  ? formatVisibleMoney(result.manualOnlyCost)
                   : "Enter the reviewer hourly rate"}
               </span>
             </p>
@@ -898,7 +910,7 @@ export default function ToolClient() {
                   ? "Enter the reviewer hourly rate"
                   : result.breakEvenMonthlyMeetings === null
                     ? "No positive saving per meeting"
-                    : `${formatInteger(
+                    : `${formatVisibleInteger(
                         result.breakEvenMonthlyMeetings,
                       )} meetings per month`}
               </span>
@@ -913,7 +925,7 @@ export default function ToolClient() {
                     ? "No implementation cost entered"
                     : result.implementationPaybackMonths === null
                       ? "No positive operating payback"
-                      : `${formatNumber(
+                      : `${formatVisibleNumber(
                           result.implementationPaybackMonths,
                         )} months`}
               </span>
@@ -942,8 +954,8 @@ export default function ToolClient() {
                   : !result.hasAnyPrice
                     ? "Enter current prices"
                     : result.budgetDifference >= 0
-                      ? `${formatMoney(result.budgetDifference)} remaining`
-                      : `${formatMoney(
+                      ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                      : `${formatVisibleMoney(
                           Math.abs(result.budgetDifference),
                         )} over budget`}
               </span>
@@ -966,7 +978,7 @@ function FieldSection({
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold text-gray-950">{title}</h3>
-      <div className="mt-5 grid gap-5 md:grid-cols-2">{children}</div>
+      <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 md:items-end [&>*]:min-w-0">{children}</div>
     </div>
   );
 }
@@ -979,11 +991,13 @@ function ResultStat({
   value: string;
 }) {
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+    <div className="min-w-0">
+      <p className="break-words text-xs font-medium uppercase tracking-wide text-gray-500 [overflow-wrap:anywhere]">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -1000,14 +1014,18 @@ function BreakdownRow({
   entered: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
-        <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
+        <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+          {label}
+        </p>
+        <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+          {detail}
+        </p>
       </div>
 
-      <p className="font-semibold text-gray-950">
-        {entered ? formatMoney(value) : "—"}
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {entered ? formatVisibleMoney(value) : "—"}
       </p>
     </div>
   );
@@ -1035,8 +1053,8 @@ function ComparisonLine({
         {!ready
           ? "Enter the reviewer hourly rate"
           : value >= 0
-            ? `${formatMoney(value)} estimated saving`
-            : `${formatMoney(Math.abs(value))} additional cost`}
+            ? `${formatVisibleMoney(value)} estimated saving`
+            : `${formatVisibleMoney(Math.abs(value))} additional cost`}
       </span>
     </p>
   );
