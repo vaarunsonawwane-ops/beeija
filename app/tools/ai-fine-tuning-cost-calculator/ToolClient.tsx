@@ -35,6 +35,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -430,8 +442,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Fine-Tuning Plan
@@ -695,36 +707,36 @@ export default function ToolClient() {
             Estimated training and inference workload
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
-              Expanded examples: {formatInteger(result.expandedExamples)}
+              Expanded examples: {formatVisibleInteger(result.expandedExamples)}
             </p>
             <p>
               Training examples used:{" "}
-              {formatInteger(result.trainingExamplesUsed)}
+              {formatVisibleInteger(result.trainingExamplesUsed)}
             </p>
             <p>
-              Tokens per example: {formatInteger(result.tokensPerExample)}
+              Tokens per example: {formatVisibleInteger(result.tokensPerExample)}
             </p>
             <p>
               Dataset tokens per epoch:{" "}
-              {formatInteger(result.datasetTokensPerEpoch)}
+              {formatVisibleInteger(result.datasetTokensPerEpoch)}
             </p>
             <p>
               Training tokens per experiment:{" "}
-              {formatInteger(result.trainingTokensPerExperiment)}
+              {formatVisibleInteger(result.trainingTokensPerExperiment)}
             </p>
             <p>
               Total training tokens:{" "}
-              {formatInteger(result.totalTrainingTokens)}
+              {formatVisibleInteger(result.totalTrainingTokens)}
             </p>
             <p>
               Tuned monthly input tokens:{" "}
-              {formatInteger(result.tunedMonthlyInputTokens)}
+              {formatVisibleInteger(result.tunedMonthlyInputTokens)}
             </p>
             <p>
               Tuned monthly output tokens:{" "}
-              {formatInteger(result.tunedMonthlyOutputTokens)}
+              {formatVisibleInteger(result.tunedMonthlyOutputTokens)}
             </p>
           </div>
         </div>
@@ -744,16 +756,16 @@ export default function ToolClient() {
         primaryLabel="Tuned workflow monthly planning cost"
         primaryValue={
           result.hasAnyPrice
-            ? formatMoney(result.tunedMonthlyPlanningCost)
+            ? formatVisibleMoney(result.tunedMonthlyPlanningCost)
             : "Enter prices"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Initial project"
               value={
                 result.hasAnyPrice
-                  ? formatMoney(result.initialProjectCost)
+                  ? formatVisibleMoney(result.initialProjectCost)
                   : "—"
               }
             />
@@ -762,7 +774,7 @@ export default function ToolClient() {
               label="Operating per request"
               value={
                 result.hasTunedPrices
-                  ? formatMoney(result.tunedOperatingCostPerRequest)
+                  ? formatVisibleMoney(result.tunedOperatingCostPerRequest)
                   : "—"
               }
             />
@@ -771,7 +783,7 @@ export default function ToolClient() {
               label="Planning per successful request"
               value={
                 result.hasTunedPrices
-                  ? formatMoney(
+                  ? formatVisibleMoney(
                       result.tunedPlanningCostPerSuccessfulRequest,
                     )
                   : "—"
@@ -793,12 +805,12 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Base-model monthly cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasBasePrices
-                  ? formatMoney(result.baseMonthlyCost)
+                  ? formatVisibleMoney(result.baseMonthlyCost)
                   : "Enter base-model prices"}
               </span>
             </p>
@@ -807,7 +819,7 @@ export default function ToolClient() {
               Tuned-model monthly operating cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasTunedPrices
-                  ? formatMoney(result.tunedMonthlyOperatingCost)
+                  ? formatVisibleMoney(result.tunedMonthlyOperatingCost)
                   : "Enter tuned-model prices"}
               </span>
             </p>
@@ -825,10 +837,10 @@ export default function ToolClient() {
                 {!result.hasComparison
                   ? "Enter base and tuned prices"
                   : result.operatingMonthlySaving >= 0
-                    ? `${formatMoney(
+                    ? `${formatVisibleMoney(
                         result.operatingMonthlySaving,
                       )} estimated saving`
-                    : `${formatMoney(
+                    : `${formatVisibleMoney(
                         Math.abs(result.operatingMonthlySaving),
                       )} additional cost`}
               </span>
@@ -847,10 +859,10 @@ export default function ToolClient() {
                 {!result.hasComparison
                   ? "Enter base and tuned prices"
                   : result.planningMonthlySaving >= 0
-                    ? `${formatMoney(
+                    ? `${formatVisibleMoney(
                         result.planningMonthlySaving,
                       )} estimated saving`
-                    : `${formatMoney(
+                    : `${formatVisibleMoney(
                         Math.abs(result.planningMonthlySaving),
                       )} additional cost`}
               </span>
@@ -869,10 +881,10 @@ export default function ToolClient() {
                 {!result.hasComparison
                   ? "Enter base and tuned prices"
                   : result.firstYearSaving >= 0
-                    ? `${formatMoney(
+                    ? `${formatVisibleMoney(
                         result.firstYearSaving,
                       )} estimated saving`
-                    : `${formatMoney(
+                    : `${formatVisibleMoney(
                         Math.abs(result.firstYearSaving),
                       )} additional cost`}
               </span>
@@ -887,7 +899,7 @@ export default function ToolClient() {
                     ? "No initial project cost entered"
                     : result.projectPaybackMonths === null
                       ? "No positive operating payback"
-                      : `${formatNumber(
+                      : `${formatVisibleNumber(
                           result.projectPaybackMonths,
                         )} months`}
               </span>
@@ -900,7 +912,7 @@ export default function ToolClient() {
                   ? "Enter base and tuned prices"
                   : result.breakEvenMonthlyRequests === null
                     ? "No variable saving per request"
-                    : `${formatInteger(
+                    : `${formatVisibleInteger(
                         result.breakEvenMonthlyRequests,
                       )} requests per month`}
               </span>
@@ -929,8 +941,8 @@ export default function ToolClient() {
                   : !result.hasAnyPrice
                     ? "Enter current prices"
                     : result.budgetDifference >= 0
-                      ? `${formatMoney(result.budgetDifference)} remaining`
-                      : `${formatMoney(
+                      ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                      : `${formatVisibleMoney(
                           Math.abs(result.budgetDifference),
                         )} over budget`}
               </span>
@@ -953,18 +965,20 @@ function FieldSection({
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold text-gray-950">{title}</h3>
-      <div className="mt-5 grid gap-5 md:grid-cols-2">{children}</div>
+      <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0">{children}</div>
     </div>
   );
 }
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -981,14 +995,16 @@ function BreakdownRow({
   entered: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
+        <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+          {detail}
+        </p>
       </div>
 
-      <p className="font-semibold text-gray-950">
-        {entered ? formatMoney(value) : "—"}
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {entered ? formatVisibleMoney(value) : "—"}
       </p>
     </div>
   );
