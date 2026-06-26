@@ -213,6 +213,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -505,8 +517,8 @@ export default function ToolClient() {
   const usesStorage = result.plan.strategy === "explicit-storage";
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Prompt Caching Workload
@@ -518,7 +530,7 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-7 grid gap-5 md:grid-cols-2">
+        <div className="mt-7 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0">
           <div className="md:col-span-2">
             <BeeijaSelect
               label="Provider, model, and cache type"
@@ -620,7 +632,7 @@ export default function ToolClient() {
         </label>
 
         {includeCustom ? (
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
+          <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0">
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-gray-700">
                 Provider name
@@ -714,14 +726,14 @@ export default function ToolClient() {
             Cache workload used for this estimate
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Cache hits: {formatInteger(result.hitRequests)}</p>
-            <p>Cache misses or writes: {formatInteger(result.missRequests)}</p>
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
+            <p>Cache hits: {formatVisibleInteger(result.hitRequests)}</p>
+            <p>Cache misses or writes: {formatVisibleInteger(result.missRequests)}</p>
             <p>
-              Cached tokens read: {formatInteger(result.cachedTokenReads)}
+              Cached tokens read: {formatVisibleInteger(result.cachedTokenReads)}
             </p>
             <p>
-              Cache hit rate: {formatNumber(result.hitRatePercent)}%
+              Cache hit rate: {formatVisibleNumber(result.hitRatePercent)}%
             </p>
           </div>
         </div>
@@ -739,16 +751,16 @@ export default function ToolClient() {
         title="Prompt Caching Cost and Savings"
         description="Compare the same request volume with every reusable token billed normally and with the selected cache pricing."
         primaryLabel="Estimated monthly cost with caching"
-        primaryValue={formatMoney(result.cached.total)}
+        primaryValue={formatVisibleMoney(result.cached.total)}
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Without caching"
-              value={formatMoney(result.noCacheTotal)}
+              value={formatVisibleMoney(result.noCacheTotal)}
             />
             <ResultStat
               label="Monthly saving"
-              value={formatMoney(result.monthlySavings)}
+              value={formatVisibleMoney(result.monthlySavings)}
             />
             <ResultStat
               label="Saving rate"
@@ -796,7 +808,7 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Selected pricing:{" "}
               <span className="font-medium text-gray-900">
@@ -806,19 +818,19 @@ export default function ToolClient() {
             <p className="mt-2">
               Estimated yearly saving:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.yearlySavings)}
+                {formatVisibleMoney(result.yearlySavings)}
               </span>
             </p>
             <p className="mt-2">
               Cost per request without caching:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.costPerRequestWithoutCache)}
+                {formatVisibleMoney(result.costPerRequestWithoutCache)}
               </span>
             </p>
             <p className="mt-2">
               Cost per request with caching:{" "}
               <span className="font-medium text-gray-900">
-                {formatMoney(result.costPerRequestWithCache)}
+                {formatVisibleMoney(result.costPerRequestWithCache)}
               </span>
             </p>
             <p className="mt-2">
@@ -839,8 +851,8 @@ export default function ToolClient() {
                 }`}
               >
                 {result.budgetDifference >= 0
-                  ? `${formatMoney(result.budgetDifference)} remaining`
-                  : `${formatMoney(
+                  ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                  : `${formatVisibleMoney(
                       Math.abs(result.budgetDifference),
                     )} over budget`}
               </span>
@@ -857,11 +869,13 @@ export default function ToolClient() {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -876,12 +890,17 @@ function BreakdownRow({
   value: number;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
+        <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+          {detail}
+        </p>
       </div>
-      <p className="font-semibold text-gray-950">{formatMoney(value)}</p>
+
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {formatVisibleMoney(value)}
+      </p>
     </div>
   );
 }
