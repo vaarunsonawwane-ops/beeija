@@ -76,6 +76,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -311,8 +323,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Batch Processing Workload
@@ -324,7 +336,7 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-7 grid gap-5 md:grid-cols-2">
+        <div className="mt-7 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0">
           <div className="md:col-span-2">
             <BeeijaSelect
               label="Batch provider"
@@ -399,7 +411,7 @@ export default function ToolClient() {
                 Verified batch discount
               </p>
               <p className="mt-1 text-lg font-semibold text-gray-950">
-                {formatNumber(result.discountPercent)}%
+                {formatVisibleNumber(result.discountPercent)}%
               </p>
               <p className="mt-1 text-sm leading-relaxed text-gray-500">
                 {result.selectedProvider.note}
@@ -467,29 +479,29 @@ export default function ToolClient() {
             Workload split used for this estimate
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
-              Real-time requests: {formatInteger(result.realtimeRequests)}
+              Real-time requests: {formatVisibleInteger(result.realtimeRequests)}
             </p>
 
             <p>
               Batch-eligible requests:{" "}
-              {formatInteger(result.batchBaseRequests)}
+              {formatVisibleInteger(result.batchBaseRequests)}
             </p>
 
             <p>
               Batch requests after repeat allowance:{" "}
-              {formatInteger(result.batchProcessedRequests)}
+              {formatVisibleInteger(result.batchProcessedRequests)}
             </p>
 
             <p>
               Standard input tokens:{" "}
-              {formatInteger(result.baselineInputTokens)}
+              {formatVisibleInteger(result.baselineInputTokens)}
             </p>
 
             <p>
               Standard output tokens:{" "}
-              {formatInteger(result.baselineOutputTokens)}
+              {formatVisibleInteger(result.baselineOutputTokens)}
             </p>
 
             <p>
@@ -514,16 +526,16 @@ export default function ToolClient() {
         primaryLabel="Estimated monthly planning cost"
         primaryValue={
           result.hasModelPrices
-            ? formatMoney(result.mixedPlanningCost)
+            ? formatVisibleMoney(result.mixedPlanningCost)
             : "Enter prices"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Standard-only cost"
               value={
                 result.hasModelPrices
-                  ? formatMoney(result.standardOnlyCost)
+                  ? formatVisibleMoney(result.standardOnlyCost)
                   : "—"
               }
             />
@@ -532,7 +544,7 @@ export default function ToolClient() {
               label="Net monthly saving"
               value={
                 result.hasModelPrices
-                  ? formatMoney(result.netMonthlyPlanningSavings)
+                  ? formatVisibleMoney(result.netMonthlyPlanningSavings)
                   : "—"
               }
             />
@@ -541,7 +553,7 @@ export default function ToolClient() {
               label="First-year saving"
               value={
                 result.hasModelPrices
-                  ? formatMoney(result.firstYearSavings)
+                  ? formatVisibleMoney(result.firstYearSavings)
                   : "—"
               }
             />
@@ -586,7 +598,7 @@ export default function ToolClient() {
 
             <BreakdownRow
               label="Amortised implementation cost"
-              detail={`${formatMoney(
+              detail={`${formatVisibleMoney(
                 result.implementationCost,
               )} spread across ${formatNumber(
                 toNumber(amortizationMonths),
@@ -597,12 +609,12 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Gross monthly token saving:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasModelPrices
-                  ? formatMoney(result.grossMonthlyTokenSavings)
+                  ? formatVisibleMoney(result.grossMonthlyTokenSavings)
                   : "—"}
               </span>
             </p>
@@ -611,7 +623,7 @@ export default function ToolClient() {
               Net monthly operating saving:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasModelPrices
-                  ? formatMoney(result.netMonthlyOperatingSavings)
+                  ? formatVisibleMoney(result.netMonthlyOperatingSavings)
                   : "—"}
               </span>
             </p>
@@ -620,7 +632,7 @@ export default function ToolClient() {
               Steady-state yearly saving:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasModelPrices
-                  ? formatMoney(result.steadyStateYearlySavings)
+                  ? formatVisibleMoney(result.steadyStateYearlySavings)
                   : "—"}
               </span>
             </p>
@@ -629,7 +641,7 @@ export default function ToolClient() {
               Standard cost per request:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasModelPrices
-                  ? formatMoney(result.costPerRequestStandard)
+                  ? formatVisibleMoney(result.costPerRequestStandard)
                   : "—"}
               </span>
             </p>
@@ -638,7 +650,7 @@ export default function ToolClient() {
               Mixed workflow cost per request:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasModelPrices
-                  ? formatMoney(result.costPerRequestMixed)
+                  ? formatVisibleMoney(result.costPerRequestMixed)
                   : "—"}
               </span>
             </p>
@@ -687,8 +699,8 @@ export default function ToolClient() {
                   : !result.hasModelPrices
                     ? "Enter current model prices"
                     : result.budgetDifference >= 0
-                      ? `${formatMoney(result.budgetDifference)} remaining`
-                      : `${formatMoney(
+                      ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                      : `${formatVisibleMoney(
                           Math.abs(result.budgetDifference),
                         )} over budget`}
               </span>
@@ -703,11 +715,13 @@ export default function ToolClient() {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -724,14 +738,16 @@ function BreakdownRow({
   showValue: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
         <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
+        <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+          {detail}
+        </p>
       </div>
 
-      <p className="font-semibold text-gray-950">
-        {showValue ? formatMoney(value) : "—"}
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {showValue ? formatVisibleMoney(value) : "—"}
       </p>
     </div>
   );

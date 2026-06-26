@@ -274,6 +274,13 @@ export default function AiBatchApiSavingsCalculatorPage() {
                   </Link>
 
                   <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
+                  </Link>
+
+                  <Link
                     href="/tools/openai-api-cost-calculator"
                     className="beeija-btn-outline"
                   >
