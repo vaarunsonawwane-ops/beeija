@@ -406,14 +406,18 @@ export default function ToolClient() {
               suffix="%"
             />
           ) : (
-            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-              <p className="text-sm font-medium text-gray-700">
+            <div className="min-w-0">
+              <p className="mb-2 text-sm font-medium text-gray-700">
                 Verified batch discount
               </p>
-              <p className="mt-1 text-lg font-semibold text-gray-950">
-                {formatVisibleNumber(result.discountPercent)}%
-              </p>
-              <p className="mt-1 text-sm leading-relaxed text-gray-500">
+
+              <div className="flex h-11 min-w-0 items-center rounded-xl border border-gray-200 bg-gray-50 px-4">
+                <p className="break-words text-sm font-semibold text-gray-950 [overflow-wrap:anywhere]">
+                  {formatVisibleNumber(result.discountPercent)}%
+                </p>
+              </div>
+
+              <p className="mt-2 break-words text-xs leading-relaxed text-gray-500 [overflow-wrap:anywhere]">
                 {result.selectedProvider.note}
               </p>
             </div>
@@ -437,23 +441,27 @@ export default function ToolClient() {
             prefix="$"
           />
 
-          <BeeijaNumberField
-            label="Other fixed monthly batch workflow cost"
-            value={fixedMonthlyBatchCost}
-            onChange={setFixedMonthlyBatchCost}
-            min="0"
-            step="1"
-            prefix="$"
-          />
+          <div className="min-w-0 [&_label]:flex [&_label]:min-h-10 [&_label]:items-end">
+            <BeeijaNumberField
+              label="Other fixed monthly batch workflow cost"
+              value={fixedMonthlyBatchCost}
+              onChange={setFixedMonthlyBatchCost}
+              min="0"
+              step="1"
+              prefix="$"
+            />
+          </div>
 
-          <BeeijaNumberField
-            label="One-time batch implementation cost"
-            value={oneTimeImplementationCost}
-            onChange={setOneTimeImplementationCost}
-            min="0"
-            step="1"
-            prefix="$"
-          />
+          <div className="min-w-0 [&_label]:flex [&_label]:min-h-10 [&_label]:items-end">
+            <BeeijaNumberField
+              label="One-time batch implementation cost"
+              value={oneTimeImplementationCost}
+              onChange={setOneTimeImplementationCost}
+              min="0"
+              step="1"
+              prefix="$"
+            />
+          </div>
 
           <BeeijaNumberField
             label="Implementation amortisation period"
