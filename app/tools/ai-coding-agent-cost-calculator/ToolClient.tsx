@@ -35,6 +35,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -431,8 +443,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Coding-Agent Workflow
@@ -713,36 +725,36 @@ export default function ToolClient() {
             Estimated monthly coding-agent workload
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
-              Planner calls: {formatInteger(result.plannerCalls)}
+              Planner calls: {formatVisibleInteger(result.plannerCalls)}
             </p>
 
             <p>
               Coding and repair calls:{" "}
-              {formatInteger(result.codingCalls)}
+              {formatVisibleInteger(result.codingCalls)}
             </p>
 
             <p>
-              Review-model calls: {formatInteger(result.reviewCalls)}
+              Review-model calls: {formatVisibleInteger(result.reviewCalls)}
             </p>
 
             <p>
-              Sandbox and CI runs: {formatInteger(result.sandboxRuns)}
+              Sandbox and CI runs: {formatVisibleInteger(result.sandboxRuns)}
             </p>
 
             <p>
               Human-reviewed tasks:{" "}
-              {formatInteger(result.reviewedTasks)}
+              {formatVisibleInteger(result.reviewedTasks)}
             </p>
 
             <p>
-              Successful tasks: {formatInteger(result.successfulTasks)}
+              Successful tasks: {formatVisibleInteger(result.successfulTasks)}
             </p>
 
             <p>
               Total model input tokens:{" "}
-              {formatInteger(
+              {formatVisibleInteger(
                 result.plannerInputTokens +
                   result.codingInputTokens +
                   result.reviewInputTokens,
@@ -751,7 +763,7 @@ export default function ToolClient() {
 
             <p>
               Total model output tokens:{" "}
-              {formatInteger(
+              {formatVisibleInteger(
                 result.plannerOutputTokens +
                   result.codingOutputTokens +
                   result.reviewOutputTokens,
@@ -775,16 +787,16 @@ export default function ToolClient() {
         primaryLabel="Monthly coding-agent planning cost"
         primaryValue={
           result.hasAnyPrice
-            ? formatMoney(result.monthlyPlanningCost)
+            ? formatVisibleMoney(result.monthlyPlanningCost)
             : "Enter prices"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per attempted task"
               value={
                 result.hasAnyPrice
-                  ? formatMoney(result.costPerTask)
+                  ? formatVisibleMoney(result.costPerTask)
                   : "—"
               }
             />
@@ -793,7 +805,7 @@ export default function ToolClient() {
               label="Per successful task"
               value={
                 result.hasAnyPrice
-                  ? formatMoney(result.costPerSuccessfulTask)
+                  ? formatVisibleMoney(result.costPerSuccessfulTask)
                   : "—"
               }
             />
@@ -802,7 +814,7 @@ export default function ToolClient() {
               label="First-year automation"
               value={
                 result.hasAnyPrice
-                  ? formatMoney(result.firstYearAutomationCost)
+                  ? formatVisibleMoney(result.firstYearAutomationCost)
                   : "—"
               }
             />
@@ -822,12 +834,12 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Monthly operating cost:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasAnyPrice
-                  ? formatMoney(result.monthlyOperatingCost)
+                  ? formatVisibleMoney(result.monthlyOperatingCost)
                   : "—"}
               </span>
             </p>
@@ -836,7 +848,7 @@ export default function ToolClient() {
               Manual-only monthly baseline:{" "}
               <span className="font-medium text-gray-900">
                 {result.hasDeveloperRate
-                  ? formatMoney(result.manualOnlyCost)
+                  ? formatVisibleMoney(result.manualOnlyCost)
                   : "Enter the developer hourly rate"}
               </span>
             </p>
@@ -854,10 +866,10 @@ export default function ToolClient() {
                 {!result.hasDeveloperRate
                   ? "Enter the developer hourly rate"
                   : result.operatingSavings >= 0
-                    ? `${formatMoney(
+                    ? `${formatVisibleMoney(
                         result.operatingSavings,
                       )} estimated saving`
-                    : `${formatMoney(
+                    : `${formatVisibleMoney(
                         Math.abs(result.operatingSavings),
                       )} additional cost`}
               </span>
@@ -876,10 +888,10 @@ export default function ToolClient() {
                 {!result.hasDeveloperRate
                   ? "Enter the developer hourly rate"
                   : result.planningSavings >= 0
-                    ? `${formatMoney(
+                    ? `${formatVisibleMoney(
                         result.planningSavings,
                       )} estimated saving`
-                    : `${formatMoney(
+                    : `${formatVisibleMoney(
                         Math.abs(result.planningSavings),
                       )} additional cost`}
               </span>
@@ -898,10 +910,10 @@ export default function ToolClient() {
                 {!result.hasDeveloperRate
                   ? "Enter the developer hourly rate"
                   : result.firstYearSavings >= 0
-                    ? `${formatMoney(
+                    ? `${formatVisibleMoney(
                         result.firstYearSavings,
                       )} estimated saving`
-                    : `${formatMoney(
+                    : `${formatVisibleMoney(
                         Math.abs(result.firstYearSavings),
                       )} additional cost`}
               </span>
@@ -914,7 +926,7 @@ export default function ToolClient() {
                   ? "Enter the developer hourly rate"
                   : result.breakEvenMonthlyTasks === null
                     ? "No positive saving per task"
-                    : `${formatInteger(
+                    : `${formatVisibleInteger(
                         result.breakEvenMonthlyTasks,
                       )} tasks per month`}
               </span>
@@ -929,7 +941,7 @@ export default function ToolClient() {
                     ? "No implementation cost entered"
                     : result.implementationPaybackMonths === null
                       ? "No positive operating payback"
-                      : `${formatNumber(
+                      : `${formatVisibleNumber(
                           result.implementationPaybackMonths,
                         )} months`}
               </span>
@@ -958,8 +970,8 @@ export default function ToolClient() {
                   : !result.hasAnyPrice
                     ? "Enter current prices"
                     : result.budgetDifference >= 0
-                      ? `${formatMoney(result.budgetDifference)} remaining`
-                      : `${formatMoney(
+                      ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                      : `${formatVisibleMoney(
                           Math.abs(result.budgetDifference),
                         )} over budget`}
               </span>
@@ -982,7 +994,7 @@ function FieldSection({
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold text-gray-950">{title}</h3>
-      <div className="mt-5 grid gap-5 md:grid-cols-2">{children}</div>
+      <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 md:items-end [&>*]:min-w-0">{children}</div>
     </div>
   );
 }
@@ -995,12 +1007,14 @@ function ResultStat({
   value: string;
 }) {
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+    <div className="min-w-0">
+      <p className="break-words text-xs font-medium uppercase tracking-wide text-gray-500 [overflow-wrap:anywhere]">
         {label}
       </p>
 
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -1017,14 +1031,18 @@ function BreakdownRow({
   entered: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
-        <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
+    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="min-w-0 flex-1">
+        <p className="break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+          {label}
+        </p>
+        <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+          {detail}
+        </p>
       </div>
 
-      <p className="font-semibold text-gray-950">
-        {entered ? formatMoney(value) : "—"}
+      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {entered ? formatVisibleMoney(value) : "—"}
       </p>
     </div>
   );
