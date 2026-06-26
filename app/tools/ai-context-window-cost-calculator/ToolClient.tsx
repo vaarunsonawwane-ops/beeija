@@ -44,6 +44,18 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleNumber(value: number) {
+  return formatNumber(value).replace(/,/g, ",\u200B");
+}
+
+function formatVisibleInteger(value: number) {
+  return formatInteger(value).replace(/,/g, ",\u200B");
+}
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
@@ -411,8 +423,8 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div>
           <h2 className="text-2xl font-semibold text-gray-950">
             Enter Your Conversation Context Plan
@@ -629,34 +641,34 @@ export default function ToolClient() {
             Estimated monthly context workload
           </p>
 
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
-              Model requests: {formatInteger(result.requestsPerMonth)}
+              Model requests: {formatVisibleInteger(result.requestsPerMonth)}
             </p>
 
             <p>
               History growth per completed turn:{" "}
-              {formatInteger(result.historyTokensPerTurn)} tokens
+              {formatVisibleInteger(result.historyTokensPerTurn)} tokens
             </p>
 
             <p>
               Effective cached share of static prefix:{" "}
-              {formatNumber(result.effectiveCachedStaticShare * 100)}%
+              {formatVisibleNumber(result.effectiveCachedStaticShare * 100)}%
             </p>
 
             <p>
               Summary refreshes per session:{" "}
-              {formatInteger(result.summaryCallsPerSession)}
+              {formatVisibleInteger(result.summaryCallsPerSession)}
             </p>
 
             <p>
               Monthly summary calls:{" "}
-              {formatInteger(result.monthlySummaryCalls)}
+              {formatVisibleInteger(result.monthlySummaryCalls)}
             </p>
 
             <p>
               Average summary input per refresh:{" "}
-              {formatInteger(result.averageSummaryInputTokensPerCall)} tokens
+              {formatVisibleInteger(result.averageSummaryInputTokensPerCall)} tokens
             </p>
           </div>
         </div>
@@ -676,16 +688,16 @@ export default function ToolClient() {
         primaryLabel="Managed monthly planning cost"
         primaryValue={
           result.hasCorePrices
-            ? formatMoney(result.managedScenario.planningCost)
+            ? formatVisibleMoney(result.managedScenario.planningCost)
             : "Enter prices"
         }
         stats={
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Full-history cost"
               value={
                 result.hasCorePrices
-                  ? formatMoney(result.fullScenario.planningCost)
+                  ? formatVisibleMoney(result.fullScenario.planningCost)
                   : "—"
               }
             />
@@ -694,7 +706,7 @@ export default function ToolClient() {
               label="Monthly saving"
               value={
                 result.hasCorePrices
-                  ? formatMoney(result.monthlyPlanningSavings)
+                  ? formatVisibleMoney(result.monthlyPlanningSavings)
                   : "—"
               }
             />
@@ -703,7 +715,7 @@ export default function ToolClient() {
               label="Managed cost per session"
               value={
                 result.hasCorePrices
-                  ? formatMoney(result.costPerManagedSession)
+                  ? formatVisibleMoney(result.costPerManagedSession)
                   : "—"
               }
             />
@@ -729,7 +741,7 @@ export default function ToolClient() {
           </div>
         }
         totals={
-          <div className="text-sm leading-relaxed text-gray-600">
+          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
               Estimated processed-token reduction:{" "}
               <span
@@ -739,15 +751,15 @@ export default function ToolClient() {
                     : "text-red-700"
                 }`}
               >
-                {formatInteger(result.tokenReduction)} tokens (
-                {formatNumber(result.tokenReductionPercent)}%)
+                {formatVisibleInteger(result.tokenReduction)} tokens (
+                {formatVisibleNumber(result.tokenReductionPercent)}%)
               </span>
             </p>
 
             <p className="mt-2">
               Managed summary overhead:{" "}
               <span className="font-medium text-gray-900">
-                {formatInteger(
+                {formatVisibleInteger(
                   result.managedScenario.summaryInputTokens +
                     result.managedScenario.summaryOutputTokens,
                 )}{" "}
@@ -785,10 +797,10 @@ export default function ToolClient() {
                 {!result.hasCorePrices
                   ? "Enter current prices"
                   : result.firstYearSavings >= 0
-                    ? `${formatMoney(
+                    ? `${formatVisibleMoney(
                         result.firstYearSavings,
                       )} estimated saving`
-                    : `${formatMoney(
+                    : `${formatVisibleMoney(
                         Math.abs(result.firstYearSavings),
                       )} additional cost`}
               </span>
@@ -803,7 +815,7 @@ export default function ToolClient() {
                     ? "No implementation cost entered"
                     : result.implementationPaybackMonths === null
                       ? "No positive operating payback"
-                      : `${formatNumber(
+                      : `${formatVisibleNumber(
                           result.implementationPaybackMonths,
                         )} months`}
               </span>
@@ -832,8 +844,8 @@ export default function ToolClient() {
                   : !result.hasCorePrices
                     ? "Enter current prices"
                     : result.budgetDifference >= 0
-                      ? `${formatMoney(result.budgetDifference)} remaining`
-                      : `${formatMoney(
+                      ? `${formatVisibleMoney(result.budgetDifference)} remaining`
+                      : `${formatVisibleMoney(
                           Math.abs(result.budgetDifference),
                         )} over budget`}
               </span>
@@ -856,7 +868,7 @@ function FieldSection({
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold text-gray-950">{title}</h3>
-      <div className="mt-5 grid gap-5 md:grid-cols-2">{children}</div>
+      <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 md:items-end [&>*]:min-w-0">{children}</div>
     </div>
   );
 }
@@ -869,11 +881,13 @@ function ResultStat({
   value: string;
 }) {
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+    <div className="min-w-0">
+      <p className="break-words text-xs font-medium uppercase tracking-wide text-gray-500 [overflow-wrap:anywhere]">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-gray-950">{value}</p>
+      <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        {value}
+      </p>
     </div>
   );
 }
@@ -892,48 +906,50 @@ function ScenarioCard({
   ready: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="font-semibold text-gray-950">{title}</p>
-          <p className="mt-1 text-sm text-gray-500">
-            Peak context use: {formatNumber(contextUse)}%
+    <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="flex min-w-0 items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+            {title}
+          </p>
+          <p className="mt-1 break-words text-sm text-gray-500 [overflow-wrap:anywhere]">
+            Peak context use: {formatVisibleNumber(contextUse)}%
           </p>
         </div>
 
-        <p className="font-semibold text-gray-950">
-          {ready ? formatMoney(scenario.planningCost) : "—"}
+        <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
+          {ready ? formatVisibleMoney(scenario.planningCost) : "—"}
         </p>
       </div>
 
-      <div className="mt-4 grid gap-2 text-sm text-gray-600 sm:grid-cols-2">
+      <div className="mt-4 grid min-w-0 gap-2 text-sm text-gray-600 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
         <p>
-          Normal input: {formatInteger(scenario.normalInputTokens)}
+          Normal input: {formatVisibleInteger(scenario.normalInputTokens)}
         </p>
         <p>
-          Cached input: {formatInteger(scenario.cachedInputTokens)}
+          Cached input: {formatVisibleInteger(scenario.cachedInputTokens)}
         </p>
         <p>
-          Assistant output: {formatInteger(scenario.assistantOutputTokens)}
+          Assistant output: {formatVisibleInteger(scenario.assistantOutputTokens)}
         </p>
         <p>
           Summary tokens:{" "}
-          {formatInteger(
+          {formatVisibleInteger(
             scenario.summaryInputTokens + scenario.summaryOutputTokens,
           )}
         </p>
         <p>
-          Peak total context: {formatInteger(scenario.peakTotalTokens)}
+          Peak total context: {formatVisibleInteger(scenario.peakTotalTokens)}
         </p>
         <p>
           Overflow turns per session:{" "}
-          {formatInteger(scenario.overflowTurnsPerSession)}
+          {formatVisibleInteger(scenario.overflowTurnsPerSession)}
         </p>
         <p>
-          Cost per session: {ready ? formatMoney(costPerSession) : "—"}
+          Cost per session: {ready ? formatVisibleMoney(costPerSession) : "—"}
         </p>
         <p>
-          Summary cost: {ready ? formatMoney(scenario.summaryCost) : "—"}
+          Summary cost: {ready ? formatVisibleMoney(scenario.summaryCost) : "—"}
         </p>
       </div>
     </div>
