@@ -384,6 +384,12 @@ export default function ToolClient() {
   );
 
   useEffect(() => {
+    if (customPlan) {
+      setSelectedPlanId(customPlan.id);
+    }
+  }, [customPlan]);
+
+  useEffect(() => {
     if (
       selectedPlanId === "custom-provider" &&
       !availablePlans.some((plan) => plan.id === "custom-provider")
