@@ -965,7 +965,7 @@ function FieldSection({
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold text-gray-950">{title}</h3>
-      <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 [&>*]:min-w-0">{children}</div>
+      <div className="mt-5 grid min-w-0 gap-5 md:grid-cols-2 md:items-end [&>*]:min-w-0">{children}</div>
     </div>
   );
 }
