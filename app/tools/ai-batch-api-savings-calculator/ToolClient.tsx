@@ -441,7 +441,7 @@ export default function ToolClient() {
             prefix="$"
           />
 
-          <div className="min-w-0 [&_label]:flex [&_label]:min-h-10 [&_label]:items-end">
+          <div className="grid min-w-0 gap-5 md:col-span-2 md:grid-cols-2 md:items-end">
             <BeeijaNumberField
               label="Other fixed monthly batch workflow cost"
               value={fixedMonthlyBatchCost}
@@ -450,9 +450,7 @@ export default function ToolClient() {
               step="1"
               prefix="$"
             />
-          </div>
 
-          <div className="min-w-0 [&_label]:flex [&_label]:min-h-10 [&_label]:items-end">
             <BeeijaNumberField
               label="One-time batch implementation cost"
               value={oneTimeImplementationCost}
