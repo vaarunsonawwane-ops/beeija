@@ -271,7 +271,10 @@ export default function AiRerankingCostCalculatorPage() {
               title: "Explore Related AI Cost Tools",
               content: (
                 <div className="flex flex-wrap gap-3">
-                  <Link href="/tools/rag-cost-calculator" className="beeija-btn-outline">
+                  <Link
+                    href="/tools/rag-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
                     RAG Cost Calculator
                   </Link>
 
@@ -301,6 +304,20 @@ export default function AiRerankingCostCalculatorPage() {
                     className="beeija-btn-outline"
                   >
                     OpenAI API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/gemini-api-cost-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    Gemini API Cost Calculator
+                  </Link>
+
+                  <Link
+                    href="/tools/ai-model-routing-savings-calculator"
+                    className="beeija-btn-outline"
+                  >
+                    AI Model Routing Savings Calculator
                   </Link>
 
                   <Link
