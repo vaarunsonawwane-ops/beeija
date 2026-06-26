@@ -385,43 +385,47 @@ export default function ToolClient() {
             step="1"
           />
 
-          <BeeijaNumberField
-            label="Repeat-processing allowance for batch work"
-            value={repeatProcessingPercent}
-            onChange={setRepeatProcessingPercent}
-            min="0"
-            max="100"
-            step="1"
-            suffix="%"
-          />
-
-          {provider === "custom" ? (
+          <div className="grid min-w-0 gap-5 md:col-span-2 md:grid-cols-2">
             <BeeijaNumberField
-              label="Current batch discount"
-              value={customDiscountPercent}
-              onChange={setCustomDiscountPercent}
+              label="Repeat-processing allowance for batch work"
+              value={repeatProcessingPercent}
+              onChange={setRepeatProcessingPercent}
               min="0"
               max="100"
               step="1"
               suffix="%"
             />
-          ) : (
-            <div className="min-w-0">
-              <p className="mb-2 text-sm font-medium text-gray-700">
-                Verified batch discount
-              </p>
 
-              <div className="flex h-11 min-w-0 items-center rounded-xl border border-gray-200 bg-gray-50 px-4">
-                <p className="break-words text-sm font-semibold text-gray-950 [overflow-wrap:anywhere]">
-                  {formatVisibleNumber(result.discountPercent)}%
-                </p>
-              </div>
+            <div className="min-w-0 md:pt-5">
+              {provider === "custom" ? (
+                <BeeijaNumberField
+                  label="Current batch discount"
+                  value={customDiscountPercent}
+                  onChange={setCustomDiscountPercent}
+                  min="0"
+                  max="100"
+                  step="1"
+                  suffix="%"
+                />
+              ) : (
+                <div className="min-w-0">
+                  <p className="mb-2 text-sm font-medium text-gray-700">
+                    Verified batch discount
+                  </p>
 
-              <p className="mt-2 break-words text-xs leading-relaxed text-gray-500 [overflow-wrap:anywhere]">
-                {result.selectedProvider.note}
-              </p>
+                  <div className="flex h-11 min-w-0 items-center rounded-xl border border-gray-200 bg-gray-50 px-4">
+                    <p className="break-words text-sm font-semibold text-gray-950 [overflow-wrap:anywhere]">
+                      {formatVisibleNumber(result.discountPercent)}%
+                    </p>
+                  </div>
+
+                  <p className="mt-2 break-words text-xs leading-relaxed text-gray-500 [overflow-wrap:anywhere]">
+                    {result.selectedProvider.note}
+                  </p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           <BeeijaNumberField
             label="Current standard input price per 1M tokens"
