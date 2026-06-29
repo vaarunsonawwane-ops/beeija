@@ -3,6 +3,7 @@
 import {
   useId,
   type ChangeEvent,
+  type ReactNode,
 } from "react";
 
 type BeeijaNumberFieldProps = {
@@ -12,8 +13,8 @@ type BeeijaNumberFieldProps = {
   min?: string;
   max?: string;
   step?: string;
-  prefix?: string;
-  suffix?: string;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
   disabled?: boolean;
 };
 
@@ -44,7 +45,7 @@ export default function BeeijaNumberField({
         }`}
       >
         {prefix ? (
-          <span className="flex shrink-0 items-center border-r border-gray-200 px-3 text-sm text-gray-500">
+          <span className="flex shrink-0 items-center border-r border-gray-200 px-3 text-sm font-semibold text-[var(--green)]">
             {prefix}
           </span>
         ) : null}
@@ -65,7 +66,7 @@ export default function BeeijaNumberField({
         />
 
         {suffix ? (
-          <span className="flex shrink-0 items-center whitespace-nowrap border-l border-gray-200 px-3 text-sm text-gray-500">
+          <span className="flex shrink-0 items-center whitespace-nowrap border-l border-gray-200 px-3 text-sm font-semibold text-[var(--yellow-dark)]">
             {suffix}
           </span>
         ) : null}
