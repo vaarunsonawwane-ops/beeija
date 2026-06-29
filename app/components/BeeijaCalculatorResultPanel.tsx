@@ -189,14 +189,93 @@ export default function BeeijaCalculatorResultPanel({
 
         .beeija-result-breakdown table,
         .beeija-result-children table {
-          width: max-content;
-          min-width: 100%;
+          width: 100% !important;
+          min-width: 0 !important;
+          max-width: 100% !important;
+          table-layout: fixed !important;
+        }
+
+        .beeija-result-breakdown th,
+        .beeija-result-breakdown td,
+        .beeija-result-children th,
+        .beeija-result-children td {
+          width: auto !important;
+          min-width: 0 !important;
+          max-width: none !important;
+          white-space: normal !important;
+          overflow-wrap: anywhere !important;
+          word-break: break-word !important;
+          vertical-align: top;
+        }
+
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          th:first-child,
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          td:first-child,
+        .beeija-result-children table:has(th:nth-child(4))
+          th:first-child,
+        .beeija-result-children table:has(th:nth-child(4))
+          td:first-child {
+          width: 42% !important;
+        }
+
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          th:nth-child(2),
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          td:nth-child(2),
+        .beeija-result-children table:has(th:nth-child(4))
+          th:nth-child(2),
+        .beeija-result-children table:has(th:nth-child(4))
+          td:nth-child(2) {
+          width: 20% !important;
+        }
+
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          th:nth-child(3),
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          td:nth-child(3),
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          th:nth-child(4),
+        .beeija-result-breakdown table:has(th:nth-child(4))
+          td:nth-child(4),
+        .beeija-result-children table:has(th:nth-child(4))
+          th:nth-child(3),
+        .beeija-result-children table:has(th:nth-child(4))
+          td:nth-child(3),
+        .beeija-result-children table:has(th:nth-child(4))
+          th:nth-child(4),
+        .beeija-result-children table:has(th:nth-child(4))
+          td:nth-child(4) {
+          width: 19% !important;
+        }
+
+        .beeija-result-breakdown table:not(:has(th:nth-child(4)))
+          th:first-child,
+        .beeija-result-breakdown table:not(:has(th:nth-child(4)))
+          td:first-child,
+        .beeija-result-children table:not(:has(th:nth-child(4)))
+          th:first-child,
+        .beeija-result-children table:not(:has(th:nth-child(4)))
+          td:first-child {
+          width: 50% !important;
+        }
+
+        .beeija-result-breakdown table:not(:has(th:nth-child(4)))
+          th:not(:first-child),
+        .beeija-result-breakdown table:not(:has(th:nth-child(4)))
+          td:not(:first-child),
+        .beeija-result-children table:not(:has(th:nth-child(4)))
+          th:not(:first-child),
+        .beeija-result-children table:not(:has(th:nth-child(4)))
+          td:not(:first-child) {
+          width: 25% !important;
         }
 
         .beeija-result-breakdown [class*="overflow-x-auto"],
         .beeija-result-children [class*="overflow-x-auto"] {
+          width: 100%;
           max-width: 100%;
-          overflow-x: auto;
+          overflow-x: hidden !important;
         }
       `}</style>
     </section>
