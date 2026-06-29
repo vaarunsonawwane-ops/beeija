@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import ToolShell from "@/app/components/ToolShell";
 import ToolContent from "@/app/components/ToolContent";
+import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
 export const metadata: Metadata = {
@@ -261,49 +261,9 @@ export default function AiVideoGenerationCostComparisonCalculatorPage() {
             {
               title: "Explore Related AI Cost Tools",
               content: (
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/ai-image-generation-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Image Generation Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/gemini-api-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    Gemini API Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-token-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Token Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-voice-agent-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Voice Agent Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-transcription-cost-comparison-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Transcription Cost Comparison
-                  </Link>
-
-                  <Link
-                    href="/categories/ai-cost-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    AI Cost Calculators
-                  </Link>
-                </div>
+                <BeeijaRelatedTools
+                  currentHref="/tools/ai-video-generation-cost-comparison-calculator"
+                />
               ),
             },
           ]}

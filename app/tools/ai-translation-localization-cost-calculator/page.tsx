@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import ToolShell from "@/app/components/ToolShell";
 import ToolContent from "@/app/components/ToolContent";
+import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
 export const metadata: Metadata = {
@@ -230,56 +230,9 @@ export default function AiTranslationLocalizationCostCalculatorPage() {
             {
               title: "Explore Related AI Cost Tools",
               content: (
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/ai-token-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Token Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-document-processing-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Document Processing Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-customer-support-automation-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Customer Support Automation Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-evaluation-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Evaluation Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-prompt-caching-savings-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Prompt Caching Savings Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-batch-api-savings-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Batch API Savings Calculator
-                  </Link>
-
-                  <Link
-                    href="/categories/ai-cost-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    AI Cost Calculators
-                  </Link>
-                </div>
+                <BeeijaRelatedTools
+                  currentHref="/tools/ai-translation-localization-cost-calculator"
+                />
               ),
             },
           ]}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import ToolShell from "@/app/components/ToolShell";
 import ToolContent from "@/app/components/ToolContent";
+import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
 export const metadata: Metadata = {
@@ -227,56 +227,9 @@ export default function AiMeetingAssistantCostCalculatorPage() {
             {
               title: "Explore Related AI Cost Tools",
               content: (
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/ai-transcription-cost-comparison-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Transcription Cost Comparison Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-voice-agent-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Voice Agent Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-token-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Token Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-customer-support-automation-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Customer Support Automation Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-translation-localization-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Translation and Localization Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-agent-workflow-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Agent Workflow Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/categories/ai-cost-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    AI Cost Calculators
-                  </Link>
-                </div>
+                <BeeijaRelatedTools
+                  currentHref="/tools/ai-meeting-assistant-cost-calculator"
+                />
               ),
             },
           ]}

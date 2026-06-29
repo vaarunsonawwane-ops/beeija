@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import ToolShell from "@/app/components/ToolShell";
 import ToolContent from "@/app/components/ToolContent";
+import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
 export const metadata: Metadata = {
@@ -236,56 +236,9 @@ export default function AiCodingAgentCostCalculatorPage() {
             {
               title: "Explore Related AI Cost Tools",
               content: (
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/ai-agent-workflow-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Agent Workflow Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-token-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Token Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-model-routing-savings-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Model Routing Savings Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-prompt-caching-savings-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Prompt Caching Savings Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-evaluation-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Evaluation Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/ai-document-processing-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI Document Processing Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/categories/ai-cost-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    AI Cost Calculators
-                  </Link>
-                </div>
+                <BeeijaRelatedTools
+                  currentHref="/tools/ai-coding-agent-cost-calculator"
+                />
               ),
             },
           ]}
