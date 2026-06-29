@@ -630,10 +630,10 @@ export default function ToolClient() {
           />
         </FieldSection>
 
-        <div className="mt-8 rounded-xl border-l-4 border-[var(--yellow)] bg-gray-50 p-5">
-          <h3 className="font-semibold text-gray-950">
+        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+          <p className="font-medium text-gray-900">
             Shared workload summary
-          </h3>
+          </p>
 
           <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
@@ -1119,15 +1119,12 @@ function ComparisonLine({
   ready: boolean;
 }) {
   return (
-    <div className="flex min-w-0 items-start justify-between gap-4">
-      <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-        {label}
-      </span>
-
-      <strong className="max-w-[56%] shrink-0 break-words text-right text-gray-950 [overflow-wrap:anywhere]">
+    <p className="min-w-0 break-words [overflow-wrap:anywhere]">
+      {label}:{" "}
+      <span className="font-semibold text-[var(--green)]">
         {ready ? value : "Enter provider prices"}
-      </strong>
-    </div>
+      </span>
+    </p>
   );
 }
 
