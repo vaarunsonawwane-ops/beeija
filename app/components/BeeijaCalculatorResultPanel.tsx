@@ -80,7 +80,7 @@ export default function BeeijaCalculatorResultPanel({
       </div>
 
       {breakdown ? (
-        <div className="beeija-result-breakdown mt-6 min-w-0 max-w-full overflow-x-auto">
+        <div className="beeija-result-breakdown mt-6 min-w-0 max-w-full overflow-hidden">
           {breakdown}
         </div>
       ) : null}
@@ -92,7 +92,7 @@ export default function BeeijaCalculatorResultPanel({
       ) : null}
 
       {children ? (
-        <div className="mt-6 min-w-0 max-w-full overflow-x-auto">
+        <div className="beeija-result-children mt-6 min-w-0 max-w-full overflow-hidden">
           {children}
         </div>
       ) : null}
@@ -120,7 +120,35 @@ export default function BeeijaCalculatorResultPanel({
         .beeija-result-stats,
         .beeija-result-stats *,
         .beeija-result-totals,
-        .beeija-result-totals * {
+        .beeija-result-totals *,
+        .beeija-result-breakdown,
+        .beeija-result-children {
+          min-width: 0 !important;
+          max-width: 100% !important;
+        }
+
+        .beeija-result-primary,
+        .beeija-result-primary *,
+        .beeija-result-stats p,
+        .beeija-result-stats span,
+        .beeija-result-stats strong,
+        .beeija-result-totals p,
+        .beeija-result-totals span,
+        .beeija-result-totals strong,
+        .beeija-result-breakdown p,
+        .beeija-result-breakdown span,
+        .beeija-result-breakdown strong,
+        .beeija-result-breakdown small,
+        .beeija-result-breakdown dt,
+        .beeija-result-breakdown dd,
+        .beeija-result-breakdown li,
+        .beeija-result-children p,
+        .beeija-result-children span,
+        .beeija-result-children strong,
+        .beeija-result-children small,
+        .beeija-result-children dt,
+        .beeija-result-children dd,
+        .beeija-result-children li {
           min-width: 0 !important;
           max-width: 100% !important;
           white-space: normal !important;
@@ -151,9 +179,16 @@ export default function BeeijaCalculatorResultPanel({
           padding-top: 0;
         }
 
-        .beeija-result-breakdown table {
+        .beeija-result-breakdown table,
+        .beeija-result-children table {
           width: max-content;
           min-width: 100%;
+        }
+
+        .beeija-result-breakdown [class*="overflow-x-auto"],
+        .beeija-result-children [class*="overflow-x-auto"] {
+          max-width: 100%;
+          overflow-x: auto;
         }
       `}</style>
     </section>
