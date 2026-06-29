@@ -9,6 +9,12 @@ import {
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 
 type GatewayPricingMode =
   | "per-gateway"
@@ -259,6 +265,8 @@ export default function ToolClient() {
   const [monthlyBudget, setMonthlyBudget] =
     useState("250");
   const [selectedPlanId, setSelectedPlanId] =
+    useState("aws-nat-gateway");
+  const [activeEditorPlanId, setActiveEditorPlanId] =
     useState("aws-nat-gateway");
   const [plans, setPlans] =
     useState<PlanInput[]>(initialPlans);
@@ -562,6 +570,19 @@ export default function ToolClient() {
     }),
   );
 
+  const activeEditorPlan =
+    plans.find(
+      (plan) => plan.id === activeEditorPlanId,
+    ) ?? plans[0];
+
+  const activeEditorPlanNumber =
+    Math.max(
+      0,
+      plans.findIndex(
+        (plan) => plan.id === activeEditorPlan.id,
+      ),
+    ) + 1;
+
   const updatePlan = (
     planId: string,
     field: keyof PlanInput,
@@ -591,6 +612,7 @@ export default function ToolClient() {
     setIncludeFlowLogs("no");
     setMonthlyBudget("250");
     setSelectedPlanId("aws-nat-gateway");
+    setActiveEditorPlanId("aws-nat-gateway");
     setPlans(initialPlans);
   };
 
@@ -687,18 +709,19 @@ export default function ToolClient() {
   ];
 
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <h2 className="text-2xl font-semibold text-gray-950">
-          NAT gateway workload
-        </h2>
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Enter the Shared NAT Gateway Workload
+          </h2>
 
-        <p className="mt-3 leading-relaxed text-gray-600">
-          Enter one outbound networking workload,
-          then adjust each provider’s regional
-          gateway, processing, public IP, transfer,
-          logging, and migration prices.
-        </p>
+          <p className="mt-3 leading-relaxed text-gray-600">
+            Use the same gateway runtime, protected instances, traffic,
+            public IP, logging, transfer, and budget workload for every
+            provider plan.
+          </p>
+        </div>
 
         <FieldSection title="Gateway deployment">
           <BeeijaNumberField
@@ -795,23 +818,10 @@ export default function ToolClient() {
             prefix="$"
           />
 
-          <BeeijaSelect
-            label="Plan shown in the main result"
-            value={selectedPlanId}
-            onChange={(event) =>
-              setSelectedPlanId(
-                event.target.value,
-              )
-            }
-            options={planOptions}
-          />
+
         </FieldSection>
 
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Shared workload summary
-          </p>
-
+        <BeeijaWorkloadSummary>
           <div className="mt-3 grid min-w-0 gap-2 text-sm text-gray-700 sm:grid-cols-2 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere]">
             <p>
               Gateway runtime:{" "}
@@ -871,22 +881,57 @@ export default function ToolClient() {
               </strong>
             </p>
           </div>
+
+        </BeeijaWorkloadSummary>
+
+        <div className="mt-10">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Select Provider Configurations and Enter Prices
+          </h2>
+
+          <p className="mt-3 leading-relaxed text-gray-600">
+            Choose the provider plan to edit. Representative regional prices
+            are prefilled and remain editable for the exact service, region,
+            agreement, or invoice you are comparing.
+          </p>
         </div>
 
-        <div className="mt-8 space-y-6">
-          {plans.map((plan) => (
+        <div className="mt-6">
+          <BeeijaProviderPlanTabs
+            plans={plans.map((plan, index) => ({
+              id: plan.id,
+              label: `Plan ${index + 1}`,
+              title: plan.providerName,
+              subtitle: plan.regionLabel,
+            }))}
+            activePlanId={activeEditorPlanId}
+            onChange={setActiveEditorPlanId}
+            ariaLabel="NAT gateway comparison plans"
+          />
+
+          <div
+            className="mt-5"
+            role="tabpanel"
+            aria-label={`NAT gateway comparison plan ${activeEditorPlanNumber}`}
+          >
             <ProviderPlanCard
-              key={plan.id}
-              plan={plan}
+              key={activeEditorPlan.id}
+              planNumber={activeEditorPlanNumber}
+              plan={activeEditorPlan}
               onChange={(field, value) =>
                 updatePlan(
-                  plan.id,
+                  activeEditorPlan.id,
                   field,
                   value,
                 )
               }
             />
-          ))}
+          </div>
+
+          <p className="mt-3 text-sm text-gray-500">
+            Select Plan 1, 2, 3, or 4 above to edit it. All four plans remain
+            included in the ranked comparison.
+          </p>
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -898,12 +943,12 @@ export default function ToolClient() {
             Reset values
           </button>
         </div>
-      </section>
+      </BeeijaComparisonInputPanel>
 
-      <div className="min-w-0">
+      <BeeijaComparisonResultColumn>
         <BeeijaCalculatorResultPanel
-          title="NAT Gateway Cost Result"
-          description={`${selectedResult.providerName} · ${selectedResult.serviceName} · ${selectedResult.regionLabel}`}
+          title="NAT Gateway Cost Comparison"
+          description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
           primaryLabel="Estimated monthly planning cost"
           primaryValue={
             selectedResult.configured
@@ -952,87 +997,157 @@ export default function ToolClient() {
             </div>
           }
           breakdown={
-            <div>
-              <h3 className="font-semibold text-gray-950">
-                Selected plan breakdown
-              </h3>
+            <div className="space-y-6">
+              <BeeijaSelect
+                label="Detailed plan"
+                value={selectedPlanId}
+                onChange={(event) =>
+                  setSelectedPlanId(event.target.value)
+                }
+                options={planOptions}
+              />
 
-              <div className="mt-3 space-y-3">
-                {breakdownItems.map(
-                  (item) => (
-                    <BreakdownRow
-                      key={item.label}
-                      {...item}
-                    />
-                  ),
-                )}
+              <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+                <p className="font-medium text-gray-900">
+                  {selectedResult.providerName} · {selectedResult.regionLabel}
+                </p>
+                <p className="mt-1">{selectedResult.serviceName}</p>
+                <p className="mt-1">
+                  {formatVisibleNumber(
+                    selectedResult.gatewayHours,
+                  )} gateway-hours · {formatVisibleNumber(
+                    selectedResult.processedTrafficGib,
+                  )} processed GiB · {formatVisibleNumber(
+                    selectedResult.publicIpHours,
+                  )} public IP-hours
+                </p>
               </div>
+
+              <div className="space-y-3">
+                {breakdownItems.map((item) => (
+                  <BreakdownRow
+                    key={item.label}
+                    {...item}
+                  />
+                ))}
+              </div>
+
+              <ComparisonTable rows={result.rankedPlans} />
             </div>
           }
           totals={
-            <div className="space-y-4 text-sm leading-relaxed text-gray-600">
-              <ComparisonLine
-                label="Lowest configured monthly plan"
-                value={`${result.cheapest.providerName} · ${
-                  result.cheapest.serviceName
-                } · ${formatVisibleMoney(
-                  result.cheapest.monthlyPlanningCost,
-                )}`}
-                ready={
+            <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+              <p>
+                Selected plan:{" "}
+                <span className="font-medium text-gray-900">
+                  {selectedResult.providerName} · {selectedResult.serviceName}
+                </span>
+              </p>
+
+              <p className="mt-2">
+                Region or pricing scope:{" "}
+                <span className="font-medium text-gray-900">
+                  {selectedResult.regionLabel}
+                </span>
+              </p>
+
+              <p className="mt-2">
+                Monthly operating cost:{" "}
+                <span className="font-medium text-gray-900">
+                  {selectedResult.configured
+                    ? formatVisibleMoney(
+                        selectedResult.monthlyOperatingCost,
+                      )
+                    : "—"}
+                </span>
+              </p>
+
+              <p className="mt-2">
+                Monthly migration allocation:{" "}
+                <span className="font-medium text-gray-900">
+                  {selectedResult.configured
+                    ? formatVisibleMoney(
+                        selectedResult.amortizedMigrationCost,
+                      )
+                    : "—"}
+                </span>
+              </p>
+
+              <p className="mt-2">
+                Lowest configured plan:{" "}
+                <span className="font-medium text-gray-900">
+                  {result.rankedPlans.length > 0
+                    ? `${result.cheapest.providerName} · ${
+                        result.cheapest.serviceName
+                      } at ${formatVisibleMoney(
+                        result.cheapest.monthlyPlanningCost,
+                      )} per month`
+                    : "Enter provider prices"}
+                </span>
+              </p>
+
+              <p className="mt-2">
+                Possible monthly saving:{" "}
+                <span className="font-semibold text-[var(--green)]">
+                  {selectedResult.configured &&
                   result.rankedPlans.length > 0
-                }
-              />
+                    ? formatVisibleMoney(
+                        result.monthlySavingVsSelected,
+                      )
+                    : "—"}
+                </span>
+              </p>
 
-              <ComparisonLine
-                label="Monthly saving available"
-                value={formatVisibleMoney(
-                  result.monthlySavingVsSelected,
-                )}
-                ready={
-                  result.rankedPlans.length > 0 &&
-                  selectedResult.configured
-                }
-              />
+              <p className="mt-2">
+                Possible first-year saving:{" "}
+                <span className="font-semibold text-[var(--green)]">
+                  {selectedResult.configured &&
+                  result.rankedPlans.length > 0
+                    ? formatVisibleMoney(
+                        result.firstYearSavingVsSelected,
+                      )
+                    : "—"}
+                </span>
+              </p>
 
-              <ComparisonLine
-                label="First-year saving available"
-                value={formatVisibleMoney(
-                  result.firstYearSavingVsSelected,
-                )}
-                ready={
-                  result.rankedPlans.length > 0 &&
-                  selectedResult.configured
-                }
-              />
+              <p className="mt-2">
+                Selected plan price inputs entered:{" "}
+                <span className="font-medium text-gray-900">
+                  {selectedResult.enteredPriceCount}
+                </span>
+              </p>
 
-              <ComparisonLine
-                label="Monthly budget position"
-                value={
-                  selectedResult.budgetDifference >=
-                  0
-                    ? `${formatVisibleMoney(
-                        selectedResult.budgetDifference,
-                      )} under budget`
-                    : `${formatVisibleMoney(
-                        Math.abs(
-                          selectedResult.budgetDifference,
-                        ),
-                      )} over budget`
-                }
-                ready={
-                  selectedResult.configured &&
-                  result.parsedBudget > 0
-                }
-              />
+              <p className="mt-2">
+                Budget status:{" "}
+                <span
+                  className={`font-semibold ${
+                    selectedResult.configured &&
+                    result.parsedBudget > 0 &&
+                    selectedResult.budgetDifference < 0
+                      ? "text-red-700"
+                      : "text-[var(--green)]"
+                  }`}
+                >
+                  {result.parsedBudget <= 0
+                    ? "Add a budget to compare"
+                    : !selectedResult.configured
+                      ? "Enter the selected provider prices"
+                      : selectedResult.budgetDifference >= 0
+                        ? `${formatVisibleMoney(
+                            selectedResult.budgetDifference,
+                          )} remaining`
+                        : `${formatVisibleMoney(
+                            Math.abs(
+                              selectedResult.budgetDifference,
+                            ),
+                          )} over budget`}
+                </span>
+              </p>
             </div>
           }
-        >
-          <ComparisonTable
-            rows={result.rankedPlans}
-          />
-        </BeeijaCalculatorResultPanel>
-      </div>
-    </div>
+        />
+      </BeeijaComparisonResultColumn>
+    </BeeijaComparisonCalculatorLayout>
   );
 }
 
@@ -1057,9 +1172,11 @@ function FieldSection({
 }
 
 function ProviderPlanCard({
+  planNumber,
   plan,
   onChange,
 }: {
+  planNumber: number;
   plan: PlanInput;
   onChange: (
     field: keyof PlanInput,
@@ -1079,9 +1196,13 @@ function ProviderPlanCard({
   ];
 
   return (
-    <section className="min-w-0 rounded-2xl border border-gray-200 bg-gray-50 p-5">
+    <section className="min-w-0 rounded-2xl border border-gray-200 bg-[#F9FBFA] p-5 md:p-6">
       <div className="min-w-0">
-        <h3 className="break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
+          Plan {planNumber}
+        </p>
+
+        <h3 className="mt-1 break-words text-xl font-semibold text-gray-950 [overflow-wrap:anywhere]">
           {plan.providerName}
         </h3>
 
