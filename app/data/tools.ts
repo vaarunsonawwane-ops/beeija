@@ -594,9 +594,22 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
   },
 
+{
+  title: "Cloud Block Storage Cost Comparison Calculator",
+  description:
+    "Compare AWS EBS gp3, Azure Premium SSD v2, Google Hyperdisk Balanced, and custom block storage costs using capacity, IOPS, throughput, snapshots, migration, and budget.",
+  href: "/tools/cloud-block-storage-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+},
 
+{
+  title: "Cloud NAT Gateway Cost Comparison Calculator",
+  description:
+    "Compare AWS NAT Gateway, Azure NAT Gateway, Google Cloud NAT, and custom managed NAT costs using gateway hours, protected instances, processed traffic, public IPs, transfer, logging, and migration cost.",
+  href: "/tools/cloud-nat-gateway-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+},
 
-  
   
   
   
