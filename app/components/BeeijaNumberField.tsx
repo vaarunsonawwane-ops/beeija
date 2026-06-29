@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  useId,
+  type ChangeEvent,
+} from "react";
+
 type BeeijaNumberFieldProps = {
   label: string;
   value: string;
@@ -21,43 +26,46 @@ export default function BeeijaNumberField({
   step,
   prefix,
   suffix,
-  disabled,
+  disabled = false,
 }: BeeijaNumberFieldProps) {
+  const inputId = useId();
+
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium text-gray-700">
+    <label htmlFor={inputId} className="block min-w-0">
+      <span className="mb-2 block text-sm font-medium leading-6 text-gray-800">
         {label}
       </span>
 
-      <div className="relative">
+      <div
+        className={`flex min-h-[52px] min-w-0 items-stretch overflow-hidden rounded-xl border border-gray-300 bg-white transition ${
+          disabled
+            ? "opacity-60"
+            : "focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]"
+        }`}
+      >
         {prefix ? (
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+          <span className="flex shrink-0 items-center border-r border-gray-200 px-3 text-sm text-gray-500">
             {prefix}
           </span>
         ) : null}
 
         <input
-          type="text"
+          id={inputId}
+          type="number"
           inputMode="decimal"
           value={value}
-          onChange={(event) => {
-            const next = event.target.value;
-
-            if (next === "" || /^\d*\.?\d*$/.test(next)) {
-              onChange(next);
-            }
-          }}
-          data-min={min}
-          data-max={max}
-          data-step={step}
+          min={min}
+          max={max}
+          step={step}
           disabled={disabled}
-          className={`min-h-12 w-full rounded-xl border border-gray-300 bg-white py-3 text-sm text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
-            prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-10" : "px-4"
-          }`}
+          onChange={(
+            event: ChangeEvent<HTMLInputElement>,
+          ) => onChange(event.target.value)}
+          className="min-w-0 flex-1 bg-transparent px-3 py-3 text-sm text-gray-900 outline-none [appearance:textfield] disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
 
         {suffix ? (
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+          <span className="flex shrink-0 items-center whitespace-nowrap border-l border-gray-200 px-3 text-sm text-gray-500">
             {suffix}
           </span>
         ) : null}
