@@ -118,9 +118,7 @@ export default function BeeijaCalculatorResultPanel({
         .beeija-result-primary,
         .beeija-result-primary *,
         .beeija-result-stats,
-        .beeija-result-stats *,
         .beeija-result-totals,
-        .beeija-result-totals *,
         .beeija-result-breakdown,
         .beeija-result-children {
           min-width: 0 !important;
@@ -150,7 +148,6 @@ export default function BeeijaCalculatorResultPanel({
         .beeija-result-children dd,
         .beeija-result-children li {
           min-width: 0 !important;
-          max-width: 100% !important;
           white-space: normal !important;
           overflow-wrap: anywhere !important;
           word-break: break-word !important;
@@ -177,6 +174,17 @@ export default function BeeijaCalculatorResultPanel({
         .beeija-result-stats > * > *:first-child {
           border-top: 0;
           padding-top: 0;
+        }
+
+        .beeija-result-breakdown > *,
+        .beeija-result-children > * {
+          min-width: 0 !important;
+          max-width: 100% !important;
+        }
+
+        .beeija-result-breakdown .flex,
+        .beeija-result-children .flex {
+          min-width: 0 !important;
         }
 
         .beeija-result-breakdown table,
