@@ -10,6 +10,12 @@ import {
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 
 type Option = {
   value: string;
@@ -895,441 +901,418 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter the Shared Kubernetes Workload
-          </h2>
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same cluster scale, compute demand, storage, networking,
-            observability, and backup workload for every provider plan.
-          </p>
-        </div>
-
-        <FieldSection title="Cluster and Worker Capacity">
-          <BeeijaNumberField
-            label="Managed Kubernetes clusters"
-            value={clusterCount}
-            onChange={setClusterCount}
-            min="0"
-            step="1"
-          />
-          <BeeijaNumberField
-            label="Running time per month"
-            value={runningHours}
-            onChange={setRunningHours}
-            min="0"
-            max="744"
-            step="1"
-            suffix="hours"
-          />
-          <BeeijaNumberField
-            label="Worker nodes per cluster"
-            value={workerNodesPerCluster}
-            onChange={setWorkerNodesPerCluster}
-            min="0"
-            step="1"
-          />
-          <BeeijaNumberField
-            label="vCPUs per worker node"
-            value={vcpusPerNode}
-            onChange={setVcpusPerNode}
-            min="0"
-            step="0.25"
-            suffix="vCPU"
-          />
-          <BeeijaNumberField
-            label="Memory per worker node"
-            value={memoryGbPerNode}
-            onChange={setMemoryGbPerNode}
-            min="0"
-            step="0.5"
-            suffix="GB"
-          />
-        </FieldSection>
-
-        <FieldSection title="Requested Pod Resources per Cluster">
-          <BeeijaNumberField
-            label="Requested pod vCPU"
-            value={requestedVcpusPerCluster}
-            onChange={setRequestedVcpusPerCluster}
-            min="0"
-            step="0.25"
-            suffix="vCPU"
-          />
-          <BeeijaNumberField
-            label="Requested pod memory"
-            value={requestedMemoryGbPerCluster}
-            onChange={setRequestedMemoryGbPerCluster}
-            min="0"
-            step="0.5"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Requested ephemeral storage"
-            value={requestedEphemeralStorageGbPerCluster}
-            onChange={setRequestedEphemeralStorageGbPerCluster}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-        </FieldSection>
-
-        <FieldSection title="Storage, Networking, and Observability">
-          <BeeijaNumberField
-            label="Persistent storage per cluster"
-            value={persistentStorageGbPerCluster}
-            onChange={setPersistentStorageGbPerCluster}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Load balancers per cluster"
-            value={loadBalancersPerCluster}
-            onChange={setLoadBalancersPerCluster}
-            min="0"
-            step="1"
-          />
-          <BeeijaNumberField
-            label="Load balancer processed data per cluster"
-            value={loadBalancerDataGbPerCluster}
-            onChange={setLoadBalancerDataGbPerCluster}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="NAT gateways per cluster"
-            value={natGatewaysPerCluster}
-            onChange={setNatGatewaysPerCluster}
-            min="0"
-            step="1"
-          />
-          <BeeijaNumberField
-            label="NAT processed data per cluster"
-            value={natDataGbPerCluster}
-            onChange={setNatDataGbPerCluster}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Internet or cross-region transfer per cluster"
-            value={egressGbPerCluster}
-            onChange={setEgressGbPerCluster}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Logging and metrics ingestion per cluster"
-            value={loggingGbPerCluster}
-            onChange={setLoggingGbPerCluster}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-        </FieldSection>
-
-        <FieldSection title="Backup and Budget">
-          <BeeijaNumberField
-            label="Protected namespaces per cluster"
-            value={backupNamespacesPerCluster}
-            onChange={setBackupNamespacesPerCluster}
-            min="0"
-            step="1"
-          />
-          <BeeijaNumberField
-            label="Backup storage per cluster"
-            value={backupStorageGbPerCluster}
-            onChange={setBackupStorageGbPerCluster}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Target monthly Kubernetes budget"
-            value={monthlyBudget}
-            onChange={setMonthlyBudget}
-            min="0"
-            step="1"
-            prefix="$"
-          />
-        </FieldSection>
-
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Shared workload summary
-          </p>
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Clusters: {formatInteger(result.clusters)}</p>
-            <p>Running time: {formatNumber(result.hours)} hours</p>
-            <p>Worker nodes per cluster: {formatInteger(result.nodesPerCluster)}</p>
-            <p>
-              Node size: {formatNumber(result.nodeVcpus)} vCPU and{" "}
-              {formatNumber(result.nodeMemoryGb)} GB
-            </p>
-            <p>Requested pod vCPU: {formatNumber(result.requestedVcpus)}</p>
-            <p>Requested pod memory: {formatNumber(result.requestedMemoryGb)} GB</p>
-            <p>Persistent storage: {formatNumber(result.persistentGb)} GB per cluster</p>
-            <p>Load balancers: {formatInteger(result.loadBalancers)} per cluster</p>
-            <p>NAT gateways: {formatInteger(result.natGateways)} per cluster</p>
-            <p>Logging ingestion: {formatNumber(result.loggingGb)} GB per cluster</p>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Select Kubernetes Configurations and Enter Prices
-          </h2>
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Choose the provider, region, service mode, support tier, and billing
-            model. Prices remain blank so you can enter the exact effective
-            rates for each selected plan.
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <div
-            className="grid gap-2 sm:grid-cols-3"
-            role="tablist"
-            aria-label="Managed Kubernetes comparison plans"
-          >
-            {plans.map((plan, index) => {
-              const isActive = plan.id === activeEditorPlanId;
-              const provider = getProvider(plan.providerId);
-
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => openPlanEditor(plan.id)}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
-                      : "border-gray-200 bg-white hover:border-[var(--green)]"
-                  }`}
-                >
-                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-                    Plan {index + 1}
-                  </span>
-                  <span className="mt-1 block font-semibold text-gray-950">
-                    {provider.serviceName}
-                  </span>
-                  <span className="mt-1 block text-xs text-gray-500">
-                    {getRegionLabel(plan, provider)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            className="mt-5"
-            role="tabpanel"
-            aria-label={`Comparison plan ${activePlanNumber}`}
-          >
-            <PlanEditor
-              key={activePlan.id}
-              planNumber={activePlanNumber}
-              plan={activePlan}
-              onChange={(field, value) =>
-                updatePlan(activePlan.id, field, value)
-              }
-              onProviderChange={(providerId) =>
-                changeProvider(activePlan.id, providerId)
-              }
-            />
-          </div>
-
-          <p className="mt-3 text-sm text-gray-500">
-            Select Plan 1, 2, or 3 above to edit it. All three plans remain
-            included in the ranked comparison.
-          </p>
-        </div>
-
-        <button type="button" onClick={reset} className="beeija-btn-outline mt-7">
-          Reset values
-        </button>
-      </section>
-
-      <div className="min-w-0 overflow-hidden">
-        <BeeijaCalculatorResultPanel
-          title="Managed Kubernetes Cost Comparison"
-          description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
-          primaryLabel="Selected monthly planning cost"
-          primaryValue={
-            selectedResult.configured
-              ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
-              : "Enter provider prices"
-          }
-          stats={
-            <div className="grid min-w-0 gap-4 sm:grid-cols-3">
-              <ResultStat
-                label="Monthly cost per cluster"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.costPerCluster)
-                    : "—"
-                }
-              />
-              <ResultStat
-                label="Cost per workload vCPU"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.costPerWorkloadVcpu)
-                    : "—"
-                }
-              />
-              <ResultStat
-                label="First-year cost"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.firstYearCost)
-                    : "—"
-                }
-              />
-            </div>
-          }
-          breakdown={
-            <div className="min-w-0 space-y-6">
-              <BeeijaSelect
-                label="Detailed plan"
-                value={selectedPlanId}
-                onChange={(event) =>
-                  setSelectedPlanId(event.target.value)
-                }
-                options={planOptions}
-              />
-
-              <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
-                <p className="font-medium text-gray-900">
-                  {selectedResult.displayName}
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter the Shared Kubernetes Workload
+                </h2>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Use the same cluster scale, compute demand, storage, networking,
+                  observability, and backup workload for every provider plan.
                 </p>
-                <p className="mt-1">
-                  {selectedResult.productLabel} ·{" "}
-                  {selectedResult.supportTierLabel}
-                </p>
-                <p className="mt-1">{selectedResult.billingModeLabel}</p>
-                <p className="mt-1">{selectedResult.configurationLabel}</p>
               </div>
 
-              <div className="space-y-4">
-                {selectedRows.map((row) => (
-                  <BreakdownRow
-                    key={row.label}
-                    label={row.label}
-                    detail={row.detail}
-                    value={row.value}
-                    entered={row.entered}
-                    negative={row.negative}
+              <FieldSection title="Cluster and Worker Capacity">
+                <BeeijaNumberField
+                  label="Managed Kubernetes clusters"
+                  value={clusterCount}
+                  onChange={setClusterCount}
+                  min="0"
+                  step="1"
+                />
+                <BeeijaNumberField
+                  label="Running time per month"
+                  value={runningHours}
+                  onChange={setRunningHours}
+                  min="0"
+                  max="744"
+                  step="1"
+                  suffix="hours"
+                />
+                <BeeijaNumberField
+                  label="Worker nodes per cluster"
+                  value={workerNodesPerCluster}
+                  onChange={setWorkerNodesPerCluster}
+                  min="0"
+                  step="1"
+                />
+                <BeeijaNumberField
+                  label="vCPUs per worker node"
+                  value={vcpusPerNode}
+                  onChange={setVcpusPerNode}
+                  min="0"
+                  step="0.25"
+                  suffix="vCPU"
+                />
+                <BeeijaNumberField
+                  label="Memory per worker node"
+                  value={memoryGbPerNode}
+                  onChange={setMemoryGbPerNode}
+                  min="0"
+                  step="0.5"
+                  suffix="GB"
+                />
+              </FieldSection>
+
+              <FieldSection title="Requested Pod Resources per Cluster">
+                <BeeijaNumberField
+                  label="Requested pod vCPU"
+                  value={requestedVcpusPerCluster}
+                  onChange={setRequestedVcpusPerCluster}
+                  min="0"
+                  step="0.25"
+                  suffix="vCPU"
+                />
+                <BeeijaNumberField
+                  label="Requested pod memory"
+                  value={requestedMemoryGbPerCluster}
+                  onChange={setRequestedMemoryGbPerCluster}
+                  min="0"
+                  step="0.5"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Requested ephemeral storage"
+                  value={requestedEphemeralStorageGbPerCluster}
+                  onChange={setRequestedEphemeralStorageGbPerCluster}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+              </FieldSection>
+
+              <FieldSection title="Storage, Networking, and Observability">
+                <BeeijaNumberField
+                  label="Persistent storage per cluster"
+                  value={persistentStorageGbPerCluster}
+                  onChange={setPersistentStorageGbPerCluster}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Load balancers per cluster"
+                  value={loadBalancersPerCluster}
+                  onChange={setLoadBalancersPerCluster}
+                  min="0"
+                  step="1"
+                />
+                <BeeijaNumberField
+                  label="Load balancer processed data per cluster"
+                  value={loadBalancerDataGbPerCluster}
+                  onChange={setLoadBalancerDataGbPerCluster}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="NAT gateways per cluster"
+                  value={natGatewaysPerCluster}
+                  onChange={setNatGatewaysPerCluster}
+                  min="0"
+                  step="1"
+                />
+                <BeeijaNumberField
+                  label="NAT processed data per cluster"
+                  value={natDataGbPerCluster}
+                  onChange={setNatDataGbPerCluster}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Internet or cross-region transfer per cluster"
+                  value={egressGbPerCluster}
+                  onChange={setEgressGbPerCluster}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Logging and metrics ingestion per cluster"
+                  value={loggingGbPerCluster}
+                  onChange={setLoggingGbPerCluster}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+              </FieldSection>
+
+              <FieldSection title="Backup and Budget">
+                <BeeijaNumberField
+                  label="Protected namespaces per cluster"
+                  value={backupNamespacesPerCluster}
+                  onChange={setBackupNamespacesPerCluster}
+                  min="0"
+                  step="1"
+                />
+                <BeeijaNumberField
+                  label="Backup storage per cluster"
+                  value={backupStorageGbPerCluster}
+                  onChange={setBackupStorageGbPerCluster}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Target monthly Kubernetes budget"
+                  value={monthlyBudget}
+                  onChange={setMonthlyBudget}
+                  min="0"
+                  step="1"
+                  prefix="$"
+                />
+              </FieldSection>
+
+              <BeeijaWorkloadSummary title="Shared workload summary">
+        <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <p>Clusters: {formatInteger(result.clusters)}</p>
+          <p>Running time: {formatNumber(result.hours)} hours</p>
+          <p>Worker nodes per cluster: {formatInteger(result.nodesPerCluster)}</p>
+          <p>
+            Node size: {formatNumber(result.nodeVcpus)} vCPU and{" "}
+            {formatNumber(result.nodeMemoryGb)} GB
+          </p>
+          <p>Requested pod vCPU: {formatNumber(result.requestedVcpus)}</p>
+          <p>Requested pod memory: {formatNumber(result.requestedMemoryGb)} GB</p>
+          <p>Persistent storage: {formatNumber(result.persistentGb)} GB per cluster</p>
+          <p>Load balancers: {formatInteger(result.loadBalancers)} per cluster</p>
+          <p>NAT gateways: {formatInteger(result.natGateways)} per cluster</p>
+          <p>Logging ingestion: {formatNumber(result.loggingGb)} GB per cluster</p>
+        </div>
+      </BeeijaWorkloadSummary>
+
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Select Kubernetes Configurations and Enter Prices
+                </h2>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Choose the provider, region, service mode, support tier, and billing
+                  model. Prices remain blank so you can enter the exact effective
+                  rates for each selected plan.
+                </p>
+              </div>
+
+              <div className="mt-6">
+                <BeeijaProviderPlanTabs
+        plans={plans.map((plan, index) => {
+          const provider = getProvider(plan.providerId);
+
+          return {
+            id: plan.id,
+            label: `Plan ${index + 1}`,
+            title: provider.serviceName,
+            subtitle: getRegionLabel(plan, provider),
+          };
+        })}
+        activePlanId={activeEditorPlanId}
+        onChange={openPlanEditor}
+        ariaLabel="Managed Kubernetes comparison plans"
+      />
+
+                <div
+                  className="mt-5"
+                  role="tabpanel"
+                  aria-label={`Comparison plan ${activePlanNumber}`}
+                >
+                  <PlanEditor
+                    key={activePlan.id}
+                    planNumber={activePlanNumber}
+                    plan={activePlan}
+                    onChange={(field, value) =>
+                      updatePlan(activePlan.id, field, value)
+                    }
+                    onProviderChange={(providerId) =>
+                      changeProvider(activePlan.id, providerId)
+                    }
                   />
-                ))}
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Select Plan 1, 2, or 3 above to edit it. All three plans remain
+                  included in the ranked comparison.
+                </p>
               </div>
 
-              <ComparisonTable rows={result.comparisonRows} />
-            </div>
-          }
-          totals={
-            <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
-              <p>
-                Selected plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.displayName}
-                </span>
-              </p>
-              <p className="mt-2">
-                Configuration:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.productLabel} ·{" "}
-                  {selectedResult.supportTierLabel} ·{" "}
-                  {selectedResult.billingModeLabel}
-                </span>
-              </p>
-              <p className="mt-2">
-                Monthly operating cost:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.monthlyOperatingCost)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Monthly migration allocation:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.amortizedMigrationCost)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Lowest configured plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {result.cheapest
-                    ? `${result.cheapest.displayName} at ${formatVisibleMoney(
-                        result.cheapest.monthlyPlanningCost,
-                      )} per month`
-                    : "Enter at least one provider price"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Possible monthly saving:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.monthlySaving)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Possible first-year saving:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.firstYearSaving)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Selected plan price inputs entered:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.enteredPriceCount} of 19
-                </span>
-              </p>
-              <p className="mt-2">
-                Budget status:{" "}
-                <span
-                  className={`font-semibold ${
-                    result.hasBudget &&
-                    selectedResult.configured &&
-                    selectedResult.budgetDifference < 0
-                      ? "text-red-700"
-                      : "text-[var(--green)]"
-                  }`}
-                >
-                  {!result.hasBudget
-                    ? "Add a budget to compare"
-                    : !selectedResult.configured
-                      ? "Enter the selected provider prices"
-                      : selectedResult.budgetDifference >= 0
-                        ? `${formatVisibleMoney(
-                            selectedResult.budgetDifference,
-                          )} remaining`
-                        : `${formatVisibleMoney(
-                            Math.abs(selectedResult.budgetDifference),
-                          )} over budget`}
-                </span>
-              </p>
-            </div>
-          }
-          provider="Amazon Elastic Kubernetes Service, Azure Kubernetes Service, Google Kubernetes Engine, and custom managed Kubernetes plans"
-          excludedCosts="taxes, premium cloud support, public IPv4 addresses, private connectivity, service mesh, security products, container registry, artifact storage, DNS, secrets, certificates, cross-zone traffic, migration labour, negotiated credits, and services not entered"
-          noticeText="Provider, region, product, support-tier, and billing selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Pricing structures and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
-        />
-      </div>
-    </div>
+              <button type="button" onClick={reset} className="beeija-btn-outline mt-7">
+                Reset values
+              </button>
+            </BeeijaComparisonInputPanel>
+
+      <BeeijaComparisonResultColumn>
+        <BeeijaCalculatorResultPanel
+                  title="Managed Kubernetes Cost Comparison"
+                  description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
+                  primaryLabel="Selected monthly planning cost"
+                  primaryValue={
+                    selectedResult.configured
+                      ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
+                      : "Enter provider prices"
+                  }
+                  stats={
+                    <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+                      <ResultStat
+                        label="Monthly cost per cluster"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.costPerCluster)
+                            : "—"
+                        }
+                      />
+                      <ResultStat
+                        label="Cost per workload vCPU"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.costPerWorkloadVcpu)
+                            : "—"
+                        }
+                      />
+                      <ResultStat
+                        label="First-year cost"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.firstYearCost)
+                            : "—"
+                        }
+                      />
+                    </div>
+                  }
+                  breakdown={
+                    <div className="min-w-0 space-y-6">
+                      <BeeijaSelect
+                        label="Detailed plan"
+                        value={selectedPlanId}
+                        onChange={(event) =>
+                          setSelectedPlanId(event.target.value)
+                        }
+                        options={planOptions}
+                      />
+
+                      <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+                        <p className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.productLabel} ·{" "}
+                          {selectedResult.supportTierLabel}
+                        </p>
+                        <p className="mt-1">{selectedResult.billingModeLabel}</p>
+                        <p className="mt-1">{selectedResult.configurationLabel}</p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {selectedRows.map((row) => (
+                          <BreakdownRow
+                            key={row.label}
+                            label={row.label}
+                            detail={row.detail}
+                            value={row.value}
+                            entered={row.entered}
+                            negative={row.negative}
+                          />
+                        ))}
+                      </div>
+
+                      <ComparisonTable rows={result.comparisonRows} />
+                    </div>
+                  }
+                  totals={
+                    <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+                      <p>
+                        Selected plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Configuration:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.productLabel} ·{" "}
+                          {selectedResult.supportTierLabel} ·{" "}
+                          {selectedResult.billingModeLabel}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Monthly operating cost:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.monthlyOperatingCost)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Monthly migration allocation:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.amortizedMigrationCost)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Lowest configured plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {result.cheapest
+                            ? `${result.cheapest.displayName} at ${formatVisibleMoney(
+                                result.cheapest.monthlyPlanningCost,
+                              )} per month`
+                            : "Enter at least one provider price"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Possible monthly saving:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.monthlySaving)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Possible first-year saving:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.firstYearSaving)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Selected plan price inputs entered:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.enteredPriceCount} of 19
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Budget status:{" "}
+                        <span
+                          className={`font-semibold ${
+                            result.hasBudget &&
+                            selectedResult.configured &&
+                            selectedResult.budgetDifference < 0
+                              ? "text-red-700"
+                              : "text-[var(--green)]"
+                          }`}
+                        >
+                          {!result.hasBudget
+                            ? "Add a budget to compare"
+                            : !selectedResult.configured
+                              ? "Enter the selected provider prices"
+                              : selectedResult.budgetDifference >= 0
+                                ? `${formatVisibleMoney(
+                                    selectedResult.budgetDifference,
+                                  )} remaining`
+                                : `${formatVisibleMoney(
+                                    Math.abs(selectedResult.budgetDifference),
+                                  )} over budget`}
+                        </span>
+                      </p>
+                    </div>
+                  }
+                  provider="Amazon Elastic Kubernetes Service, Azure Kubernetes Service, Google Kubernetes Engine, and custom managed Kubernetes plans"
+                  excludedCosts="taxes, premium cloud support, public IPv4 addresses, private connectivity, service mesh, security products, container registry, artifact storage, DNS, secrets, certificates, cross-zone traffic, migration labour, negotiated credits, and services not entered"
+                  noticeText="Provider, region, product, support-tier, and billing selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Pricing structures and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
+                />
+      </BeeijaComparisonResultColumn>
+</BeeijaComparisonCalculatorLayout>
   );
 }
 

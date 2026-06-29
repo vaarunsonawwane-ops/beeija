@@ -4,6 +4,12 @@ import { useMemo, useState, type ReactNode } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 
 type PlanInput = {
   id: string;
@@ -196,6 +202,7 @@ export default function ToolClient() {
   const [monthlyBudget, setMonthlyBudget] = useState("");
 
   const [plans, setPlans] = useState<PlanInput[]>(initialPlans);
+  const [activeEditorPlanId, setActiveEditorPlanId] = useState("plan-a");
   const [selectedPlanId, setSelectedPlanId] = useState("plan-a");
 
   const updatePlan = (
@@ -533,6 +540,13 @@ export default function ToolClient() {
     label: displayPlanName(plan),
   }));
 
+  const activeEditorPlan =
+    plans.find((plan) => plan.id === activeEditorPlanId) ?? plans[0];
+  const activeEditorPlanNumber = Math.max(
+    1,
+    plans.findIndex((plan) => plan.id === activeEditorPlan.id) + 1,
+  );
+
   const reset = () => {
     setBaseInstances("4");
     setBaseHoursPerDay("24");
@@ -548,407 +562,427 @@ export default function ToolClient() {
     setLoadBalancerDataGb("2000");
     setMonthlyBudget("");
     setPlans(initialPlans);
+    setActiveEditorPlanId("plan-a");
     setSelectedPlanId("plan-a");
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter the Shared VM Workload
-          </h2>
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter the Shared VM Workload
+                </h2>
 
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same workload for every plan, then enter current regional
-            rates for each provider.
-          </p>
-        </div>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Use the same workload for every plan, then enter current regional
+                  rates for each provider.
+                </p>
+              </div>
 
-        <FieldSection title="Compute Runtime">
-          <BeeijaNumberField
-            label="Base VM count"
-            value={baseInstances}
-            onChange={setBaseInstances}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Base VM hours per day"
-            value={baseHoursPerDay}
-            onChange={setBaseHoursPerDay}
-            min="0"
-            max="24"
-            step="0.1"
-            suffix="hr"
-          />
-
-          <BeeijaNumberField
-            label="Additional peak VM count"
-            value={additionalPeakInstances}
-            onChange={setAdditionalPeakInstances}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Peak VM hours per day"
-            value={peakHoursPerDay}
-            onChange={setPeakHoursPerDay}
-            min="0"
-            max="24"
-            step="0.1"
-            suffix="hr"
-          />
-
-          <BeeijaNumberField
-            label="Active days per month"
-            value={activeDaysPerMonth}
-            onChange={setActiveDaysPerMonth}
-            min="0"
-            max="31"
-            step="1"
-            suffix="days"
-          />
-
-          <BeeijaNumberField
-            label="Capacity and deployment overhead"
-            value={capacityOverheadPercent}
-            onChange={setCapacityOverheadPercent}
-            min="0"
-            max="500"
-            step="1"
-            suffix="%"
-          />
-        </FieldSection>
-
-        <FieldSection title="Shared Storage and Network Usage">
-          <BeeijaNumberField
-            label="Total persistent storage"
-            value={persistentStorageGb}
-            onChange={setPersistentStorageGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Total snapshot storage"
-            value={snapshotStorageGb}
-            onChange={setSnapshotStorageGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Outbound data transfer"
-            value={outboundDataGb}
-            onChange={setOutboundDataGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Public IPv4 address count"
-            value={publicIpCount}
-            onChange={setPublicIpCount}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Load balancer count"
-            value={loadBalancerCount}
-            onChange={setLoadBalancerCount}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Load balancer data processed"
-            value={loadBalancerDataGb}
-            onChange={setLoadBalancerDataGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Target monthly VM budget"
-            value={monthlyBudget}
-            onChange={setMonthlyBudget}
-            min="0"
-            step="1"
-            prefix="$"
-          />
-        </FieldSection>
-
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Shared monthly workload
-          </p>
-
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>
-              Base instance-hours:{" "}
-              {formatNumber(result.rawBaseInstanceHours)}
-            </p>
-
-            <p>
-              Peak instance-hours:{" "}
-              {formatNumber(result.rawPeakInstanceHours)}
-            </p>
-
-            <p>
-              Instance-hours after overhead:{" "}
-              {formatNumber(result.totalInstanceHours)}
-            </p>
-
-            <p>
-              Average running VM count:{" "}
-              {formatNumber(result.averageRunningInstances)}
-            </p>
-
-            <p>
-              Public IPv4 address-hours:{" "}
-              {formatInteger(result.publicIpHours)}
-            </p>
-
-            <p>
-              Load balancer hours:{" "}
-              {formatInteger(result.loadBalancerHours)}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter Provider Plan Prices
-          </h2>
-
-          <p className="mt-3 leading-relaxed text-gray-600">
-            A VM hourly rate is required for a plan to enter the ranked
-            comparison. Other price fields are optional.
-          </p>
-        </div>
-
-        <div className="mt-6 space-y-6">
-          {plans.map((plan) => (
-            <PlanEditor
-              key={plan.id}
-              plan={plan}
-              onChange={(field, value) =>
-                updatePlan(plan.id, field, value)
-              }
-            />
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={reset}
-          className="beeija-btn-outline mt-7"
-        >
-          Reset values
-        </button>
-      </section>
-
-      <BeeijaCalculatorResultPanel
-        title="Cloud VM Cost Comparison"
-        description="Select a plan for the detailed breakdown. Configured plans are ranked by monthly planning cost."
-        primaryLabel="Selected monthly planning cost"
-        primaryValue={
-          selectedResult.configured
-            ? formatMoney(selectedResult.monthlyPlanningCost)
-            : "Enter VM price"
-        }
-        stats={
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ResultStat
-              label="Compute cost"
-              value={
-                selectedResult.configured
-                  ? formatMoney(selectedResult.computeCost)
-                  : "—"
-              }
-            />
-
-            <ResultStat
-              label="All-in per instance-hour"
-              value={
-                selectedResult.configured
-                  ? formatMoney(selectedResult.costPerInstanceHour)
-                  : "—"
-              }
-            />
-
-            <ResultStat
-              label="First-year cost"
-              value={
-                selectedResult.configured
-                  ? formatMoney(selectedResult.firstYearCost)
-                  : "—"
-              }
-            />
-          </div>
-        }
-        breakdown={
-          <div className="space-y-6">
-            <BeeijaSelect
-              label="Detailed plan"
-              value={selectedPlanId}
-              onChange={(event) =>
-                setSelectedPlanId(event.target.value)
-              }
-              options={planOptions}
-            />
-
-            <div className="space-y-4">
-              {selectedRows.map((row) => (
-                <BreakdownRow
-                  key={row.label}
-                  label={row.label}
-                  detail={row.detail}
-                  value={row.value}
-                  entered={row.entered}
+              <FieldSection title="Compute Runtime">
+                <BeeijaNumberField
+                  label="Base VM count"
+                  value={baseInstances}
+                  onChange={setBaseInstances}
+                  min="0"
+                  step="1"
                 />
-              ))}
-            </div>
 
-            <ComparisonTable rows={result.comparisonRows} />
-          </div>
-        }
-        totals={
-          <div className="text-sm leading-relaxed text-gray-600">
-            <p>
-              Selected plan:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.displayName}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Base VM hours per day"
+                  value={baseHoursPerDay}
+                  onChange={setBaseHoursPerDay}
+                  min="0"
+                  max="24"
+                  step="0.1"
+                  suffix="hr"
+                />
 
-            <p className="mt-2">
-              Pure on-demand compute before entered discounts:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.configured
-                  ? formatMoney(
-                      selectedResult.pureOnDemandComputeCost,
-                    )
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Additional peak VM count"
+                  value={additionalPeakInstances}
+                  onChange={setAdditionalPeakInstances}
+                  min="0"
+                  step="1"
+                />
 
-            <p className="mt-2">
-              Estimated compute saving from commitment and Spot mix:{" "}
-              <span
-                className={`font-semibold ${
-                  selectedResult.computeSavings >= 0
-                    ? "text-[var(--green)]"
-                    : "text-red-700"
-                }`}
+                <BeeijaNumberField
+                  label="Peak VM hours per day"
+                  value={peakHoursPerDay}
+                  onChange={setPeakHoursPerDay}
+                  min="0"
+                  max="24"
+                  step="0.1"
+                  suffix="hr"
+                />
+
+                <BeeijaNumberField
+                  label="Active days per month"
+                  value={activeDaysPerMonth}
+                  onChange={setActiveDaysPerMonth}
+                  min="0"
+                  max="31"
+                  step="1"
+                  suffix="days"
+                />
+
+                <BeeijaNumberField
+                  label="Capacity and deployment overhead"
+                  value={capacityOverheadPercent}
+                  onChange={setCapacityOverheadPercent}
+                  min="0"
+                  max="500"
+                  step="1"
+                  suffix="%"
+                />
+              </FieldSection>
+
+              <FieldSection title="Shared Storage and Network Usage">
+                <BeeijaNumberField
+                  label="Total persistent storage"
+                  value={persistentStorageGb}
+                  onChange={setPersistentStorageGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Total snapshot storage"
+                  value={snapshotStorageGb}
+                  onChange={setSnapshotStorageGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Outbound data transfer"
+                  value={outboundDataGb}
+                  onChange={setOutboundDataGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Public IPv4 address count"
+                  value={publicIpCount}
+                  onChange={setPublicIpCount}
+                  min="0"
+                  step="1"
+                />
+
+                <BeeijaNumberField
+                  label="Load balancer count"
+                  value={loadBalancerCount}
+                  onChange={setLoadBalancerCount}
+                  min="0"
+                  step="1"
+                />
+
+                <BeeijaNumberField
+                  label="Load balancer data processed"
+                  value={loadBalancerDataGb}
+                  onChange={setLoadBalancerDataGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Target monthly VM budget"
+                  value={monthlyBudget}
+                  onChange={setMonthlyBudget}
+                  min="0"
+                  step="1"
+                  prefix="$"
+                />
+              </FieldSection>
+
+              <BeeijaWorkloadSummary title="Shared monthly workload">
+        <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <p>
+            Base instance-hours:{" "}
+            {formatNumber(result.rawBaseInstanceHours)}
+          </p>
+
+          <p>
+            Peak instance-hours:{" "}
+            {formatNumber(result.rawPeakInstanceHours)}
+          </p>
+
+          <p>
+            Instance-hours after overhead:{" "}
+            {formatNumber(result.totalInstanceHours)}
+          </p>
+
+          <p>
+            Average running VM count:{" "}
+            {formatNumber(result.averageRunningInstances)}
+          </p>
+
+          <p>
+            Public IPv4 address-hours:{" "}
+            {formatInteger(result.publicIpHours)}
+          </p>
+
+          <p>
+            Load balancer hours:{" "}
+            {formatInteger(result.loadBalancerHours)}
+          </p>
+        </div>
+      </BeeijaWorkloadSummary>
+
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter Provider Plan Prices
+                </h2>
+
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  A VM hourly rate is required for a plan to enter the ranked
+                  comparison. Other price fields are optional.
+                </p>
+              </div>
+
+              <div className="mt-6">
+                <BeeijaProviderPlanTabs
+                  plans={plans.map((plan, index) => ({
+                    id: plan.id,
+                    label: `Plan ${index + 1}`,
+                    title: plan.provider.trim() || "Cloud provider",
+                    subtitle: plan.planName.trim() || "VM plan",
+                  }))}
+                  activePlanId={activeEditorPlanId}
+                  onChange={setActiveEditorPlanId}
+                  ariaLabel="Cloud VM comparison plans"
+                />
+
+                <div
+                  className="mt-5"
+                  role="tabpanel"
+                  aria-label={`Cloud VM comparison plan ${activeEditorPlanNumber}`}
+                >
+                  <PlanEditor
+                    key={activeEditorPlan.id}
+                    plan={activeEditorPlan}
+                    onChange={(field, value) =>
+                      updatePlan(activeEditorPlan.id, field, value)
+                    }
+                  />
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Select Plan 1, 2, or 3 above to edit it. All three plans remain
+                  included in the ranked comparison.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={reset}
+                className="beeija-btn-outline mt-7"
               >
-                {selectedResult.configured
-                  ? formatMoney(selectedResult.computeSavings)
-                  : "—"}
-              </span>
-            </p>
+                Reset values
+              </button>
+            </BeeijaComparisonInputPanel>
 
-            <p className="mt-2">
-              All-in cost per vCPU-hour:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.configured &&
-                selectedResult.vcpuPerVm > 0
-                  ? formatMoney(
-                      selectedResult.allInCostPerVcpuHour,
-                    )
-                  : "—"}
-              </span>
-            </p>
+      <BeeijaComparisonResultColumn>
+        <BeeijaCalculatorResultPanel
+                title="Cloud VM Cost Comparison"
+                description="Select a plan for the detailed breakdown. Configured plans are ranked by monthly planning cost."
+                primaryLabel="Selected monthly planning cost"
+                primaryValue={
+                  selectedResult.configured
+                    ? formatMoney(selectedResult.monthlyPlanningCost)
+                    : "Enter VM price"
+                }
+                stats={
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <ResultStat
+                      label="Compute cost"
+                      value={
+                        selectedResult.configured
+                          ? formatMoney(selectedResult.computeCost)
+                          : "—"
+                      }
+                    />
 
-            <p className="mt-2">
-              All-in cost per memory GB-hour:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.configured &&
-                selectedResult.memoryGbPerVm > 0
-                  ? formatMoney(
-                      selectedResult.allInCostPerMemoryGbHour,
-                    )
-                  : "—"}
-              </span>
-            </p>
+                    <ResultStat
+                      label="All-in per instance-hour"
+                      value={
+                        selectedResult.configured
+                          ? formatMoney(selectedResult.costPerInstanceHour)
+                          : "—"
+                      }
+                    />
 
-            <p className="mt-2">
-              Lowest configured plan:{" "}
-              <span className="font-medium text-gray-900">
-                {result.cheapest
-                  ? `${result.cheapest.displayName} at ${formatMoney(
-                      result.cheapest.monthlyPlanningCost,
-                    )} per month`
-                  : "Enter at least one VM hourly price"}
-              </span>
-            </p>
+                    <ResultStat
+                      label="First-year cost"
+                      value={
+                        selectedResult.configured
+                          ? formatMoney(selectedResult.firstYearCost)
+                          : "—"
+                      }
+                    />
+                  </div>
+                }
+                breakdown={
+                  <div className="space-y-6">
+                    <BeeijaSelect
+                      label="Detailed plan"
+                      value={selectedPlanId}
+                      onChange={(event) =>
+                        setSelectedPlanId(event.target.value)
+                      }
+                      options={planOptions}
+                    />
 
-            <p className="mt-2">
-              Possible monthly saving against selected plan:{" "}
-              <span className="font-semibold text-[var(--green)]">
-                {selectedResult.configured && result.cheapest
-                  ? formatMoney(result.monthlySavingVsSelected)
-                  : "—"}
-              </span>
-            </p>
+                    <div className="space-y-4">
+                      {selectedRows.map((row) => (
+                        <BreakdownRow
+                          key={row.label}
+                          label={row.label}
+                          detail={row.detail}
+                          value={row.value}
+                          entered={row.entered}
+                        />
+                      ))}
+                    </div>
 
-            <p className="mt-2">
-              Possible first-year saving:{" "}
-              <span className="font-semibold text-[var(--green)]">
-                {selectedResult.configured && result.cheapest
-                  ? formatMoney(result.firstYearSavingVsSelected)
-                  : "—"}
-              </span>
-            </p>
+                    <ComparisonTable rows={result.comparisonRows} />
+                  </div>
+                }
+                totals={
+                  <div className="text-sm leading-relaxed text-gray-600">
+                    <p>
+                      Selected plan:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.displayName}
+                      </span>
+                    </p>
 
-            <p className="mt-2">
-              Selected plan price inputs entered:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.enteredPriceCount} of 10
-              </span>
-            </p>
+                    <p className="mt-2">
+                      Pure on-demand compute before entered discounts:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.configured
+                          ? formatMoney(
+                              selectedResult.pureOnDemandComputeCost,
+                            )
+                          : "—"}
+                      </span>
+                    </p>
 
-            <p className="mt-2">
-              Budget status:{" "}
-              <span
-                className={`font-semibold ${
-                  result.hasBudget &&
-                  selectedResult.configured &&
-                  selectedResult.budgetDifference < 0
-                    ? "text-red-700"
-                    : "text-[var(--green)]"
-                }`}
-              >
-                {!result.hasBudget
-                  ? "Add a budget to compare"
-                  : !selectedResult.configured
-                    ? "Enter the selected VM price"
-                    : selectedResult.budgetDifference >= 0
-                      ? `${formatMoney(
-                          selectedResult.budgetDifference,
-                        )} remaining`
-                      : `${formatMoney(
-                          Math.abs(
-                            selectedResult.budgetDifference,
-                          ),
-                        )} over budget`}
-              </span>
-            </p>
-          </div>
-        }
-        provider="AWS EC2, Microsoft Azure Virtual Machines, Google Compute Engine, or custom cloud VM plans"
-        excludedCosts="taxes, support plans, NAT gateways, private connectivity, managed databases, Kubernetes control planes, tiered free allowances, negotiated credits, migration labour, and services not entered"
-        noticeText="No provider price is hardcoded. Enter current effective prices for the exact region, machine, operating system, purchase option, currency, and account agreement. Blank optional price fields are treated as zero. Commitment and Spot availability, interruption risk, minimum billing rules, tiered network rates, and provider discounts can change the final bill."
-      />
-    </div>
+                    <p className="mt-2">
+                      Estimated compute saving from commitment and Spot mix:{" "}
+                      <span
+                        className={`font-semibold ${
+                          selectedResult.computeSavings >= 0
+                            ? "text-[var(--green)]"
+                            : "text-red-700"
+                        }`}
+                      >
+                        {selectedResult.configured
+                          ? formatMoney(selectedResult.computeSavings)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      All-in cost per vCPU-hour:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.configured &&
+                        selectedResult.vcpuPerVm > 0
+                          ? formatMoney(
+                              selectedResult.allInCostPerVcpuHour,
+                            )
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      All-in cost per memory GB-hour:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.configured &&
+                        selectedResult.memoryGbPerVm > 0
+                          ? formatMoney(
+                              selectedResult.allInCostPerMemoryGbHour,
+                            )
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Lowest configured plan:{" "}
+                      <span className="font-medium text-gray-900">
+                        {result.cheapest
+                          ? `${result.cheapest.displayName} at ${formatMoney(
+                              result.cheapest.monthlyPlanningCost,
+                            )} per month`
+                          : "Enter at least one VM hourly price"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Possible monthly saving against selected plan:{" "}
+                      <span className="font-semibold text-[var(--green)]">
+                        {selectedResult.configured && result.cheapest
+                          ? formatMoney(result.monthlySavingVsSelected)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Possible first-year saving:{" "}
+                      <span className="font-semibold text-[var(--green)]">
+                        {selectedResult.configured && result.cheapest
+                          ? formatMoney(result.firstYearSavingVsSelected)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Selected plan price inputs entered:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.enteredPriceCount} of 10
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Budget status:{" "}
+                      <span
+                        className={`font-semibold ${
+                          result.hasBudget &&
+                          selectedResult.configured &&
+                          selectedResult.budgetDifference < 0
+                            ? "text-red-700"
+                            : "text-[var(--green)]"
+                        }`}
+                      >
+                        {!result.hasBudget
+                          ? "Add a budget to compare"
+                          : !selectedResult.configured
+                            ? "Enter the selected VM price"
+                            : selectedResult.budgetDifference >= 0
+                              ? `${formatMoney(
+                                  selectedResult.budgetDifference,
+                                )} remaining`
+                              : `${formatMoney(
+                                  Math.abs(
+                                    selectedResult.budgetDifference,
+                                  ),
+                                )} over budget`}
+                      </span>
+                    </p>
+                  </div>
+                }
+                provider="AWS EC2, Microsoft Azure Virtual Machines, Google Compute Engine, or custom cloud VM plans"
+                excludedCosts="taxes, support plans, NAT gateways, private connectivity, managed databases, Kubernetes control planes, tiered free allowances, negotiated credits, migration labour, and services not entered"
+                noticeText="No provider price is hardcoded. Enter current effective prices for the exact region, machine, operating system, purchase option, currency, and account agreement. Blank optional price fields are treated as zero. Commitment and Spot availability, interruption risk, minimum billing rules, tiered network rates, and provider discounts can change the final bill."
+              />
+      </BeeijaComparisonResultColumn>
+</BeeijaComparisonCalculatorLayout>
   );
 }
 

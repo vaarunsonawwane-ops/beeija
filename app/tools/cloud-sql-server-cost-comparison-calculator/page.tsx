@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import ToolShell from "@/app/components/ToolShell";
 import ToolContent from "@/app/components/ToolContent";
+import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
 const pricingCheckedDate = "June 25, 2026";
@@ -324,28 +324,7 @@ export default function CloudSQLServerCostComparisonCalculatorPage() {
             {
               title: "Explore Related Cost Tools",
               content: (
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/cloud-postgresql-cost-comparison-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    Cloud PostgreSQL Cost Comparison Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/cloud-mysql-cost-comparison-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    Cloud MySQL Cost Comparison Calculator
-                  </Link>
-
-                  <Link
-                    href="/tools/cloud-vm-cost-comparison-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    Cloud VM Cost Comparison Calculator
-                  </Link>
-                </div>
+                <BeeijaRelatedTools currentHref="/tools/cloud-sql-server-cost-comparison-calculator" />
               ),
             },
           ]}

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useLayoutEffect,
-  useRef,
-  type ReactNode,
-} from "react";
+import type { ReactNode } from "react";
 import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type BeeijaCalculatorResultPanelProps = {
@@ -27,44 +23,6 @@ type BeeijaCalculatorResultPanelProps = {
   className?: string;
 };
 
-type StoredElementStyles = {
-  width: string;
-  minWidth: string;
-  maxWidth: string;
-};
-
-type OriginalStyles = {
-  grid: {
-    gridTemplateColumns: string;
-    alignItems: string;
-    width: string;
-    minWidth: string;
-    maxWidth: string;
-  };
-  children: Array<{
-    element: HTMLElement;
-    styles: StoredElementStyles;
-  }>;
-};
-
-function findCalculatorGrid(start: HTMLElement | null) {
-  let current = start;
-  let levelsChecked = 0;
-
-  while (current && levelsChecked < 6) {
-    const computed = window.getComputedStyle(current);
-
-    if (computed.display === "grid" && current.children.length >= 2) {
-      return current;
-    }
-
-    current = current.parentElement;
-    levelsChecked += 1;
-  }
-
-  return null;
-}
-
 export default function BeeijaCalculatorResultPanel({
   title,
   description,
@@ -80,108 +38,6 @@ export default function BeeijaCalculatorResultPanel({
   noticeText,
   className = "",
 }: BeeijaCalculatorResultPanelProps) {
-  const panelRef = useRef<HTMLElement | null>(null);
-
-  useLayoutEffect(() => {
-    const panel = panelRef.current;
-
-    if (!panel) {
-      return;
-    }
-
-    const grid = findCalculatorGrid(panel.parentElement);
-
-    if (!grid) {
-      return;
-    }
-
-    const directChildren = Array.from(grid.children).filter(
-      (child): child is HTMLElement => child instanceof HTMLElement,
-    );
-
-    const original: OriginalStyles = {
-      grid: {
-        gridTemplateColumns: grid.style.gridTemplateColumns,
-        alignItems: grid.style.alignItems,
-        width: grid.style.width,
-        minWidth: grid.style.minWidth,
-        maxWidth: grid.style.maxWidth,
-      },
-      children: directChildren.map((element) => ({
-        element,
-        styles: {
-          width: element.style.width,
-          minWidth: element.style.minWidth,
-          maxWidth: element.style.maxWidth,
-        },
-      })),
-    };
-
-    const resultContainer =
-      panel.parentElement && panel.parentElement !== grid
-        ? panel.parentElement
-        : panel;
-
-    const applyLayout = () => {
-      const desktop = window.matchMedia("(min-width: 1024px)").matches;
-
-      grid.style.setProperty(
-        "grid-template-columns",
-        desktop
-          ? "minmax(0, 1fr) minmax(0, 1fr)"
-          : "minmax(0, 1fr)",
-        "important",
-      );
-      grid.style.setProperty("align-items", "start", "important");
-      grid.style.setProperty("width", "100%", "important");
-      grid.style.setProperty("min-width", "0", "important");
-      grid.style.setProperty("max-width", "100%", "important");
-
-      directChildren.forEach((element) => {
-        element.style.setProperty("width", "100%", "important");
-        element.style.setProperty("min-width", "0", "important");
-        element.style.setProperty("max-width", "100%", "important");
-      });
-
-      resultContainer.style.setProperty("width", "100%", "important");
-      resultContainer.style.setProperty("min-width", "0", "important");
-      resultContainer.style.setProperty("max-width", "100%", "important");
-      resultContainer.style.setProperty("overflow", "hidden", "important");
-
-      panel.style.setProperty("width", "100%", "important");
-      panel.style.setProperty("min-width", "0", "important");
-      panel.style.setProperty("max-width", "100%", "important");
-      panel.style.setProperty("overflow", "hidden", "important");
-    };
-
-    applyLayout();
-
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    const handleMediaChange = () => applyLayout();
-    mediaQuery.addEventListener("change", handleMediaChange);
-
-    const resizeObserver = new ResizeObserver(() => applyLayout());
-    resizeObserver.observe(grid);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleMediaChange);
-      resizeObserver.disconnect();
-
-      grid.style.gridTemplateColumns =
-        original.grid.gridTemplateColumns ?? "";
-      grid.style.alignItems = original.grid.alignItems ?? "";
-      grid.style.width = original.grid.width ?? "";
-      grid.style.minWidth = original.grid.minWidth ?? "";
-      grid.style.maxWidth = original.grid.maxWidth ?? "";
-
-      original.children.forEach(({ element, styles }) => {
-        element.style.width = styles.width ?? "";
-        element.style.minWidth = styles.minWidth ?? "";
-        element.style.maxWidth = styles.maxWidth ?? "";
-      });
-    };
-  }, []);
-
   const defaultNotice =
     provider && pricingCheckedDate ? (
       <>
@@ -194,7 +50,6 @@ export default function BeeijaCalculatorResultPanel({
 
   return (
     <section
-      ref={panelRef}
       data-beeija-result-panel
       className={`beeija-result-panel w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 ${className}`}
     >

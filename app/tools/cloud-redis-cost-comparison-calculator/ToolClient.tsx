@@ -10,6 +10,12 @@ import {
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 
 type Option = {
   value: string;
@@ -749,446 +755,422 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter the Shared Redis or Valkey Workload
-          </h2>
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter the Shared Redis or Valkey Workload
+                </h2>
 
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same data size, memory headroom, topology, requests,
-            transfer, and backup workload for every provider plan.
-          </p>
-        </div>
-
-        <FieldSection title="Runtime, Data, and Memory">
-          <BeeijaNumberField
-            label="Cache running time per month"
-            value={runningHours}
-            onChange={setRunningHours}
-            min="0"
-            max="744"
-            step="1"
-            suffix="hours"
-          />
-
-          <BeeijaNumberField
-            label="Average dataset stored in cache"
-            value={datasetGb}
-            onChange={setDatasetGb}
-            min="0"
-            step="0.1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Memory overhead and growth allowance"
-            value={memoryOverheadPercent}
-            onChange={setMemoryOverheadPercent}
-            min="0"
-            max="500"
-            step="1"
-            suffix="%"
-          />
-
-          <BeeijaNumberField
-            label="Target monthly managed cache budget"
-            value={monthlyBudget}
-            onChange={setMonthlyBudget}
-            min="0"
-            step="1"
-            prefix="$"
-          />
-        </FieldSection>
-
-        <FieldSection title="Shards, Replicas, and Usage">
-          <BeeijaNumberField
-            label="Primary shards"
-            value={primaryShards}
-            onChange={setPrimaryShards}
-            min="1"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Replicas per primary shard"
-            value={replicasPerShard}
-            onChange={setReplicasPerShard}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Monthly requests or processing units"
-            value={monthlyRequestsMillions}
-            onChange={setMonthlyRequestsMillions}
-            min="0"
-            step="0.1"
-            suffix="million"
-          />
-
-          <BeeijaNumberField
-            label="Backup or snapshot storage"
-            value={backupStorageGb}
-            onChange={setBackupStorageGb}
-            min="0"
-            step="0.1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Internet or cross-region data transfer out"
-            value={internetEgressGb}
-            onChange={setInternetEgressGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-        </FieldSection>
-
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Shared workload summary
-          </p>
-
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>
-              Required memory: {formatNumber(result.requiredMemoryGb)} GB
-            </p>
-            <p>
-              Dataset: {formatNumber(result.dataGb)} GB plus {formatNumber(
-                result.overheadPercent,
-              )}% overhead
-            </p>
-            <p>Primary shards: {formatInteger(result.shards)}</p>
-            <p>Replicas per shard: {formatInteger(result.replicas)}</p>
-            <p>Total cache nodes: {formatInteger(result.totalCacheNodes)}</p>
-            <p>
-              Monthly usage: {formatNumber(result.requestsMillions)} million
-            </p>
-            <p>Backup storage: {formatNumber(result.backupGb)} GB</p>
-            <p>Transfer out: {formatNumber(result.egressGb)} GB</p>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Select Provider Configurations and Enter Prices
-          </h2>
-
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Choose the provider, region, product, billing model, and capacity.
-            Current prices remain blank so you can enter the exact effective
-            rates for each selected plan.
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <div
-            className="grid gap-2 sm:grid-cols-3"
-            role="tablist"
-            aria-label="Managed Redis and Valkey comparison plans"
-          >
-            {plans.map((plan, index) => {
-              const isActive = plan.id === activeEditorPlanId;
-              const provider = getProvider(plan.providerId);
-
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => openPlanEditor(plan.id)}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
-                      : "border-gray-200 bg-white hover:border-[var(--green)]"
-                  }`}
-                >
-                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-                    Plan {index + 1}
-                  </span>
-                  <span className="mt-1 block font-semibold text-gray-950">
-                    {provider.serviceName}
-                  </span>
-                  <span className="mt-1 block text-xs text-gray-500">
-                    {getRegionLabel(plan, provider)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            className="mt-5"
-            role="tabpanel"
-            aria-label={`Comparison plan ${activeEditorPlanNumber}`}
-          >
-            <PlanEditor
-              key={activeEditorPlan.id}
-              planNumber={activeEditorPlanNumber}
-              plan={activeEditorPlan}
-              onChange={(field, value) =>
-                updatePlan(activeEditorPlan.id, field, value)
-              }
-              onProviderChange={(providerId) =>
-                changeProvider(activeEditorPlan.id, providerId)
-              }
-            />
-          </div>
-
-          <p className="mt-3 text-sm text-gray-500">
-            Select Plan 1, 2, or 3 above to edit it. All three plans remain
-            included in the ranked comparison.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={reset}
-          className="beeija-btn-outline mt-7"
-        >
-          Reset values
-        </button>
-      </section>
-
-      <div className="min-w-0 overflow-hidden">
-        <BeeijaCalculatorResultPanel
-          title="Managed Redis and Valkey Cost Comparison"
-          description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
-          primaryLabel="Selected monthly planning cost"
-          primaryValue={
-            selectedResult.configured
-              ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
-              : "Enter provider prices"
-          }
-          stats={
-            <div className="grid gap-4 sm:grid-cols-3">
-              <ResultStat
-                label="Cost per usable memory GB"
-                value={
-                  selectedResult.configured &&
-                  selectedResult.usableMemoryGb > 0
-                    ? formatVisibleMoney(
-                        selectedResult.costPerUsableMemoryGb,
-                      )
-                    : "—"
-                }
-              />
-
-              <ResultStat
-                label="Cost per million requests"
-                value={
-                  selectedResult.configured &&
-                  result.requestsMillions > 0
-                    ? formatVisibleMoney(
-                        selectedResult.costPerMillionRequests,
-                      )
-                    : "—"
-                }
-              />
-
-              <ResultStat
-                label="First-year cost"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.firstYearCost)
-                    : "—"
-                }
-              />
-            </div>
-          }
-          breakdown={
-            <div className="space-y-6">
-              <BeeijaSelect
-                label="Detailed plan"
-                value={selectedPlanId}
-                onChange={(event) =>
-                  setSelectedPlanId(event.target.value)
-                }
-                options={planOptions}
-              />
-
-              <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
-                <p className="font-medium text-gray-900">
-                  {selectedResult.displayName}
-                </p>
-                <p className="mt-1">
-                  {selectedResult.productLabel} · {selectedResult.configurationLabel}
-                </p>
-                <p className="mt-1">
-                  {selectedResult.billingModeLabel} · {formatNumber(
-                    selectedResult.hourlyBillingUnits,
-                  )} hourly units
-                </p>
-                <p className="mt-1">
-                  Usable memory: {formatNumber(selectedResult.usableMemoryGb)} GB
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Use the same data size, memory headroom, topology, requests,
+                  transfer, and backup workload for every provider plan.
                 </p>
               </div>
 
-              <div className="space-y-4">
-                {selectedRows.map((row) => (
-                  <BreakdownRow
-                    key={row.label}
-                    label={row.label}
-                    detail={row.detail}
-                    value={row.value}
-                    entered={row.entered}
+              <FieldSection title="Runtime, Data, and Memory">
+                <BeeijaNumberField
+                  label="Cache running time per month"
+                  value={runningHours}
+                  onChange={setRunningHours}
+                  min="0"
+                  max="744"
+                  step="1"
+                  suffix="hours"
+                />
+
+                <BeeijaNumberField
+                  label="Average dataset stored in cache"
+                  value={datasetGb}
+                  onChange={setDatasetGb}
+                  min="0"
+                  step="0.1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Memory overhead and growth allowance"
+                  value={memoryOverheadPercent}
+                  onChange={setMemoryOverheadPercent}
+                  min="0"
+                  max="500"
+                  step="1"
+                  suffix="%"
+                />
+
+                <BeeijaNumberField
+                  label="Target monthly managed cache budget"
+                  value={monthlyBudget}
+                  onChange={setMonthlyBudget}
+                  min="0"
+                  step="1"
+                  prefix="$"
+                />
+              </FieldSection>
+
+              <FieldSection title="Shards, Replicas, and Usage">
+                <BeeijaNumberField
+                  label="Primary shards"
+                  value={primaryShards}
+                  onChange={setPrimaryShards}
+                  min="1"
+                  step="1"
+                />
+
+                <BeeijaNumberField
+                  label="Replicas per primary shard"
+                  value={replicasPerShard}
+                  onChange={setReplicasPerShard}
+                  min="0"
+                  step="1"
+                />
+
+                <BeeijaNumberField
+                  label="Monthly requests or processing units"
+                  value={monthlyRequestsMillions}
+                  onChange={setMonthlyRequestsMillions}
+                  min="0"
+                  step="0.1"
+                  suffix="million"
+                />
+
+                <BeeijaNumberField
+                  label="Backup or snapshot storage"
+                  value={backupStorageGb}
+                  onChange={setBackupStorageGb}
+                  min="0"
+                  step="0.1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Internet or cross-region data transfer out"
+                  value={internetEgressGb}
+                  onChange={setInternetEgressGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+              </FieldSection>
+
+              <BeeijaWorkloadSummary title="Shared workload summary">
+        <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <p>
+            Required memory: {formatNumber(result.requiredMemoryGb)} GB
+          </p>
+          <p>
+            Dataset: {formatNumber(result.dataGb)} GB plus {formatNumber(
+              result.overheadPercent,
+            )}% overhead
+          </p>
+          <p>Primary shards: {formatInteger(result.shards)}</p>
+          <p>Replicas per shard: {formatInteger(result.replicas)}</p>
+          <p>Total cache nodes: {formatInteger(result.totalCacheNodes)}</p>
+          <p>
+            Monthly usage: {formatNumber(result.requestsMillions)} million
+          </p>
+          <p>Backup storage: {formatNumber(result.backupGb)} GB</p>
+          <p>Transfer out: {formatNumber(result.egressGb)} GB</p>
+        </div>
+      </BeeijaWorkloadSummary>
+
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Select Provider Configurations and Enter Prices
+                </h2>
+
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Choose the provider, region, product, billing model, and capacity.
+                  Current prices remain blank so you can enter the exact effective
+                  rates for each selected plan.
+                </p>
+              </div>
+
+              <div className="mt-6">
+                <BeeijaProviderPlanTabs
+        plans={plans.map((plan, index) => {
+          const provider = getProvider(plan.providerId);
+
+          return {
+            id: plan.id,
+            label: `Plan ${index + 1}`,
+            title: provider.serviceName,
+            subtitle: getRegionLabel(plan, provider),
+          };
+        })}
+        activePlanId={activeEditorPlanId}
+        onChange={openPlanEditor}
+        ariaLabel="Managed Redis and Valkey comparison plans"
+      />
+
+                <div
+                  className="mt-5"
+                  role="tabpanel"
+                  aria-label={`Comparison plan ${activeEditorPlanNumber}`}
+                >
+                  <PlanEditor
+                    key={activeEditorPlan.id}
+                    planNumber={activeEditorPlanNumber}
+                    plan={activeEditorPlan}
+                    onChange={(field, value) =>
+                      updatePlan(activeEditorPlan.id, field, value)
+                    }
+                    onProviderChange={(providerId) =>
+                      changeProvider(activeEditorPlan.id, providerId)
+                    }
                   />
-                ))}
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Select Plan 1, 2, or 3 above to edit it. All three plans remain
+                  included in the ranked comparison.
+                </p>
               </div>
 
-              <ComparisonTable
-                rows={result.comparisonRows}
-                requiredMemoryGb={result.requiredMemoryGb}
-              />
-            </div>
-          }
-          totals={
-            <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
-              <p>
-                Selected plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.displayName}
-                </span>
-              </p>
+              <button
+                type="button"
+                onClick={reset}
+                className="beeija-btn-outline mt-7"
+              >
+                Reset values
+              </button>
+            </BeeijaComparisonInputPanel>
 
-              <p className="mt-2">
-                Product and billing model:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.productLabel} · {selectedResult.billingModeLabel}
-                </span>
-              </p>
+      <BeeijaComparisonResultColumn>
+        <BeeijaCalculatorResultPanel
+                  title="Managed Redis and Valkey Cost Comparison"
+                  description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
+                  primaryLabel="Selected monthly planning cost"
+                  primaryValue={
+                    selectedResult.configured
+                      ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
+                      : "Enter provider prices"
+                  }
+                  stats={
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <ResultStat
+                        label="Cost per usable memory GB"
+                        value={
+                          selectedResult.configured &&
+                          selectedResult.usableMemoryGb > 0
+                            ? formatVisibleMoney(
+                                selectedResult.costPerUsableMemoryGb,
+                              )
+                            : "—"
+                        }
+                      />
 
-              <p className="mt-2">
-                Cache topology:{" "}
-                <span className="font-medium text-gray-900">
-                  {formatInteger(result.shards)} primary shards, {formatInteger(
-                    result.replicas,
-                  )} replicas per shard, {formatInteger(
-                    result.totalCacheNodes,
-                  )} total nodes
-                </span>
-              </p>
+                      <ResultStat
+                        label="Cost per million requests"
+                        value={
+                          selectedResult.configured &&
+                          result.requestsMillions > 0
+                            ? formatVisibleMoney(
+                                selectedResult.costPerMillionRequests,
+                              )
+                            : "—"
+                        }
+                      />
 
-              <p className="mt-2">
-                Memory status:{" "}
-                <span
-                  className={`font-semibold ${
-                    selectedResult.usableMemoryGb > 0 &&
-                    selectedResult.memoryHeadroomGb < 0
-                      ? "text-red-700"
-                      : "text-[var(--green)]"
-                  }`}
-                >
-                  {selectedResult.usableMemoryGb <= 0
-                    ? "Enter usable memory"
-                    : selectedResult.memoryHeadroomGb >= 0
-                      ? `${formatNumber(
-                          selectedResult.memoryHeadroomGb,
-                        )} GB headroom (${formatNumber(
-                          selectedResult.memoryCoveragePercent,
-                        )}% coverage)`
-                      : `${formatNumber(
-                          Math.abs(selectedResult.memoryHeadroomGb),
-                        )} GB short (${formatNumber(
-                          selectedResult.memoryCoveragePercent,
-                        )}% coverage)`}
-                </span>
-              </p>
+                      <ResultStat
+                        label="First-year cost"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.firstYearCost)
+                            : "—"
+                        }
+                      />
+                    </div>
+                  }
+                  breakdown={
+                    <div className="space-y-6">
+                      <BeeijaSelect
+                        label="Detailed plan"
+                        value={selectedPlanId}
+                        onChange={(event) =>
+                          setSelectedPlanId(event.target.value)
+                        }
+                        options={planOptions}
+                      />
 
-              <p className="mt-2">
-                Monthly operating cost:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.monthlyOperatingCost,
-                      )
-                    : "—"}
-                </span>
-              </p>
+                      <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+                        <p className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.productLabel} · {selectedResult.configurationLabel}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.billingModeLabel} · {formatNumber(
+                            selectedResult.hourlyBillingUnits,
+                          )} hourly units
+                        </p>
+                        <p className="mt-1">
+                          Usable memory: {formatNumber(selectedResult.usableMemoryGb)} GB
+                        </p>
+                      </div>
 
-              <p className="mt-2">
-                Monthly migration allocation:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.amortizedMigrationCost,
-                      )
-                    : "—"}
-                </span>
-              </p>
+                      <div className="space-y-4">
+                        {selectedRows.map((row) => (
+                          <BreakdownRow
+                            key={row.label}
+                            label={row.label}
+                            detail={row.detail}
+                            value={row.value}
+                            entered={row.entered}
+                          />
+                        ))}
+                      </div>
 
-              <p className="mt-2">
-                Lowest configured plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {result.cheapest
-                    ? `${result.cheapest.displayName} at ${formatVisibleMoney(
-                        result.cheapest.monthlyPlanningCost,
-                      )} per month`
-                    : "Enter at least one provider price"}
-                </span>
-              </p>
+                      <ComparisonTable
+                        rows={result.comparisonRows}
+                        requiredMemoryGb={result.requiredMemoryGb}
+                      />
+                    </div>
+                  }
+                  totals={
+                    <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+                      <p>
+                        Selected plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </span>
+                      </p>
 
-              <p className="mt-2">
-                Possible monthly saving against selected plan:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.monthlySavingVsSelected)
-                    : "—"}
-                </span>
-              </p>
+                      <p className="mt-2">
+                        Product and billing model:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.productLabel} · {selectedResult.billingModeLabel}
+                        </span>
+                      </p>
 
-              <p className="mt-2">
-                Possible first-year saving:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.firstYearSavingVsSelected)
-                    : "—"}
-                </span>
-              </p>
+                      <p className="mt-2">
+                        Cache topology:{" "}
+                        <span className="font-medium text-gray-900">
+                          {formatInteger(result.shards)} primary shards, {formatInteger(
+                            result.replicas,
+                          )} replicas per shard, {formatInteger(
+                            result.totalCacheNodes,
+                          )} total nodes
+                        </span>
+                      </p>
 
-              <p className="mt-2">
-                Selected plan price inputs entered:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.enteredPriceCount} of 8
-                </span>
-              </p>
+                      <p className="mt-2">
+                        Memory status:{" "}
+                        <span
+                          className={`font-semibold ${
+                            selectedResult.usableMemoryGb > 0 &&
+                            selectedResult.memoryHeadroomGb < 0
+                              ? "text-red-700"
+                              : "text-[var(--green)]"
+                          }`}
+                        >
+                          {selectedResult.usableMemoryGb <= 0
+                            ? "Enter usable memory"
+                            : selectedResult.memoryHeadroomGb >= 0
+                              ? `${formatNumber(
+                                  selectedResult.memoryHeadroomGb,
+                                )} GB headroom (${formatNumber(
+                                  selectedResult.memoryCoveragePercent,
+                                )}% coverage)`
+                              : `${formatNumber(
+                                  Math.abs(selectedResult.memoryHeadroomGb),
+                                )} GB short (${formatNumber(
+                                  selectedResult.memoryCoveragePercent,
+                                )}% coverage)`}
+                        </span>
+                      </p>
 
-              <p className="mt-2">
-                Budget status:{" "}
-                <span
-                  className={`font-semibold ${
-                    result.hasBudget &&
-                    selectedResult.configured &&
-                    selectedResult.budgetDifference < 0
-                      ? "text-red-700"
-                      : "text-[var(--green)]"
-                  }`}
-                >
-                  {!result.hasBudget
-                    ? "Add a budget to compare"
-                    : !selectedResult.configured
-                      ? "Enter the selected provider prices"
-                      : selectedResult.budgetDifference >= 0
-                        ? `${formatVisibleMoney(
-                            selectedResult.budgetDifference,
-                          )} remaining`
-                        : `${formatVisibleMoney(
-                            Math.abs(selectedResult.budgetDifference),
-                          )} over budget`}
-                </span>
-              </p>
-            </div>
-          }
-          provider="Amazon ElastiCache for Valkey or Redis OSS, Microsoft Azure Managed Redis, Google Cloud Memorystore for Valkey or Redis, and custom managed cache plans"
-          excludedCosts="taxes, premium support, private connectivity, monitoring, persistence storage, cross-region replication, global databases, backup exports, encryption key requests, public IP addresses, migration labour, negotiated credits, and services not entered"
-          noticeText="Provider, region, product, billing-model, and configuration selections identify the plan only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Product names, pricing structures, and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
-        />
-      </div>
-    </div>
+                      <p className="mt-2">
+                        Monthly operating cost:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.monthlyOperatingCost,
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+
+                      <p className="mt-2">
+                        Monthly migration allocation:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.amortizedMigrationCost,
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+
+                      <p className="mt-2">
+                        Lowest configured plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {result.cheapest
+                            ? `${result.cheapest.displayName} at ${formatVisibleMoney(
+                                result.cheapest.monthlyPlanningCost,
+                              )} per month`
+                            : "Enter at least one provider price"}
+                        </span>
+                      </p>
+
+                      <p className="mt-2">
+                        Possible monthly saving against selected plan:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.monthlySavingVsSelected)
+                            : "—"}
+                        </span>
+                      </p>
+
+                      <p className="mt-2">
+                        Possible first-year saving:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.firstYearSavingVsSelected)
+                            : "—"}
+                        </span>
+                      </p>
+
+                      <p className="mt-2">
+                        Selected plan price inputs entered:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.enteredPriceCount} of 8
+                        </span>
+                      </p>
+
+                      <p className="mt-2">
+                        Budget status:{" "}
+                        <span
+                          className={`font-semibold ${
+                            result.hasBudget &&
+                            selectedResult.configured &&
+                            selectedResult.budgetDifference < 0
+                              ? "text-red-700"
+                              : "text-[var(--green)]"
+                          }`}
+                        >
+                          {!result.hasBudget
+                            ? "Add a budget to compare"
+                            : !selectedResult.configured
+                              ? "Enter the selected provider prices"
+                              : selectedResult.budgetDifference >= 0
+                                ? `${formatVisibleMoney(
+                                    selectedResult.budgetDifference,
+                                  )} remaining`
+                                : `${formatVisibleMoney(
+                                    Math.abs(selectedResult.budgetDifference),
+                                  )} over budget`}
+                        </span>
+                      </p>
+                    </div>
+                  }
+                  provider="Amazon ElastiCache for Valkey or Redis OSS, Microsoft Azure Managed Redis, Google Cloud Memorystore for Valkey or Redis, and custom managed cache plans"
+                  excludedCosts="taxes, premium support, private connectivity, monitoring, persistence storage, cross-region replication, global databases, backup exports, encryption key requests, public IP addresses, migration labour, negotiated credits, and services not entered"
+                  noticeText="Provider, region, product, billing-model, and configuration selections identify the plan only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Product names, pricing structures, and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
+                />
+      </BeeijaComparisonResultColumn>
+</BeeijaComparisonCalculatorLayout>
   );
 }
 

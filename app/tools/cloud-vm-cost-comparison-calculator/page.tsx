@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import ToolShell from "@/app/components/ToolShell";
 import ToolContent from "@/app/components/ToolContent";
+import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
 export const metadata: Metadata = {
@@ -280,42 +280,7 @@ export default function CloudVmCostComparisonCalculatorPage() {
             {
               title: "Explore Related Cost Tools",
               content: (
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/tools/ai-gpu-inference-cost-calculator"
-                    className="beeija-btn-outline"
-                  >
-                    AI GPU Inference Cost Calculator
-                  </Link>
-
-                  <Link
-                    href="/categories/cloud-cost-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    Cloud Cost Calculators
-                  </Link>
-
-                  <Link
-                    href="/categories/hosting-infrastructure-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    Hosting &amp; Infrastructure Calculators
-                  </Link>
-
-                  <Link
-                    href="/categories/capacity-usage-calculators"
-                    className="beeija-btn-outline"
-                  >
-                    Capacity &amp; Usage Calculators
-                  </Link>
-
-                  <Link
-                    href="/categories/technology-comparison-tools"
-                    className="beeija-btn-outline"
-                  >
-                    Technology Comparison Tools
-                  </Link>
-                </div>
+                <BeeijaRelatedTools currentHref="/tools/cloud-vm-cost-comparison-calculator" />
               ),
             },
           ]}

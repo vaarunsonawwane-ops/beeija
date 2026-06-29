@@ -9,6 +9,12 @@ import {
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 import {
   cloudPostgresProviders,
   getAvailabilityOption,
@@ -648,434 +654,411 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter the Shared PostgreSQL Workload
-          </h2>
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter the Shared PostgreSQL Workload
+                </h2>
 
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same node size, storage, IOPS, backup, and transfer
-            workload for every provider plan.
-          </p>
-        </div>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Use the same node size, storage, IOPS, backup, and transfer
+                  workload for every provider plan.
+                </p>
+              </div>
 
-        <FieldSection title="Database Nodes and Runtime">
-          <BeeijaNumberField
-            label="Primary database servers"
-            value={primaryServers}
-            onChange={setPrimaryServers}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Billable hours per node each month"
-            value={hoursPerMonth}
-            onChange={setHoursPerMonth}
-            min="0"
-            step="1"
-            suffix="hr"
-          />
-
-          <BeeijaNumberField
-            label="vCPUs per database node"
-            value={vcpuPerNode}
-            onChange={setVcpuPerNode}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Memory per database node"
-            value={memoryGbPerNode}
-            onChange={setMemoryGbPerNode}
-            min="0"
-            step="0.1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Read replicas per primary server"
-            value={readReplicasPerPrimary}
-            onChange={setReadReplicasPerPrimary}
-            min="0"
-            step="1"
-          />
-        </FieldSection>
-
-        <FieldSection title="Storage, I/O, Backup, and Network">
-          <BeeijaNumberField
-            label="Database storage per primary server"
-            value={storageGbPerPrimary}
-            onChange={setStorageGbPerPrimary}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Monthly storage growth per primary"
-            value={monthlyStorageGrowthGb}
-            onChange={setMonthlyStorageGrowthGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Provisioned IOPS per database node"
-            value={provisionedIopsPerNode}
-            onChange={setProvisionedIopsPerNode}
-            min="0"
-            step="1"
-            suffix="IOPS"
-          />
-
-          <BeeijaNumberField
-            label="Billable I/O requests per month"
-            value={monthlyIoRequestsMillions}
-            onChange={setMonthlyIoRequestsMillions}
-            min="0"
-            step="0.1"
-            suffix="million"
-          />
-
-          <BeeijaNumberField
-            label="Total backup and snapshot storage"
-            value={totalBackupStorageGb}
-            onChange={setTotalBackupStorageGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Outbound data transfer per month"
-            value={outboundDataGb}
-            onChange={setOutboundDataGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Target monthly PostgreSQL budget"
-            value={monthlyBudget}
-            onChange={setMonthlyBudget}
-            min="0"
-            step="1"
-            prefix="$"
-          />
-        </FieldSection>
-
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-semibold text-gray-900">
-            Shared workload before provider availability settings
-          </p>
-
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Primary servers: {formatNumber(result.primaries)}</p>
-            <p>Read replicas per primary: {formatNumber(result.replicasPerPrimary)}</p>
-            <p>Node size: {formatNumber(result.vcpu)} vCPU / {formatNumber(result.memoryGb)} GB</p>
-            <p>Hours per node: {formatNumber(result.hours)}</p>
-            <p>Storage per primary: {formatNumber(result.storagePerPrimary)} GB</p>
-            <p>Monthly storage growth: {formatNumber(result.storageGrowthPerMonth)} GB</p>
-            <p>Backup storage: {formatNumber(result.backupStorageGb)} GB</p>
-            <p>Outbound data: {formatNumber(result.egressGb)} GB</p>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Select Provider Configurations and Enter Prices
-          </h2>
-
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Choose a provider, region, availability mode, compute tier,
-            storage type, and pricing basis. Current price fields remain blank.
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <div
-            className="grid gap-2 sm:grid-cols-3"
-            role="tablist"
-            aria-label="PostgreSQL comparison plans"
-          >
-            {plans.map((plan, index) => {
-              const isActive = plan.id === activeEditorPlanId;
-              const provider = getCloudPostgresProvider(plan.providerId);
-
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => openPlanEditor(plan.id)}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
-                      : "border-gray-200 bg-white hover:border-[var(--green)]"
-                  }`}
-                >
-                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-                    Plan {index + 1}
-                  </span>
-                  <span className="mt-1 block font-semibold text-gray-950">
-                    {provider.shortLabel}
-                  </span>
-                  <span className="mt-1 block text-xs text-gray-500">
-                    {getRegionLabel(plan, provider)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            className="mt-5"
-            role="tabpanel"
-            aria-label={`Comparison plan ${activeEditorPlanNumber}`}
-          >
-            <PlanEditor
-              key={activeEditorPlan.id}
-              planNumber={activeEditorPlanNumber}
-              plan={activeEditorPlan}
-              onChange={(field, value) =>
-                updatePlan(activeEditorPlan.id, field, value)
-              }
-              onProviderChange={(providerId) =>
-                changeProvider(activeEditorPlan.id, providerId)
-              }
-            />
-          </div>
-
-          <p className="mt-3 text-sm text-gray-500">
-            Select Plan 1, 2, or 3 above to edit it. All three plans remain
-            included in the ranked comparison.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={reset}
-          className="beeija-btn-outline mt-7"
-        >
-          Reset values
-        </button>
-      </section>
-
-      <div className="min-w-0 overflow-hidden">
-        <BeeijaCalculatorResultPanel
-        title="Managed PostgreSQL Cost Comparison"
-        description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
-        primaryLabel="Selected monthly planning cost"
-        primaryValue={
-          selectedResult.configured
-            ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
-            : "Enter compute or storage prices"
-        }
-        stats={
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ResultStat
-              label="Cost per node-hour"
-              value={
-                selectedResult.configured
-                  ? formatVisibleMoney(selectedResult.costPerNodeHour)
-                  : "—"
-              }
-            />
-
-            <ResultStat
-              label="Cost per stored TB"
-              value={
-                selectedResult.configured
-                  ? formatVisibleMoney(selectedResult.costPerStoredTb)
-                  : "—"
-              }
-            />
-
-            <ResultStat
-              label="First-year cost"
-              value={
-                selectedResult.configured
-                  ? formatVisibleMoney(selectedResult.firstYearCost)
-                  : "—"
-              }
-            />
-          </div>
-        }
-        breakdown={
-          <div className="space-y-6">
-            <BeeijaSelect
-              label="Detailed plan"
-              value={selectedPlanId}
-              onChange={(event) =>
-                setSelectedPlanId(event.target.value)
-              }
-              options={planOptions}
-            />
-
-            <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
-              <p className="font-medium text-gray-900">
-                {selectedResult.displayName}
-              </p>
-              <p className="mt-1">
-                {selectedResult.availabilityLabel} · {selectedResult.computeTierLabel}
-              </p>
-              <p className="mt-1">{selectedResult.storageTypeLabel}</p>
-              <p className="mt-2 text-xs text-gray-500">
-                {selectedAvailability.description}
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {selectedRows.map((row) => (
-                <BreakdownRow
-                  key={row.label}
-                  label={row.label}
-                  detail={row.detail}
-                  value={row.value}
-                  entered={row.entered}
+              <FieldSection title="Database Nodes and Runtime">
+                <BeeijaNumberField
+                  label="Primary database servers"
+                  value={primaryServers}
+                  onChange={setPrimaryServers}
+                  min="0"
+                  step="1"
                 />
-              ))}
-            </div>
 
-            <ComparisonTable rows={result.comparisonRows} />
-          </div>
-        }
-        totals={
-          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
-            <p>
-              Selected plan:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.displayName}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Billable hours per node each month"
+                  value={hoursPerMonth}
+                  onChange={setHoursPerMonth}
+                  min="0"
+                  step="1"
+                  suffix="hr"
+                />
 
-            <p className="mt-2">
-              Billable database nodes:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(selectedResult.totalNodes)}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="vCPUs per database node"
+                  value={vcpuPerNode}
+                  onChange={setVcpuPerNode}
+                  min="0"
+                  step="1"
+                />
 
-            <p className="mt-2">
-              HA and primary nodes:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(selectedResult.highAvailabilityNodes)}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Memory per database node"
+                  value={memoryGbPerNode}
+                  onChange={setMemoryGbPerNode}
+                  min="0"
+                  step="0.1"
+                  suffix="GB"
+                />
 
-            <p className="mt-2">
-              Read replica nodes:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(selectedResult.readReplicaNodes)}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Read replicas per primary server"
+                  value={readReplicasPerPrimary}
+                  onChange={setReadReplicasPerPrimary}
+                  min="0"
+                  step="1"
+                />
+              </FieldSection>
 
-            <p className="mt-2">
-              Compute saving from entered commitment:{" "}
-              <span className="font-semibold text-[var(--green)]">
-                {selectedResult.configured
-                  ? formatVisibleMoney(selectedResult.commitmentSaving)
-                  : "—"}
-              </span>
-            </p>
+              <FieldSection title="Storage, I/O, Backup, and Network">
+                <BeeijaNumberField
+                  label="Database storage per primary server"
+                  value={storageGbPerPrimary}
+                  onChange={setStorageGbPerPrimary}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
 
-            <p className="mt-2">
-              Current stored data across nodes:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(selectedResult.currentStoredGb)} GB
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Monthly storage growth per primary"
+                  value={monthlyStorageGrowthGb}
+                  onChange={setMonthlyStorageGrowthGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
 
-            <p className="mt-2">
-              End-of-year stored data across nodes:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(selectedResult.endOfYearStoredGb)} GB
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Provisioned IOPS per database node"
+                  value={provisionedIopsPerNode}
+                  onChange={setProvisionedIopsPerNode}
+                  min="0"
+                  step="1"
+                  suffix="IOPS"
+                />
 
-            <p className="mt-2">
-              All-in cost per vCPU-hour:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.configured && result.vcpu > 0
-                  ? formatVisibleMoney(selectedResult.costPerVcpuHour)
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Billable I/O requests per month"
+                  value={monthlyIoRequestsMillions}
+                  onChange={setMonthlyIoRequestsMillions}
+                  min="0"
+                  step="0.1"
+                  suffix="million"
+                />
 
-            <p className="mt-2">
-              Lowest configured plan:{" "}
-              <span className="font-medium text-gray-900">
-                {result.cheapest
-                  ? `${result.cheapest.displayName} at ${formatVisibleMoney(
-                      result.cheapest.monthlyPlanningCost,
-                    )} per month`
-                  : "Enter at least one compute or storage price"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Total backup and snapshot storage"
+                  value={totalBackupStorageGb}
+                  onChange={setTotalBackupStorageGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
 
-            <p className="mt-2">
-              Possible monthly saving against selected plan:{" "}
-              <span className="font-semibold text-[var(--green)]">
-                {selectedResult.configured && result.cheapest
-                  ? formatVisibleMoney(result.monthlySavingVsSelected)
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Outbound data transfer per month"
+                  value={outboundDataGb}
+                  onChange={setOutboundDataGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
 
-            <p className="mt-2">
-              Possible first-year saving:{" "}
-              <span className="font-semibold text-[var(--green)]">
-                {selectedResult.configured && result.cheapest
-                  ? formatVisibleMoney(result.firstYearSavingVsSelected)
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Target monthly PostgreSQL budget"
+                  value={monthlyBudget}
+                  onChange={setMonthlyBudget}
+                  min="0"
+                  step="1"
+                  prefix="$"
+                />
+              </FieldSection>
 
-            <p className="mt-2">
-              Selected plan price inputs entered:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.enteredPriceCount} of 10
-              </span>
-            </p>
+              <BeeijaWorkloadSummary title="Shared workload before provider availability settings">
+        <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <p>Primary servers: {formatNumber(result.primaries)}</p>
+          <p>Read replicas per primary: {formatNumber(result.replicasPerPrimary)}</p>
+          <p>Node size: {formatNumber(result.vcpu)} vCPU / {formatNumber(result.memoryGb)} GB</p>
+          <p>Hours per node: {formatNumber(result.hours)}</p>
+          <p>Storage per primary: {formatNumber(result.storagePerPrimary)} GB</p>
+          <p>Monthly storage growth: {formatNumber(result.storageGrowthPerMonth)} GB</p>
+          <p>Backup storage: {formatNumber(result.backupStorageGb)} GB</p>
+          <p>Outbound data: {formatNumber(result.egressGb)} GB</p>
+        </div>
+      </BeeijaWorkloadSummary>
 
-            <p className="mt-2">
-              Budget status:{" "}
-              <span
-                className={`font-semibold ${
-                  result.hasBudget &&
-                  selectedResult.configured &&
-                  selectedResult.budgetDifference < 0
-                    ? "text-red-700"
-                    : "text-[var(--green)]"
-                }`}
-              >
-                {!result.hasBudget
-                  ? "Add a budget to compare"
-                  : !selectedResult.configured
-                    ? "Enter current prices"
-                    : selectedResult.budgetDifference >= 0
-                      ? `${formatVisibleMoney(
-                          selectedResult.budgetDifference,
-                        )} remaining`
-                      : `${formatVisibleMoney(
-                          Math.abs(selectedResult.budgetDifference),
-                        )} over budget`}
-              </span>
-            </p>
-          </div>
-        }
-        provider="Amazon RDS for PostgreSQL, Azure Database for PostgreSQL Flexible Server, and Google Cloud SQL for PostgreSQL"
-        excludedCosts="taxes, support plans, private connectivity, NAT gateways, connection proxies, cross-zone application traffic, log ingestion, database administration labour, negotiated credits, and services not entered"
-        noticeText="No provider price is hardcoded. Enter current effective prices for the exact region, availability mode, compute tier, storage type, commitment, currency, and billing agreement. Provider configuration options were checked against official documentation in June 2026, but availability can change. Blank optional price fields are treated as zero."
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Select Provider Configurations and Enter Prices
+                </h2>
+
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Choose a provider, region, availability mode, compute tier,
+                  storage type, and pricing basis. Current price fields remain blank.
+                </p>
+              </div>
+
+              <div className="mt-6">
+                <BeeijaProviderPlanTabs
+        plans={plans.map((plan, index) => {
+          const provider = getCloudPostgresProvider(plan.providerId);
+
+          return {
+            id: plan.id,
+            label: `Plan ${index + 1}`,
+            title: provider.shortLabel,
+            subtitle: getRegionLabel(plan, provider),
+          };
+        })}
+        activePlanId={activeEditorPlanId}
+        onChange={openPlanEditor}
+        ariaLabel="PostgreSQL comparison plans"
       />
-      </div>    </div>
+
+                <div
+                  className="mt-5"
+                  role="tabpanel"
+                  aria-label={`Comparison plan ${activeEditorPlanNumber}`}
+                >
+                  <PlanEditor
+                    key={activeEditorPlan.id}
+                    planNumber={activeEditorPlanNumber}
+                    plan={activeEditorPlan}
+                    onChange={(field, value) =>
+                      updatePlan(activeEditorPlan.id, field, value)
+                    }
+                    onProviderChange={(providerId) =>
+                      changeProvider(activeEditorPlan.id, providerId)
+                    }
+                  />
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Select Plan 1, 2, or 3 above to edit it. All three plans remain
+                  included in the ranked comparison.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={reset}
+                className="beeija-btn-outline mt-7"
+              >
+                Reset values
+              </button>
+            </BeeijaComparisonInputPanel>
+
+      <BeeijaComparisonResultColumn>
+        <BeeijaCalculatorResultPanel
+                title="Managed PostgreSQL Cost Comparison"
+                description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
+                primaryLabel="Selected monthly planning cost"
+                primaryValue={
+                  selectedResult.configured
+                    ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
+                    : "Enter compute or storage prices"
+                }
+                stats={
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <ResultStat
+                      label="Cost per node-hour"
+                      value={
+                        selectedResult.configured
+                          ? formatVisibleMoney(selectedResult.costPerNodeHour)
+                          : "—"
+                      }
+                    />
+
+                    <ResultStat
+                      label="Cost per stored TB"
+                      value={
+                        selectedResult.configured
+                          ? formatVisibleMoney(selectedResult.costPerStoredTb)
+                          : "—"
+                      }
+                    />
+
+                    <ResultStat
+                      label="First-year cost"
+                      value={
+                        selectedResult.configured
+                          ? formatVisibleMoney(selectedResult.firstYearCost)
+                          : "—"
+                      }
+                    />
+                  </div>
+                }
+                breakdown={
+                  <div className="space-y-6">
+                    <BeeijaSelect
+                      label="Detailed plan"
+                      value={selectedPlanId}
+                      onChange={(event) =>
+                        setSelectedPlanId(event.target.value)
+                      }
+                      options={planOptions}
+                    />
+
+                    <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+                      <p className="font-medium text-gray-900">
+                        {selectedResult.displayName}
+                      </p>
+                      <p className="mt-1">
+                        {selectedResult.availabilityLabel} · {selectedResult.computeTierLabel}
+                      </p>
+                      <p className="mt-1">{selectedResult.storageTypeLabel}</p>
+                      <p className="mt-2 text-xs text-gray-500">
+                        {selectedAvailability.description}
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {selectedRows.map((row) => (
+                        <BreakdownRow
+                          key={row.label}
+                          label={row.label}
+                          detail={row.detail}
+                          value={row.value}
+                          entered={row.entered}
+                        />
+                      ))}
+                    </div>
+
+                    <ComparisonTable rows={result.comparisonRows} />
+                  </div>
+                }
+                totals={
+                  <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+                    <p>
+                      Selected plan:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.displayName}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Billable database nodes:{" "}
+                      <span className="font-medium text-gray-900">
+                        {formatNumber(selectedResult.totalNodes)}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      HA and primary nodes:{" "}
+                      <span className="font-medium text-gray-900">
+                        {formatNumber(selectedResult.highAvailabilityNodes)}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Read replica nodes:{" "}
+                      <span className="font-medium text-gray-900">
+                        {formatNumber(selectedResult.readReplicaNodes)}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Compute saving from entered commitment:{" "}
+                      <span className="font-semibold text-[var(--green)]">
+                        {selectedResult.configured
+                          ? formatVisibleMoney(selectedResult.commitmentSaving)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Current stored data across nodes:{" "}
+                      <span className="font-medium text-gray-900">
+                        {formatNumber(selectedResult.currentStoredGb)} GB
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      End-of-year stored data across nodes:{" "}
+                      <span className="font-medium text-gray-900">
+                        {formatNumber(selectedResult.endOfYearStoredGb)} GB
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      All-in cost per vCPU-hour:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.configured && result.vcpu > 0
+                          ? formatVisibleMoney(selectedResult.costPerVcpuHour)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Lowest configured plan:{" "}
+                      <span className="font-medium text-gray-900">
+                        {result.cheapest
+                          ? `${result.cheapest.displayName} at ${formatVisibleMoney(
+                              result.cheapest.monthlyPlanningCost,
+                            )} per month`
+                          : "Enter at least one compute or storage price"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Possible monthly saving against selected plan:{" "}
+                      <span className="font-semibold text-[var(--green)]">
+                        {selectedResult.configured && result.cheapest
+                          ? formatVisibleMoney(result.monthlySavingVsSelected)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Possible first-year saving:{" "}
+                      <span className="font-semibold text-[var(--green)]">
+                        {selectedResult.configured && result.cheapest
+                          ? formatVisibleMoney(result.firstYearSavingVsSelected)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Selected plan price inputs entered:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.enteredPriceCount} of 10
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Budget status:{" "}
+                      <span
+                        className={`font-semibold ${
+                          result.hasBudget &&
+                          selectedResult.configured &&
+                          selectedResult.budgetDifference < 0
+                            ? "text-red-700"
+                            : "text-[var(--green)]"
+                        }`}
+                      >
+                        {!result.hasBudget
+                          ? "Add a budget to compare"
+                          : !selectedResult.configured
+                            ? "Enter current prices"
+                            : selectedResult.budgetDifference >= 0
+                              ? `${formatVisibleMoney(
+                                  selectedResult.budgetDifference,
+                                )} remaining`
+                              : `${formatVisibleMoney(
+                                  Math.abs(selectedResult.budgetDifference),
+                                )} over budget`}
+                      </span>
+                    </p>
+                  </div>
+                }
+                provider="Amazon RDS for PostgreSQL, Azure Database for PostgreSQL Flexible Server, and Google Cloud SQL for PostgreSQL"
+                excludedCosts="taxes, support plans, private connectivity, NAT gateways, connection proxies, cross-zone application traffic, log ingestion, database administration labour, negotiated credits, and services not entered"
+                noticeText="No provider price is hardcoded. Enter current effective prices for the exact region, availability mode, compute tier, storage type, commitment, currency, and billing agreement. Provider configuration options were checked against official documentation in June 2026, but availability can change. Blank optional price fields are treated as zero."
+              />
+      </BeeijaComparisonResultColumn>
+</BeeijaComparisonCalculatorLayout>
   );
 }
 

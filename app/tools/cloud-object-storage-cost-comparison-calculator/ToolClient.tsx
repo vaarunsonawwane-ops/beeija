@@ -4,6 +4,12 @@ import { useMemo, useState, type ReactNode } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 import {
   getObjectStorageOptionLabel,
   getObjectStorageProvider,
@@ -721,503 +727,481 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter the Shared Object Storage Workload
-          </h2>
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter the Shared Object Storage Workload
+                </h2>
 
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same storage, request, retrieval, and transfer workload
-            for every provider plan.
-          </p>
-        </div>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Use the same storage, request, retrieval, and transfer workload
+                  for every provider plan.
+                </p>
+              </div>
 
-        <FieldSection title="Stored Data and Tier Mix">
-          <BeeijaNumberField
-            label="Average primary data stored"
-            value={averageStoredDataGb}
-            onChange={setAverageStoredDataGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="New or changed data per month"
-            value={monthlyNewDataGb}
-            onChange={setMonthlyNewDataGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Standard or hot storage share"
-            value={standardSharePercent}
-            onChange={setStandardSharePercent}
-            min="0"
-            max="100"
-            step="1"
-            suffix="%"
-          />
-
-          <BeeijaNumberField
-            label="Cool or infrequent-access share"
-            value={coolSharePercent}
-            onChange={setCoolSharePercent}
-            min="0"
-            max="100"
-            step="1"
-            suffix="%"
-          />
-
-          <BeeijaNumberField
-            label="Archive storage share"
-            value={archiveSharePercent}
-            onChange={setArchiveSharePercent}
-            min="0"
-            max="100"
-            step="1"
-            suffix="%"
-          />
-
-          <BeeijaNumberField
-            label="Data with one additional replicated copy"
-            value={replicatedSharePercent}
-            onChange={setReplicatedSharePercent}
-            min="0"
-            max="100"
-            step="1"
-            suffix="%"
-          />
-        </FieldSection>
-
-        <FieldSection title="Requests and Lifecycle Activity">
-          <BeeijaNumberField
-            label="Write, create, or update requests"
-            value={writeRequests}
-            onChange={setWriteRequests}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Read or GET requests"
-            value={readRequests}
-            onChange={setReadRequests}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="List and metadata requests"
-            value={listRequests}
-            onChange={setListRequests}
-            min="0"
-            step="1"
-          />
-
-          <BeeijaNumberField
-            label="Lifecycle transition requests"
-            value={lifecycleTransitions}
-            onChange={setLifecycleTransitions}
-            min="0"
-            step="1"
-          />
-        </FieldSection>
-
-        <FieldSection title="Retrieval, Transfer, and Management">
-          <BeeijaNumberField
-            label="Data retrieved from cool storage"
-            value={coolRetrievedGb}
-            onChange={setCoolRetrievedGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Data retrieved or restored from archive"
-            value={archiveRetrievedGb}
-            onChange={setArchiveRetrievedGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Internet or cross-region data transfer"
-            value={internetEgressGb}
-            onChange={setInternetEgressGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Managed object count"
-            value={objectCountMillions}
-            onChange={setObjectCountMillions}
-            min="0"
-            step="0.1"
-            suffix="million"
-          />
-
-          <BeeijaNumberField
-            label="Data deleted before minimum duration"
-            value={earlyDeletedDataGb}
-            onChange={setEarlyDeletedDataGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-
-          <BeeijaNumberField
-            label="Target monthly object storage budget"
-            value={monthlyBudget}
-            onChange={setMonthlyBudget}
-            min="0"
-            step="1"
-            prefix="$"
-          />
-        </FieldSection>
-
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Normalized monthly storage workload
-          </p>
-
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>
-              Total stored with replication:{" "}
-              {formatNumber(result.totalStoredGb)} GB
-            </p>
-
-            <p>
-              Additional replicated storage:{" "}
-              {formatNumber(result.replicatedStoredGb)} GB
-            </p>
-
-            <p>
-              Standard share:{" "}
-              {formatNumber(result.standardSharePercent)}%
-            </p>
-
-            <p>
-              Cool share: {formatNumber(result.coolSharePercent)}%
-            </p>
-
-            <p>
-              Archive share:{" "}
-              {formatNumber(result.archiveSharePercent)}%
-            </p>
-
-            <p>
-              Entered tier total:{" "}
-              {formatNumber(result.enteredShareTotal)}%
-            </p>
-
-            <p>
-              Monthly operations:{" "}
-              {formatInteger(result.totalRequests)}
-            </p>
-
-            <p>
-              Cool and archive retrieval:{" "}
-              {formatNumber(result.totalRetrievedGb)} GB
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Select Provider Configurations and Enter Prices
-          </h2>
-
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Choose the provider, region, resilience setup, and storage
-            classes. Current prices remain blank so you can enter the exact
-            rates for the selected configuration.
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <div
-            className="grid gap-2 sm:grid-cols-3"
-            role="tablist"
-            aria-label="Object storage comparison plans"
-          >
-            {plans.map((plan, index) => {
-              const isActive = plan.id === activeEditorPlanId;
-              const provider = getObjectStorageProvider(
-                plan.providerId,
-              );
-
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => openPlanEditor(plan.id)}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
-                      : "border-gray-200 bg-white hover:border-[var(--green)]"
-                  }`}
-                >
-                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-                    Plan {index + 1}
-                  </span>
-                  <span className="mt-1 block font-semibold text-gray-950">
-                    {provider.serviceName}
-                  </span>
-                  <span className="mt-1 block text-xs text-gray-500">
-                    {getRegionLabel(plan, provider)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            className="mt-5"
-            role="tabpanel"
-            aria-label={`Comparison plan ${activeEditorPlanNumber}`}
-          >
-            <PlanEditor
-              key={activeEditorPlan.id}
-              planNumber={activeEditorPlanNumber}
-              plan={activeEditorPlan}
-              onChange={(field, value) =>
-                updatePlan(activeEditorPlan.id, field, value)
-              }
-              onProviderChange={(providerId) =>
-                changeProvider(activeEditorPlan.id, providerId)
-              }
-              onResilienceChange={(resilienceId) =>
-                changeResilience(
-                  activeEditorPlan.id,
-                  resilienceId,
-                )
-              }
-            />
-          </div>
-
-          <p className="mt-3 text-sm text-gray-500">
-            Select Plan 1, 2, or 3 above to edit it. All three plans
-            remain included in the ranked comparison.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={reset}
-          className="beeija-btn-outline mt-7"
-        >
-          Reset values
-        </button>
-      </section>
-
-      <BeeijaCalculatorResultPanel
-        title="Object Storage Cost Comparison"
-        description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
-        primaryLabel="Selected monthly planning cost"
-        primaryValue={
-          selectedResult.configured
-            ? formatMoney(selectedResult.monthlyPlanningCost)
-            : "Enter storage prices"
-        }
-        stats={
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ResultStat
-              label="Cost per stored TB"
-              value={
-                selectedResult.configured
-                  ? formatMoney(selectedResult.costPerStoredTb)
-                  : "—"
-              }
-            />
-
-            <ResultStat
-              label="Request cost per 1M"
-              value={
-                selectedResult.configured
-                  ? formatMoney(
-                      selectedResult.requestCostPerMillion,
-                    )
-                  : "—"
-              }
-            />
-
-            <ResultStat
-              label="First-year cost"
-              value={
-                selectedResult.configured
-                  ? formatMoney(selectedResult.firstYearCost)
-                  : "—"
-              }
-            />
-          </div>
-        }
-        breakdown={
-          <div className="space-y-6">
-            <BeeijaSelect
-              label="Detailed plan"
-              value={selectedPlanId}
-              onChange={(event) =>
-                setSelectedPlanId(event.target.value)
-              }
-              options={planOptions}
-            />
-
-            <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
-              <p className="font-medium text-gray-900">
-                {selectedResult.displayName}
-              </p>
-              <p className="mt-1">
-                {selectedResult.resilienceLabel}
-              </p>
-              <p className="mt-1">
-                {selectedResult.classSummary}
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {selectedRows.map((row) => (
-                <BreakdownRow
-                  key={row.label}
-                  label={row.label}
-                  detail={row.detail}
-                  value={row.value}
-                  entered={row.entered}
+              <FieldSection title="Stored Data and Tier Mix">
+                <BeeijaNumberField
+                  label="Average primary data stored"
+                  value={averageStoredDataGb}
+                  onChange={setAverageStoredDataGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
                 />
-              ))}
-            </div>
 
-            <ComparisonTable rows={result.comparisonRows} />
-          </div>
-        }
-        totals={
-          <div className="text-sm leading-relaxed text-gray-600">
-            <p>
-              Selected plan:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.displayName}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="New or changed data per month"
+                  value={monthlyNewDataGb}
+                  onChange={setMonthlyNewDataGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
 
-            <p className="mt-2">
-              Configuration:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.resilienceLabel} ·{" "}
-                {selectedResult.classSummary}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Standard or hot storage share"
+                  value={standardSharePercent}
+                  onChange={setStandardSharePercent}
+                  min="0"
+                  max="100"
+                  step="1"
+                  suffix="%"
+                />
 
-            <p className="mt-2">
-              Monthly operating cost:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.configured
-                  ? formatMoney(
-                      selectedResult.monthlyOperatingCost,
-                    )
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Cool or infrequent-access share"
+                  value={coolSharePercent}
+                  onChange={setCoolSharePercent}
+                  min="0"
+                  max="100"
+                  step="1"
+                  suffix="%"
+                />
 
-            <p className="mt-2">
-              Storage portion:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.configured
-                  ? formatMoney(selectedResult.totalStorageCost)
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Archive storage share"
+                  value={archiveSharePercent}
+                  onChange={setArchiveSharePercent}
+                  min="0"
+                  max="100"
+                  step="1"
+                  suffix="%"
+                />
 
-            <p className="mt-2">
-              Retrieval cost per retrieved GB:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.configured &&
-                result.totalRetrievedGb > 0
-                  ? formatMoney(
-                      selectedResult.retrievalCostPerGb,
-                    )
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Data with one additional replicated copy"
+                  value={replicatedSharePercent}
+                  onChange={setReplicatedSharePercent}
+                  min="0"
+                  max="100"
+                  step="1"
+                  suffix="%"
+                />
+              </FieldSection>
 
-            <p className="mt-2">
-              Lowest configured plan:{" "}
-              <span className="font-medium text-gray-900">
-                {result.cheapest
-                  ? `${result.cheapest.displayName} at ${formatMoney(
-                      result.cheapest.monthlyPlanningCost,
-                    )} per month`
-                  : "Enter at least one storage-tier price"}
-              </span>
-            </p>
+              <FieldSection title="Requests and Lifecycle Activity">
+                <BeeijaNumberField
+                  label="Write, create, or update requests"
+                  value={writeRequests}
+                  onChange={setWriteRequests}
+                  min="0"
+                  step="1"
+                />
 
-            <p className="mt-2">
-              Possible monthly saving against selected plan:{" "}
-              <span className="font-semibold text-[var(--green)]">
-                {selectedResult.configured && result.cheapest
-                  ? formatMoney(result.monthlySavingVsSelected)
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Read or GET requests"
+                  value={readRequests}
+                  onChange={setReadRequests}
+                  min="0"
+                  step="1"
+                />
 
-            <p className="mt-2">
-              Possible first-year saving:{" "}
-              <span className="font-semibold text-[var(--green)]">
-                {selectedResult.configured && result.cheapest
-                  ? formatMoney(result.firstYearSavingVsSelected)
-                  : "—"}
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="List and metadata requests"
+                  value={listRequests}
+                  onChange={setListRequests}
+                  min="0"
+                  step="1"
+                />
 
-            <p className="mt-2">
-              Selected plan price inputs entered:{" "}
-              <span className="font-medium text-gray-900">
-                {selectedResult.enteredPriceCount} of 15
-              </span>
-            </p>
+                <BeeijaNumberField
+                  label="Lifecycle transition requests"
+                  value={lifecycleTransitions}
+                  onChange={setLifecycleTransitions}
+                  min="0"
+                  step="1"
+                />
+              </FieldSection>
 
-            <p className="mt-2">
-              Budget status:{" "}
-              <span
-                className={`font-semibold ${
-                  result.hasBudget &&
-                  selectedResult.configured &&
-                  selectedResult.budgetDifference < 0
-                    ? "text-red-700"
-                    : "text-[var(--green)]"
-                }`}
-              >
-                {!result.hasBudget
-                  ? "Add a budget to compare"
-                  : !selectedResult.configured
-                    ? "Enter the selected storage prices"
-                    : selectedResult.budgetDifference >= 0
-                      ? `${formatMoney(
-                          selectedResult.budgetDifference,
-                        )} remaining`
-                      : `${formatMoney(
-                          Math.abs(
-                            selectedResult.budgetDifference,
-                          ),
-                        )} over budget`}
-              </span>
-            </p>
-          </div>
-        }
-        provider="Amazon S3, Microsoft Azure Blob Storage, and Google Cloud Storage"
-        excludedCosts="taxes, support, CDN delivery, private connectivity, accelerated transfer, restore-speed premiums, encryption key requests, analytics, legal retention, negotiated credits, and services not entered"
-        noticeText="Provider, region, resilience, and storage-class selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. The region lists contain commonly used locations plus an Other option and are not intended to replace the providers' authoritative location lists. Blank optional price fields are treated as zero."
+              <FieldSection title="Retrieval, Transfer, and Management">
+                <BeeijaNumberField
+                  label="Data retrieved from cool storage"
+                  value={coolRetrievedGb}
+                  onChange={setCoolRetrievedGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Data retrieved or restored from archive"
+                  value={archiveRetrievedGb}
+                  onChange={setArchiveRetrievedGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Internet or cross-region data transfer"
+                  value={internetEgressGb}
+                  onChange={setInternetEgressGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Managed object count"
+                  value={objectCountMillions}
+                  onChange={setObjectCountMillions}
+                  min="0"
+                  step="0.1"
+                  suffix="million"
+                />
+
+                <BeeijaNumberField
+                  label="Data deleted before minimum duration"
+                  value={earlyDeletedDataGb}
+                  onChange={setEarlyDeletedDataGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+
+                <BeeijaNumberField
+                  label="Target monthly object storage budget"
+                  value={monthlyBudget}
+                  onChange={setMonthlyBudget}
+                  min="0"
+                  step="1"
+                  prefix="$"
+                />
+              </FieldSection>
+
+              <BeeijaWorkloadSummary title="Normalized monthly storage workload">
+        <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <p>
+            Total stored with replication:{" "}
+            {formatNumber(result.totalStoredGb)} GB
+          </p>
+
+          <p>
+            Additional replicated storage:{" "}
+            {formatNumber(result.replicatedStoredGb)} GB
+          </p>
+
+          <p>
+            Standard share:{" "}
+            {formatNumber(result.standardSharePercent)}%
+          </p>
+
+          <p>
+            Cool share: {formatNumber(result.coolSharePercent)}%
+          </p>
+
+          <p>
+            Archive share:{" "}
+            {formatNumber(result.archiveSharePercent)}%
+          </p>
+
+          <p>
+            Entered tier total:{" "}
+            {formatNumber(result.enteredShareTotal)}%
+          </p>
+
+          <p>
+            Monthly operations:{" "}
+            {formatInteger(result.totalRequests)}
+          </p>
+
+          <p>
+            Cool and archive retrieval:{" "}
+            {formatNumber(result.totalRetrievedGb)} GB
+          </p>
+        </div>
+      </BeeijaWorkloadSummary>
+
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Select Provider Configurations and Enter Prices
+                </h2>
+
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Choose the provider, region, resilience setup, and storage
+                  classes. Current prices remain blank so you can enter the exact
+                  rates for the selected configuration.
+                </p>
+              </div>
+
+              <div className="mt-6">
+                <BeeijaProviderPlanTabs
+        plans={plans.map((plan, index) => {
+          const provider = getObjectStorageProvider(
+            plan.providerId,
+            );
+
+          return {
+            id: plan.id,
+            label: `Plan ${index + 1}`,
+            title: provider.serviceName,
+            subtitle: getRegionLabel(plan, provider),
+          };
+        })}
+        activePlanId={activeEditorPlanId}
+        onChange={openPlanEditor}
+        ariaLabel="Object storage comparison plans"
       />
-    </div>
+
+                <div
+                  className="mt-5"
+                  role="tabpanel"
+                  aria-label={`Comparison plan ${activeEditorPlanNumber}`}
+                >
+                  <PlanEditor
+                    key={activeEditorPlan.id}
+                    planNumber={activeEditorPlanNumber}
+                    plan={activeEditorPlan}
+                    onChange={(field, value) =>
+                      updatePlan(activeEditorPlan.id, field, value)
+                    }
+                    onProviderChange={(providerId) =>
+                      changeProvider(activeEditorPlan.id, providerId)
+                    }
+                    onResilienceChange={(resilienceId) =>
+                      changeResilience(
+                        activeEditorPlan.id,
+                        resilienceId,
+                      )
+                    }
+                  />
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Select Plan 1, 2, or 3 above to edit it. All three plans
+                  remain included in the ranked comparison.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={reset}
+                className="beeija-btn-outline mt-7"
+              >
+                Reset values
+              </button>
+            </BeeijaComparisonInputPanel>
+
+      <BeeijaComparisonResultColumn>
+        <BeeijaCalculatorResultPanel
+                title="Object Storage Cost Comparison"
+                description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
+                primaryLabel="Selected monthly planning cost"
+                primaryValue={
+                  selectedResult.configured
+                    ? formatMoney(selectedResult.monthlyPlanningCost)
+                    : "Enter storage prices"
+                }
+                stats={
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <ResultStat
+                      label="Cost per stored TB"
+                      value={
+                        selectedResult.configured
+                          ? formatMoney(selectedResult.costPerStoredTb)
+                          : "—"
+                      }
+                    />
+
+                    <ResultStat
+                      label="Request cost per 1M"
+                      value={
+                        selectedResult.configured
+                          ? formatMoney(
+                              selectedResult.requestCostPerMillion,
+                            )
+                          : "—"
+                      }
+                    />
+
+                    <ResultStat
+                      label="First-year cost"
+                      value={
+                        selectedResult.configured
+                          ? formatMoney(selectedResult.firstYearCost)
+                          : "—"
+                      }
+                    />
+                  </div>
+                }
+                breakdown={
+                  <div className="space-y-6">
+                    <BeeijaSelect
+                      label="Detailed plan"
+                      value={selectedPlanId}
+                      onChange={(event) =>
+                        setSelectedPlanId(event.target.value)
+                      }
+                      options={planOptions}
+                    />
+
+                    <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+                      <p className="font-medium text-gray-900">
+                        {selectedResult.displayName}
+                      </p>
+                      <p className="mt-1">
+                        {selectedResult.resilienceLabel}
+                      </p>
+                      <p className="mt-1">
+                        {selectedResult.classSummary}
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {selectedRows.map((row) => (
+                        <BreakdownRow
+                          key={row.label}
+                          label={row.label}
+                          detail={row.detail}
+                          value={row.value}
+                          entered={row.entered}
+                        />
+                      ))}
+                    </div>
+
+                    <ComparisonTable rows={result.comparisonRows} />
+                  </div>
+                }
+                totals={
+                  <div className="text-sm leading-relaxed text-gray-600">
+                    <p>
+                      Selected plan:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.displayName}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Configuration:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.resilienceLabel} ·{" "}
+                        {selectedResult.classSummary}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Monthly operating cost:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.configured
+                          ? formatMoney(
+                              selectedResult.monthlyOperatingCost,
+                            )
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Storage portion:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.configured
+                          ? formatMoney(selectedResult.totalStorageCost)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Retrieval cost per retrieved GB:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.configured &&
+                        result.totalRetrievedGb > 0
+                          ? formatMoney(
+                              selectedResult.retrievalCostPerGb,
+                            )
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Lowest configured plan:{" "}
+                      <span className="font-medium text-gray-900">
+                        {result.cheapest
+                          ? `${result.cheapest.displayName} at ${formatMoney(
+                              result.cheapest.monthlyPlanningCost,
+                            )} per month`
+                          : "Enter at least one storage-tier price"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Possible monthly saving against selected plan:{" "}
+                      <span className="font-semibold text-[var(--green)]">
+                        {selectedResult.configured && result.cheapest
+                          ? formatMoney(result.monthlySavingVsSelected)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Possible first-year saving:{" "}
+                      <span className="font-semibold text-[var(--green)]">
+                        {selectedResult.configured && result.cheapest
+                          ? formatMoney(result.firstYearSavingVsSelected)
+                          : "—"}
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Selected plan price inputs entered:{" "}
+                      <span className="font-medium text-gray-900">
+                        {selectedResult.enteredPriceCount} of 15
+                      </span>
+                    </p>
+
+                    <p className="mt-2">
+                      Budget status:{" "}
+                      <span
+                        className={`font-semibold ${
+                          result.hasBudget &&
+                          selectedResult.configured &&
+                          selectedResult.budgetDifference < 0
+                            ? "text-red-700"
+                            : "text-[var(--green)]"
+                        }`}
+                      >
+                        {!result.hasBudget
+                          ? "Add a budget to compare"
+                          : !selectedResult.configured
+                            ? "Enter the selected storage prices"
+                            : selectedResult.budgetDifference >= 0
+                              ? `${formatMoney(
+                                  selectedResult.budgetDifference,
+                                )} remaining`
+                              : `${formatMoney(
+                                  Math.abs(
+                                    selectedResult.budgetDifference,
+                                  ),
+                                )} over budget`}
+                      </span>
+                    </p>
+                  </div>
+                }
+                provider="Amazon S3, Microsoft Azure Blob Storage, and Google Cloud Storage"
+                excludedCosts="taxes, support, CDN delivery, private connectivity, accelerated transfer, restore-speed premiums, encryption key requests, analytics, legal retention, negotiated credits, and services not entered"
+                noticeText="Provider, region, resilience, and storage-class selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. The region lists contain commonly used locations plus an Other option and are not intended to replace the providers' authoritative location lists. Blank optional price fields are treated as zero."
+              />
+      </BeeijaComparisonResultColumn>
+</BeeijaComparisonCalculatorLayout>
   );
 }
 

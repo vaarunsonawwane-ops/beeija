@@ -10,6 +10,12 @@ import {
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 
 type Option = {
   value: string;
@@ -921,388 +927,365 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter the Shared SQL Server Workload
-          </h2>
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same database size, storage, I/O, transfer, and
-            additional-instance workload for every provider plan.
-          </p>
-        </div>
-
-        <FieldSection title="Database Size and Running Time">
-          <BeeijaNumberField
-            label="Database running time per month"
-            value={runningHours}
-            onChange={setRunningHours}
-            min="0"
-            max="744"
-            step="1"
-            suffix="hours"
-          />
-          <BeeijaNumberField
-            label="vCPUs in the primary database configuration"
-            value={vcpusPerDatabase}
-            onChange={setVcpusPerDatabase}
-            min="0"
-            step="1"
-            suffix="vCPU"
-          />
-          <BeeijaNumberField
-            label="Memory in the primary database configuration"
-            value={memoryGbPerDatabase}
-            onChange={setMemoryGbPerDatabase}
-            min="0"
-            step="0.5"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Separately billed read, reporting, or DR instances"
-            value={additionalInstanceCount}
-            onChange={setAdditionalInstanceCount}
-            min="0"
-            step="1"
-          />
-        </FieldSection>
-
-        <FieldSection title="Storage, IOPS, and Backup">
-          <BeeijaNumberField
-            label="Primary database storage"
-            value={primaryStorageGb}
-            onChange={setPrimaryStorageGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Total backup storage used"
-            value={backupStorageGb}
-            onChange={setBackupStorageGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Provisioned IOPS for each SQL Server instance"
-            value={provisionedIops}
-            onChange={setProvisionedIops}
-            min="0"
-            step="1"
-            suffix="IOPS"
-          />
-          <BeeijaNumberField
-            label="Total billable I/O across the deployment"
-            value={billableIoMillions}
-            onChange={setBillableIoMillions}
-            min="0"
-            step="0.1"
-            suffix="million"
-          />
-        </FieldSection>
-
-        <FieldSection title="Transfer and Budget">
-          <BeeijaNumberField
-            label="Internet or cross-region data transfer out"
-            value={internetEgressGb}
-            onChange={setInternetEgressGb}
-            min="0"
-            step="1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Target monthly managed SQL Server budget"
-            value={monthlyBudget}
-            onChange={setMonthlyBudget}
-            min="0"
-            step="1"
-            prefix="$"
-          />
-        </FieldSection>
-
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Shared workload summary
-          </p>
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Running time: {formatNumber(result.hours)} hours</p>
-            <p>
-              Primary size: {formatNumber(result.vcpus)} vCPU and{" "}
-              {formatNumber(result.memoryGb)} GB memory
-            </p>
-            <p>Primary storage: {formatNumber(result.primaryGb)} GB</p>
-            <p>Backup usage: {formatNumber(result.backupGb)} GB</p>
-            <p>Provisioned IOPS: {formatInteger(result.iops)}</p>
-            <p>Billable I/O: {formatNumber(result.ioMillions)} million</p>
-            <p>Data transfer out: {formatNumber(result.egressGb)} GB</p>
-            <p>
-              Additional instances:{" "}
-              {formatInteger(result.additionalInstances)}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Select SQL Server Configurations and Enter Prices
-          </h2>
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Choose the provider, region, service tier, licensing option,
-            availability setup, and billing model. Prices remain blank so you
-            can enter the exact effective rates for each selected plan.
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <div
-            className="grid gap-2 sm:grid-cols-3"
-            role="tablist"
-            aria-label="Managed SQL Server comparison plans"
-          >
-            {plans.map((plan, index) => {
-              const isActive = plan.id === activeEditorPlanId;
-              const provider = getProvider(plan.providerId);
-
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => openPlanEditor(plan.id)}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
-                      : "border-gray-200 bg-white hover:border-[var(--green)]"
-                  }`}
-                >
-                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-                    Plan {index + 1}
-                  </span>
-                  <span className="mt-1 block font-semibold text-gray-950">
-                    {provider.serviceName}
-                  </span>
-                  <span className="mt-1 block text-xs text-gray-500">
-                    {getRegionLabel(plan, provider)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            className="mt-5"
-            role="tabpanel"
-            aria-label={`Comparison plan ${activePlanNumber}`}
-          >
-            <PlanEditor
-              key={activePlan.id}
-              planNumber={activePlanNumber}
-              plan={activePlan}
-              onChange={(field, value) =>
-                updatePlan(activePlan.id, field, value)
-              }
-              onProviderChange={(providerId) =>
-                changeProvider(activePlan.id, providerId)
-              }
-            />
-          </div>
-
-          <p className="mt-3 text-sm text-gray-500">
-            Select Plan 1, 2, or 3 above to edit it. All three plans remain
-            included in the ranked comparison.
-          </p>
-        </div>
-
-        <button type="button" onClick={reset} className="beeija-btn-outline mt-7">
-          Reset values
-        </button>
-      </section>
-
-      <div className="min-w-0 overflow-hidden">
-        <BeeijaCalculatorResultPanel
-          title="Managed SQL Server Cost Comparison"
-          description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
-          primaryLabel="Selected monthly planning cost"
-          primaryValue={
-            selectedResult.configured
-              ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
-              : "Enter provider prices"
-          }
-          stats={
-            <div className="grid gap-4 sm:grid-cols-3">
-              <ResultStat
-                label="Cost per primary vCPU"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.costPerPrimaryVcpu)
-                    : "—"
-                }
-              />
-              <ResultStat
-                label="Cost per primary storage GB"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.costPerPrimaryStorageGb,
-                      )
-                    : "—"
-                }
-              />
-              <ResultStat
-                label="First-year cost"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.firstYearCost)
-                    : "—"
-                }
-              />
-            </div>
-          }
-          breakdown={
-            <div className="min-w-0 space-y-6">
-              <BeeijaSelect
-                label="Detailed plan"
-                value={selectedPlanId}
-                onChange={(event) =>
-                  setSelectedPlanId(event.target.value)
-                }
-                options={planOptions}
-              />
-
-              <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
-                <p className="font-medium text-gray-900">
-                  {selectedResult.displayName}
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter the Shared SQL Server Workload
+                </h2>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Use the same database size, storage, I/O, transfer, and
+                  additional-instance workload for every provider plan.
                 </p>
-                <p className="mt-1">
-                  {selectedResult.productLabel} ·{" "}
-                  {selectedResult.licenseOptionLabel}
-                </p>
-                <p className="mt-1">
-                  {selectedResult.availabilityLabel} ·{" "}
-                  {selectedResult.billingModeLabel}
-                </p>
-                <p className="mt-1">{selectedResult.configurationLabel}</p>
               </div>
 
-              <div className="space-y-4">
-                {selectedRows.map((row) => (
-                  <BreakdownRow
-                    key={row.label}
-                    label={row.label}
-                    detail={row.detail}
-                    value={row.value}
-                    entered={row.entered}
-                    negative={row.negative}
+              <FieldSection title="Database Size and Running Time">
+                <BeeijaNumberField
+                  label="Database running time per month"
+                  value={runningHours}
+                  onChange={setRunningHours}
+                  min="0"
+                  max="744"
+                  step="1"
+                  suffix="hours"
+                />
+                <BeeijaNumberField
+                  label="vCPUs in the primary database configuration"
+                  value={vcpusPerDatabase}
+                  onChange={setVcpusPerDatabase}
+                  min="0"
+                  step="1"
+                  suffix="vCPU"
+                />
+                <BeeijaNumberField
+                  label="Memory in the primary database configuration"
+                  value={memoryGbPerDatabase}
+                  onChange={setMemoryGbPerDatabase}
+                  min="0"
+                  step="0.5"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Separately billed read, reporting, or DR instances"
+                  value={additionalInstanceCount}
+                  onChange={setAdditionalInstanceCount}
+                  min="0"
+                  step="1"
+                />
+              </FieldSection>
+
+              <FieldSection title="Storage, IOPS, and Backup">
+                <BeeijaNumberField
+                  label="Primary database storage"
+                  value={primaryStorageGb}
+                  onChange={setPrimaryStorageGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Total backup storage used"
+                  value={backupStorageGb}
+                  onChange={setBackupStorageGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Provisioned IOPS for each SQL Server instance"
+                  value={provisionedIops}
+                  onChange={setProvisionedIops}
+                  min="0"
+                  step="1"
+                  suffix="IOPS"
+                />
+                <BeeijaNumberField
+                  label="Total billable I/O across the deployment"
+                  value={billableIoMillions}
+                  onChange={setBillableIoMillions}
+                  min="0"
+                  step="0.1"
+                  suffix="million"
+                />
+              </FieldSection>
+
+              <FieldSection title="Transfer and Budget">
+                <BeeijaNumberField
+                  label="Internet or cross-region data transfer out"
+                  value={internetEgressGb}
+                  onChange={setInternetEgressGb}
+                  min="0"
+                  step="1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Target monthly managed SQL Server budget"
+                  value={monthlyBudget}
+                  onChange={setMonthlyBudget}
+                  min="0"
+                  step="1"
+                  prefix="$"
+                />
+              </FieldSection>
+
+              <BeeijaWorkloadSummary title="Shared workload summary">
+        <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <p>Running time: {formatNumber(result.hours)} hours</p>
+          <p>
+            Primary size: {formatNumber(result.vcpus)} vCPU and{" "}
+            {formatNumber(result.memoryGb)} GB memory
+          </p>
+          <p>Primary storage: {formatNumber(result.primaryGb)} GB</p>
+          <p>Backup usage: {formatNumber(result.backupGb)} GB</p>
+          <p>Provisioned IOPS: {formatInteger(result.iops)}</p>
+          <p>Billable I/O: {formatNumber(result.ioMillions)} million</p>
+          <p>Data transfer out: {formatNumber(result.egressGb)} GB</p>
+          <p>
+            Additional instances:{" "}
+            {formatInteger(result.additionalInstances)}
+          </p>
+        </div>
+      </BeeijaWorkloadSummary>
+
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Select SQL Server Configurations and Enter Prices
+                </h2>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Choose the provider, region, service tier, licensing option,
+                  availability setup, and billing model. Prices remain blank so you
+                  can enter the exact effective rates for each selected plan.
+                </p>
+              </div>
+
+              <div className="mt-6">
+                <BeeijaProviderPlanTabs
+        plans={plans.map((plan, index) => {
+          const provider = getProvider(plan.providerId);
+
+          return {
+            id: plan.id,
+            label: `Plan ${index + 1}`,
+            title: provider.serviceName,
+            subtitle: getRegionLabel(plan, provider),
+          };
+        })}
+        activePlanId={activeEditorPlanId}
+        onChange={openPlanEditor}
+        ariaLabel="Managed SQL Server comparison plans"
+      />
+
+                <div
+                  className="mt-5"
+                  role="tabpanel"
+                  aria-label={`Comparison plan ${activePlanNumber}`}
+                >
+                  <PlanEditor
+                    key={activePlan.id}
+                    planNumber={activePlanNumber}
+                    plan={activePlan}
+                    onChange={(field, value) =>
+                      updatePlan(activePlan.id, field, value)
+                    }
+                    onProviderChange={(providerId) =>
+                      changeProvider(activePlan.id, providerId)
+                    }
                   />
-                ))}
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Select Plan 1, 2, or 3 above to edit it. All three plans remain
+                  included in the ranked comparison.
+                </p>
               </div>
 
-              <ComparisonTable rows={result.comparisonRows} />
-            </div>
-          }
-          totals={
-            <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
-              <p>
-                Selected plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.displayName}
-                </span>
-              </p>
-              <p className="mt-2">
-                Configuration:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.productLabel} ·{" "}
-                  {selectedResult.licenseOptionLabel} ·{" "}
-                  {selectedResult.availabilityLabel}
-                </span>
-              </p>
-              <p className="mt-2">
-                Monthly operating cost:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.monthlyOperatingCost,
-                      )
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Monthly migration allocation:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.amortizedMigrationCost,
-                      )
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Lowest configured plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {result.cheapest
-                    ? `${result.cheapest.displayName} at ${formatVisibleMoney(
-                        result.cheapest.monthlyPlanningCost,
-                      )} per month`
-                    : "Enter at least one provider price"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Possible monthly saving:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.monthlySaving)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Possible first-year saving:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.firstYearSaving)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Selected plan price inputs entered:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.enteredPriceCount} of 14
-                </span>
-              </p>
-              <p className="mt-2">
-                Budget status:{" "}
-                <span
-                  className={`font-semibold ${
-                    result.hasBudget &&
-                    selectedResult.configured &&
-                    selectedResult.budgetDifference < 0
-                      ? "text-red-700"
-                      : "text-[var(--green)]"
-                  }`}
-                >
-                  {!result.hasBudget
-                    ? "Add a budget to compare"
-                    : !selectedResult.configured
-                      ? "Enter the selected provider prices"
-                      : selectedResult.budgetDifference >= 0
-                        ? `${formatVisibleMoney(
-                            selectedResult.budgetDifference,
-                          )} remaining`
-                        : `${formatVisibleMoney(
-                            Math.abs(selectedResult.budgetDifference),
-                          )} over budget`}
-                </span>
-              </p>
-            </div>
-          }
-          provider="Amazon RDS for SQL Server, Azure SQL Managed Instance, Google Cloud SQL for SQL Server, and custom managed SQL Server plans"
-          excludedCosts="taxes, premium support, private connectivity, monitoring, DNS, public IP addresses, cross-region replication traffic, backup exports, encryption key requests, migration labour, application remediation, negotiated credits, and services not entered"
-          noticeText="Provider, region, service-tier, licensing, availability, and billing selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Pricing structures and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
-        />
-      </div>
-    </div>
+              <button type="button" onClick={reset} className="beeija-btn-outline mt-7">
+                Reset values
+              </button>
+            </BeeijaComparisonInputPanel>
+
+      <BeeijaComparisonResultColumn>
+        <BeeijaCalculatorResultPanel
+                  title="Managed SQL Server Cost Comparison"
+                  description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
+                  primaryLabel="Selected monthly planning cost"
+                  primaryValue={
+                    selectedResult.configured
+                      ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
+                      : "Enter provider prices"
+                  }
+                  stats={
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <ResultStat
+                        label="Cost per primary vCPU"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.costPerPrimaryVcpu)
+                            : "—"
+                        }
+                      />
+                      <ResultStat
+                        label="Cost per primary storage GB"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.costPerPrimaryStorageGb,
+                              )
+                            : "—"
+                        }
+                      />
+                      <ResultStat
+                        label="First-year cost"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.firstYearCost)
+                            : "—"
+                        }
+                      />
+                    </div>
+                  }
+                  breakdown={
+                    <div className="min-w-0 space-y-6">
+                      <BeeijaSelect
+                        label="Detailed plan"
+                        value={selectedPlanId}
+                        onChange={(event) =>
+                          setSelectedPlanId(event.target.value)
+                        }
+                        options={planOptions}
+                      />
+
+                      <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+                        <p className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.productLabel} ·{" "}
+                          {selectedResult.licenseOptionLabel}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.availabilityLabel} ·{" "}
+                          {selectedResult.billingModeLabel}
+                        </p>
+                        <p className="mt-1">{selectedResult.configurationLabel}</p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {selectedRows.map((row) => (
+                          <BreakdownRow
+                            key={row.label}
+                            label={row.label}
+                            detail={row.detail}
+                            value={row.value}
+                            entered={row.entered}
+                            negative={row.negative}
+                          />
+                        ))}
+                      </div>
+
+                      <ComparisonTable rows={result.comparisonRows} />
+                    </div>
+                  }
+                  totals={
+                    <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+                      <p>
+                        Selected plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Configuration:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.productLabel} ·{" "}
+                          {selectedResult.licenseOptionLabel} ·{" "}
+                          {selectedResult.availabilityLabel}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Monthly operating cost:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.monthlyOperatingCost,
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Monthly migration allocation:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.amortizedMigrationCost,
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Lowest configured plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {result.cheapest
+                            ? `${result.cheapest.displayName} at ${formatVisibleMoney(
+                                result.cheapest.monthlyPlanningCost,
+                              )} per month`
+                            : "Enter at least one provider price"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Possible monthly saving:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.monthlySaving)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Possible first-year saving:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.firstYearSaving)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Selected plan price inputs entered:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.enteredPriceCount} of 14
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Budget status:{" "}
+                        <span
+                          className={`font-semibold ${
+                            result.hasBudget &&
+                            selectedResult.configured &&
+                            selectedResult.budgetDifference < 0
+                              ? "text-red-700"
+                              : "text-[var(--green)]"
+                          }`}
+                        >
+                          {!result.hasBudget
+                            ? "Add a budget to compare"
+                            : !selectedResult.configured
+                              ? "Enter the selected provider prices"
+                              : selectedResult.budgetDifference >= 0
+                                ? `${formatVisibleMoney(
+                                    selectedResult.budgetDifference,
+                                  )} remaining`
+                                : `${formatVisibleMoney(
+                                    Math.abs(selectedResult.budgetDifference),
+                                  )} over budget`}
+                        </span>
+                      </p>
+                    </div>
+                  }
+                  provider="Amazon RDS for SQL Server, Azure SQL Managed Instance, Google Cloud SQL for SQL Server, and custom managed SQL Server plans"
+                  excludedCosts="taxes, premium support, private connectivity, monitoring, DNS, public IP addresses, cross-region replication traffic, backup exports, encryption key requests, migration labour, application remediation, negotiated credits, and services not entered"
+                  noticeText="Provider, region, service-tier, licensing, availability, and billing selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Pricing structures and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
+                />
+      </BeeijaComparisonResultColumn>
+</BeeijaComparisonCalculatorLayout>
   );
 }
 

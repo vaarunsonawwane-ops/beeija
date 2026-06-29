@@ -12,6 +12,12 @@ import {
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
+import BeeijaComparisonCalculatorLayout, {
+  BeeijaComparisonInputPanel,
+  BeeijaComparisonResultColumn,
+} from "@/app/components/BeeijaComparisonCalculatorLayout";
+import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
+import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
 
 type Option = {
   value: string;
@@ -967,423 +973,400 @@ export default function ToolClient() {
   };
 
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter the Shared Serverless Function Workload
-          </h2>
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use the same requests, duration, memory, CPU, warm capacity,
-            transfer, and logging workload for every provider plan.
-          </p>
-        </div>
-
-        <FieldSection title="Requests and Execution Resources">
-          <BeeijaNumberField
-            label="Function requests per month"
-            value={monthlyRequests}
-            onChange={setMonthlyRequests}
-            min="0"
-            step="1"
-          />
-          <BeeijaNumberField
-            label="Average execution duration"
-            value={averageDurationMs}
-            onChange={setAverageDurationMs}
-            min="0"
-            step="1"
-            suffix="ms"
-          />
-          <BeeijaNumberField
-            label="Allocated memory per execution"
-            value={memoryGbPerExecution}
-            onChange={setMemoryGbPerExecution}
-            min="0"
-            step="0.001"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Allocated vCPU per execution"
-            value={vcpuPerExecution}
-            onChange={setVcpuPerExecution}
-            min="0"
-            step="0.001"
-            suffix="vCPU"
-          />
-          <BeeijaNumberField
-            label="Temporary storage per execution"
-            value={ephemeralStorageGbPerExecution}
-            onChange={setEphemeralStorageGbPerExecution}
-            min="0"
-            step="0.001"
-            suffix="GB"
-          />
-        </FieldSection>
-
-        <FieldSection title="Warm Capacity">
-          <BeeijaNumberField
-            label="Requests handled by warm capacity"
-            value={warmRequestPercent}
-            onChange={setWarmRequestPercent}
-            min="0"
-            max="100"
-            step="0.1"
-            suffix="%"
-          />
-          <BeeijaNumberField
-            label="Provisioned or always-ready instances"
-            value={warmInstances}
-            onChange={setWarmInstances}
-            min="0"
-            step="1"
-          />
-          <BeeijaNumberField
-            label="Warm capacity enabled per month"
-            value={warmHoursPerMonth}
-            onChange={setWarmHoursPerMonth}
-            min="0"
-            max="744"
-            step="1"
-            suffix="hours"
-          />
-          <BeeijaNumberField
-            label="Memory per warm instance"
-            value={warmMemoryGbPerInstance}
-            onChange={setWarmMemoryGbPerInstance}
-            min="0"
-            step="0.001"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="vCPU per warm instance"
-            value={warmVcpuPerInstance}
-            onChange={setWarmVcpuPerInstance}
-            min="0"
-            step="0.001"
-            suffix="vCPU"
-          />
-        </FieldSection>
-
-        <FieldSection title="Transfer, Logging, and Budget">
-          <BeeijaNumberField
-            label="Outbound data transfer per month"
-            value={egressGbPerMonth}
-            onChange={setEgressGbPerMonth}
-            min="0"
-            step="0.1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Logging ingestion per month"
-            value={loggingGbPerMonth}
-            onChange={setLoggingGbPerMonth}
-            min="0"
-            step="0.1"
-            suffix="GB"
-          />
-          <BeeijaNumberField
-            label="Target monthly serverless budget"
-            value={monthlyBudget}
-            onChange={setMonthlyBudget}
-            min="0"
-            step="1"
-            prefix="$"
-          />
-        </FieldSection>
-
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Shared workload summary
-          </p>
-          <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
-            <p>Requests: {formatInteger(result.requests)} per month</p>
-            <p>Duration: {formatNumber(result.durationSeconds)} seconds</p>
-            <p>Memory: {formatNumber(result.memoryGb)} GB</p>
-            <p>vCPU: {formatNumber(result.vcpu)}</p>
-            <p>
-              Warm requests: {formatInteger(result.warmRequests)} (
-              {formatNumber(result.warmPercent * 100)}%)
-            </p>
-            <p>
-              On-demand requests:{" "}
-              {formatInteger(result.onDemandRequests)}
-            </p>
-            <p>
-              Estimated average requests per second:{" "}
-              {formatNumber(result.averageRequestsPerSecond)}
-            </p>
-            <p>
-              Estimated average concurrency:{" "}
-              {formatNumber(result.estimatedAverageConcurrency)}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Select Function Plans and Enter Prices
-          </h2>
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Choose the provider, region, service plan, architecture, and
-            billing model. Prices remain blank so you can enter the exact
-            effective rates for each selected plan.
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <div
-            className="grid gap-2 sm:grid-cols-3"
-            role="tablist"
-            aria-label="Serverless function comparison plans"
-          >
-            {plans.map((plan, index) => {
-              const isActive = plan.id === activeEditorPlanId;
-              const provider = getProvider(plan.providerId);
-
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => openPlanEditor(plan.id)}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? "border-[var(--green)] bg-[#F5FAF7] shadow-sm"
-                      : "border-gray-200 bg-white hover:border-[var(--green)]"
-                  }`}
-                >
-                  <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-                    Plan {index + 1}
-                  </span>
-                  <span className="mt-1 block font-semibold text-gray-950">
-                    {provider.serviceName}
-                  </span>
-                  <span className="mt-1 block text-xs text-gray-500">
-                    {getRegionLabel(plan, provider)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            className="mt-5"
-            role="tabpanel"
-            aria-label={`Comparison plan ${activePlanNumber}`}
-          >
-            <PlanEditor
-              key={activePlan.id}
-              planNumber={activePlanNumber}
-              plan={activePlan}
-              onChange={(field, value) =>
-                updatePlan(activePlan.id, field, value)
-              }
-              onProviderChange={(providerId) =>
-                changeProvider(activePlan.id, providerId)
-              }
-            />
-          </div>
-
-          <p className="mt-3 text-sm text-gray-500">
-            Select Plan 1, 2, or 3 above to edit it. All three plans remain
-            included in the ranked comparison.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={reset}
-          className="beeija-btn-outline mt-7"
-        >
-          Reset values
-        </button>
-      </section>
-
-      <div className="min-w-0 overflow-hidden">
-        <BeeijaCalculatorResultPanel
-          title="Serverless Functions Cost Comparison"
-          description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
-          primaryLabel="Selected monthly planning cost"
-          primaryValue={
-            selectedResult.configured
-              ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
-              : "Enter provider prices"
-          }
-          stats={
-            <div className="grid min-w-0 gap-4 sm:grid-cols-3">
-              <ResultStat
-                label="Cost per million requests"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.costPerMillionRequests,
-                      )
-                    : "—"
-                }
-              />
-              <ResultStat
-                label="Cost per execution"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.costPerExecution)
-                    : "—"
-                }
-              />
-              <ResultStat
-                label="First-year cost"
-                value={
-                  selectedResult.configured
-                    ? formatVisibleMoney(selectedResult.firstYearCost)
-                    : "—"
-                }
-              />
-            </div>
-          }
-          breakdown={
-            <div className="min-w-0 space-y-6">
-              <BeeijaSelect
-                label="Detailed plan"
-                value={selectedPlanId}
-                onChange={(event) =>
-                  setSelectedPlanId(event.target.value)
-                }
-                options={planOptions}
-              />
-
-              <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
-                <p className="font-medium text-gray-900">
-                  {selectedResult.displayName}
-                </p>
-                <p className="mt-1">
-                  {selectedResult.planLabel} ·{" "}
-                  {selectedResult.architectureLabel}
-                </p>
-                <p className="mt-1">
-                  {selectedResult.billingModeLabel}
-                </p>
-                <p className="mt-1">
-                  {selectedResult.configurationLabel}
+    <BeeijaComparisonCalculatorLayout>
+      <BeeijaComparisonInputPanel>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Enter the Shared Serverless Function Workload
+                </h2>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Use the same requests, duration, memory, CPU, warm capacity,
+                  transfer, and logging workload for every provider plan.
                 </p>
               </div>
 
-              <div className="space-y-4">
-                {selectedRows.map((row) => (
-                  <BreakdownRow
-                    key={row.label}
-                    label={row.label}
-                    detail={row.detail}
-                    value={row.value}
-                    entered={row.entered}
-                    negative={row.negative}
+              <FieldSection title="Requests and Execution Resources">
+                <BeeijaNumberField
+                  label="Function requests per month"
+                  value={monthlyRequests}
+                  onChange={setMonthlyRequests}
+                  min="0"
+                  step="1"
+                />
+                <BeeijaNumberField
+                  label="Average execution duration"
+                  value={averageDurationMs}
+                  onChange={setAverageDurationMs}
+                  min="0"
+                  step="1"
+                  suffix="ms"
+                />
+                <BeeijaNumberField
+                  label="Allocated memory per execution"
+                  value={memoryGbPerExecution}
+                  onChange={setMemoryGbPerExecution}
+                  min="0"
+                  step="0.001"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Allocated vCPU per execution"
+                  value={vcpuPerExecution}
+                  onChange={setVcpuPerExecution}
+                  min="0"
+                  step="0.001"
+                  suffix="vCPU"
+                />
+                <BeeijaNumberField
+                  label="Temporary storage per execution"
+                  value={ephemeralStorageGbPerExecution}
+                  onChange={setEphemeralStorageGbPerExecution}
+                  min="0"
+                  step="0.001"
+                  suffix="GB"
+                />
+              </FieldSection>
+
+              <FieldSection title="Warm Capacity">
+                <BeeijaNumberField
+                  label="Requests handled by warm capacity"
+                  value={warmRequestPercent}
+                  onChange={setWarmRequestPercent}
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  suffix="%"
+                />
+                <BeeijaNumberField
+                  label="Provisioned or always-ready instances"
+                  value={warmInstances}
+                  onChange={setWarmInstances}
+                  min="0"
+                  step="1"
+                />
+                <BeeijaNumberField
+                  label="Warm capacity enabled per month"
+                  value={warmHoursPerMonth}
+                  onChange={setWarmHoursPerMonth}
+                  min="0"
+                  max="744"
+                  step="1"
+                  suffix="hours"
+                />
+                <BeeijaNumberField
+                  label="Memory per warm instance"
+                  value={warmMemoryGbPerInstance}
+                  onChange={setWarmMemoryGbPerInstance}
+                  min="0"
+                  step="0.001"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="vCPU per warm instance"
+                  value={warmVcpuPerInstance}
+                  onChange={setWarmVcpuPerInstance}
+                  min="0"
+                  step="0.001"
+                  suffix="vCPU"
+                />
+              </FieldSection>
+
+              <FieldSection title="Transfer, Logging, and Budget">
+                <BeeijaNumberField
+                  label="Outbound data transfer per month"
+                  value={egressGbPerMonth}
+                  onChange={setEgressGbPerMonth}
+                  min="0"
+                  step="0.1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Logging ingestion per month"
+                  value={loggingGbPerMonth}
+                  onChange={setLoggingGbPerMonth}
+                  min="0"
+                  step="0.1"
+                  suffix="GB"
+                />
+                <BeeijaNumberField
+                  label="Target monthly serverless budget"
+                  value={monthlyBudget}
+                  onChange={setMonthlyBudget}
+                  min="0"
+                  step="1"
+                  prefix="$"
+                />
+              </FieldSection>
+
+              <BeeijaWorkloadSummary title="Shared workload summary">
+        <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
+          <p>Requests: {formatInteger(result.requests)} per month</p>
+          <p>Duration: {formatNumber(result.durationSeconds)} seconds</p>
+          <p>Memory: {formatNumber(result.memoryGb)} GB</p>
+          <p>vCPU: {formatNumber(result.vcpu)}</p>
+          <p>
+            Warm requests: {formatInteger(result.warmRequests)} (
+            {formatNumber(result.warmPercent * 100)}%)
+          </p>
+          <p>
+            On-demand requests:{" "}
+            {formatInteger(result.onDemandRequests)}
+          </p>
+          <p>
+            Estimated average requests per second:{" "}
+            {formatNumber(result.averageRequestsPerSecond)}
+          </p>
+          <p>
+            Estimated average concurrency:{" "}
+            {formatNumber(result.estimatedAverageConcurrency)}
+          </p>
+        </div>
+      </BeeijaWorkloadSummary>
+
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-950">
+                  Select Function Plans and Enter Prices
+                </h2>
+                <p className="mt-3 leading-relaxed text-gray-600">
+                  Choose the provider, region, service plan, architecture, and
+                  billing model. Prices remain blank so you can enter the exact
+                  effective rates for each selected plan.
+                </p>
+              </div>
+
+              <div className="mt-6">
+                <BeeijaProviderPlanTabs
+        plans={plans.map((plan, index) => {
+          const provider = getProvider(plan.providerId);
+
+          return {
+            id: plan.id,
+            label: `Plan ${index + 1}`,
+            title: provider.serviceName,
+            subtitle: getRegionLabel(plan, provider),
+          };
+        })}
+        activePlanId={activeEditorPlanId}
+        onChange={openPlanEditor}
+        ariaLabel="Serverless function comparison plans"
+      />
+
+                <div
+                  className="mt-5"
+                  role="tabpanel"
+                  aria-label={`Comparison plan ${activePlanNumber}`}
+                >
+                  <PlanEditor
+                    key={activePlan.id}
+                    planNumber={activePlanNumber}
+                    plan={activePlan}
+                    onChange={(field, value) =>
+                      updatePlan(activePlan.id, field, value)
+                    }
+                    onProviderChange={(providerId) =>
+                      changeProvider(activePlan.id, providerId)
+                    }
                   />
-                ))}
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Select Plan 1, 2, or 3 above to edit it. All three plans remain
+                  included in the ranked comparison.
+                </p>
               </div>
 
-              <ComparisonTable rows={result.comparisonRows} />
-            </div>
-          }
-          totals={
-            <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
-              <p>
-                Selected plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.displayName}
-                </span>
-              </p>
-              <p className="mt-2">
-                Configuration:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.planLabel} ·{" "}
-                  {selectedResult.architectureLabel} ·{" "}
-                  {selectedResult.billingModeLabel}
-                </span>
-              </p>
-              <p className="mt-2">
-                Monthly operating cost:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.monthlyOperatingCost,
-                      )
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Monthly migration allocation:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.configured
-                    ? formatVisibleMoney(
-                        selectedResult.amortizedMigrationCost,
-                      )
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Lowest configured plan:{" "}
-                <span className="font-medium text-gray-900">
-                  {result.cheapest
-                    ? `${result.cheapest.displayName} at ${formatVisibleMoney(
-                        result.cheapest.monthlyPlanningCost,
-                      )} per month`
-                    : "Enter at least one provider price"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Possible monthly saving:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.monthlySaving)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Possible first-year saving:{" "}
-                <span className="font-semibold text-[var(--green)]">
-                  {selectedResult.configured && result.cheapest
-                    ? formatVisibleMoney(result.firstYearSaving)
-                    : "—"}
-                </span>
-              </p>
-              <p className="mt-2">
-                Selected plan price inputs entered:{" "}
-                <span className="font-medium text-gray-900">
-                  {selectedResult.enteredPriceCount} of 14
-                </span>
-              </p>
-              <p className="mt-2">
-                Budget status:{" "}
-                <span
-                  className={`font-semibold ${
-                    result.hasBudget &&
-                    selectedResult.configured &&
-                    selectedResult.budgetDifference < 0
-                      ? "text-red-700"
-                      : "text-[var(--green)]"
-                  }`}
-                >
-                  {!result.hasBudget
-                    ? "Add a budget to compare"
-                    : !selectedResult.configured
-                      ? "Enter the selected provider prices"
-                      : selectedResult.budgetDifference >= 0
-                        ? `${formatVisibleMoney(
-                            selectedResult.budgetDifference,
-                          )} remaining`
-                        : `${formatVisibleMoney(
-                            Math.abs(selectedResult.budgetDifference),
-                          )} over budget`}
-                </span>
-              </p>
-            </div>
-          }
-          provider="AWS Lambda, Azure Functions, Google Cloud Run functions, and custom serverless function plans"
-          excludedCosts="taxes, premium cloud support, API gateways, Eventarc, Event Grid, queues, storage accounts, Cloud Build, Artifact Registry, private networking, public IPv4 addresses, databases, migration labour, negotiated credits, and services not entered"
-          noticeText="Provider, region, service-plan, architecture, free-grant, and billing selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Pricing structures and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
-        />
-      </div>
-    </div>
+              <button
+                type="button"
+                onClick={reset}
+                className="beeija-btn-outline mt-7"
+              >
+                Reset values
+              </button>
+            </BeeijaComparisonInputPanel>
+
+      <BeeijaComparisonResultColumn>
+        <BeeijaCalculatorResultPanel
+                  title="Serverless Functions Cost Comparison"
+                  description="Select a plan for a detailed breakdown. Configured plans are ranked by monthly planning cost."
+                  primaryLabel="Selected monthly planning cost"
+                  primaryValue={
+                    selectedResult.configured
+                      ? formatVisibleMoney(selectedResult.monthlyPlanningCost)
+                      : "Enter provider prices"
+                  }
+                  stats={
+                    <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+                      <ResultStat
+                        label="Cost per million requests"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.costPerMillionRequests,
+                              )
+                            : "—"
+                        }
+                      />
+                      <ResultStat
+                        label="Cost per execution"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.costPerExecution)
+                            : "—"
+                        }
+                      />
+                      <ResultStat
+                        label="First-year cost"
+                        value={
+                          selectedResult.configured
+                            ? formatVisibleMoney(selectedResult.firstYearCost)
+                            : "—"
+                        }
+                      />
+                    </div>
+                  }
+                  breakdown={
+                    <div className="min-w-0 space-y-6">
+                      <BeeijaSelect
+                        label="Detailed plan"
+                        value={selectedPlanId}
+                        onChange={(event) =>
+                          setSelectedPlanId(event.target.value)
+                        }
+                        options={planOptions}
+                      />
+
+                      <div className="rounded-xl border border-gray-200 bg-[#F5FAF7] p-4 text-sm text-gray-700">
+                        <p className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.planLabel} ·{" "}
+                          {selectedResult.architectureLabel}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.billingModeLabel}
+                        </p>
+                        <p className="mt-1">
+                          {selectedResult.configurationLabel}
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {selectedRows.map((row) => (
+                          <BreakdownRow
+                            key={row.label}
+                            label={row.label}
+                            detail={row.detail}
+                            value={row.value}
+                            entered={row.entered}
+                            negative={row.negative}
+                          />
+                        ))}
+                      </div>
+
+                      <ComparisonTable rows={result.comparisonRows} />
+                    </div>
+                  }
+                  totals={
+                    <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
+                      <p>
+                        Selected plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.displayName}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Configuration:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.planLabel} ·{" "}
+                          {selectedResult.architectureLabel} ·{" "}
+                          {selectedResult.billingModeLabel}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Monthly operating cost:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.monthlyOperatingCost,
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Monthly migration allocation:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.configured
+                            ? formatVisibleMoney(
+                                selectedResult.amortizedMigrationCost,
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Lowest configured plan:{" "}
+                        <span className="font-medium text-gray-900">
+                          {result.cheapest
+                            ? `${result.cheapest.displayName} at ${formatVisibleMoney(
+                                result.cheapest.monthlyPlanningCost,
+                              )} per month`
+                            : "Enter at least one provider price"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Possible monthly saving:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.monthlySaving)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Possible first-year saving:{" "}
+                        <span className="font-semibold text-[var(--green)]">
+                          {selectedResult.configured && result.cheapest
+                            ? formatVisibleMoney(result.firstYearSaving)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Selected plan price inputs entered:{" "}
+                        <span className="font-medium text-gray-900">
+                          {selectedResult.enteredPriceCount} of 14
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        Budget status:{" "}
+                        <span
+                          className={`font-semibold ${
+                            result.hasBudget &&
+                            selectedResult.configured &&
+                            selectedResult.budgetDifference < 0
+                              ? "text-red-700"
+                              : "text-[var(--green)]"
+                          }`}
+                        >
+                          {!result.hasBudget
+                            ? "Add a budget to compare"
+                            : !selectedResult.configured
+                              ? "Enter the selected provider prices"
+                              : selectedResult.budgetDifference >= 0
+                                ? `${formatVisibleMoney(
+                                    selectedResult.budgetDifference,
+                                  )} remaining`
+                                : `${formatVisibleMoney(
+                                    Math.abs(selectedResult.budgetDifference),
+                                  )} over budget`}
+                        </span>
+                      </p>
+                    </div>
+                  }
+                  provider="AWS Lambda, Azure Functions, Google Cloud Run functions, and custom serverless function plans"
+                  excludedCosts="taxes, premium cloud support, API gateways, Eventarc, Event Grid, queues, storage accounts, Cloud Build, Artifact Registry, private networking, public IPv4 addresses, databases, migration labour, negotiated credits, and services not entered"
+                  noticeText="Provider, region, service-plan, architecture, free-grant, and billing selections identify the configuration only; they do not load or imply a current price. Enter current effective rates for the exact selected setup. Pricing structures and official billing guidance were checked on June 25, 2026. Blank optional price fields are treated as zero."
+                />
+      </BeeijaComparisonResultColumn>
+</BeeijaComparisonCalculatorLayout>
   );
 }
 
