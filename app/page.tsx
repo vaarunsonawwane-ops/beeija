@@ -97,7 +97,7 @@ export default function HomePage() {
             ✦ Built for you
           </p>
 
-          <h1 className="mt-8 text-4xl font-semibold tracking-tight text-gray-950 md:text-6xl md:leading-tight">
+          <h1 className="mt-8 text-4xl font-semibold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
             Simple cost calculators for better AI, cloud, and technology
             decisions.
           </h1>
