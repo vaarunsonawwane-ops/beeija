@@ -26,16 +26,7 @@ html {
 body {
   background: white;
   color: var(--dark);
-  font-size: 13.5px;
-  line-height: 1.6;
 }
-
-/* Keep Beeija's common small UI text at the same readable size as Yoryantra. */
-.text-sm {
-  font-size: 13.5px;
-  line-height: 1.35rem;
-}
-
 
 button,
 input,
@@ -49,7 +40,6 @@ textarea {
   resize: vertical;
   overflow: auto;
 }
-
 
 /* =========================================
    OUTPUT BOX
@@ -140,4 +130,3 @@ select option {
   background-color: #ffffff;
   color: var(--dark);
 }
-
