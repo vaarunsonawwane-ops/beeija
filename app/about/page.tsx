@@ -38,7 +38,7 @@ export default function AboutPage() {
           </p>
 
           <p>
-            In my case I have also faced the similar issue, I had to move
+            In my case I have also faced a similar issue, I had to move
             between several different platforms just to understand one complete
             requirement. That takes time and breaks the connection between the
             idea in your mind and the decision you are trying to make.
@@ -82,8 +82,7 @@ export default function AboutPage() {
           <p>
             You will directly get what you came for, without unnecessary
             hurdles or clutter. We will not fill pages with distracting
-            pop-ups. In a subtle way we might just show you very minimal ad and
-            that too only for our survival.
+            pop-ups. We might show a small number of ads, only to help keep the website running.
           </p>
 
           <p>
@@ -95,7 +94,7 @@ export default function AboutPage() {
           <p>
             When you move into actual development and need practical tools for
             JSON, encoding, security, DevOps, SEO, APIs, or technical
-            troubleshooting, you can continue with our very own webstie{" "}
+            troubleshooting, you can continue with our very own website{" "}
             <a
               href="https://yoryantra.com"
               target="_blank"
@@ -132,7 +131,7 @@ export default function AboutPage() {
 
           <p>
             <strong className="font-semibold text-gray-950">“Beej”</strong> is
-            a Sanskrit word meaning “seed”, “beginning”, or “starting point”.
+            a Sanskrit word meaning “seed”, “beginning”, or “starting point”. 
             <strong className="font-semibold text-gray-950">
               “Beeija”
             </strong>{" "}
