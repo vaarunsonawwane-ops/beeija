@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "About Beeija",
+  title: "About",
 
   description:
     "Learn about Beeija, a practical platform for AI, cloud, hosting, API, SaaS, capacity, and infrastructure cost planning.",

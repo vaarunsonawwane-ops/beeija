@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Terms of Use | Beeija",
+  title: "Terms of Use",
 
   description:
     "Read the terms and conditions for using Beeija tools and services.",
