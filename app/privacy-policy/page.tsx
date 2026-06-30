@@ -21,8 +21,9 @@ export default function PrivacyPolicyPage() {
         </p>
 
         <p>
-          We use Google Analytics to understand general website usage and improve Beeija.
-          Most calculator inputs are processed directly in your browser and are not stored by Beeija.
+          We may use basic analytics tools to understand usage patterns and
+          improve performance. In the future, we may also use third-party
+          services such as analytics or advertising networks.
         </p>
 
         <p>
