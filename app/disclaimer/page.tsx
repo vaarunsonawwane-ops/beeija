@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Disclaimer | Beeija",
+  title: "Disclaimer",
 
   description:
     "Read the disclaimer for using Beeija tools, utilities, and website content.",
