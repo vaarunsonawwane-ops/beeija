@@ -2,7 +2,7 @@ import Link from "next/link";
 import { tools } from "@/app/data/tools";
 
 export const metadata = {
-  title: "Sitemap",
+  title: "Sitemap | Beeija",
 
   description:
     "Browse all pages, categories, and tools available on Beeija.",

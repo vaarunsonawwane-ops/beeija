@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Contact",
+  title: "Contact | Beeija",
 
   description:
     "Contact Beeija for feedback, suggestions, bugs, pricing updates, or general questions.",

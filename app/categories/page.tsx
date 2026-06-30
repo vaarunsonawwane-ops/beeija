@@ -41,7 +41,7 @@ const categories = [
 ];
 
 export const metadata: Metadata = {
-  title: "Cost Calculator Categories",
+  title: "Cost Calculator Categories | Beeija",
 
   description:
     "Browse AI, cloud, hosting, infrastructure, API, SaaS, capacity, usage, and technology comparison calculator categories on Beeija.",

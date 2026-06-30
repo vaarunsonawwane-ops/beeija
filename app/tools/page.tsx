@@ -2,7 +2,7 @@ import { tools } from "@/app/data/tools";
 import ToolsClient from "./ToolsClient";
 
 export const metadata = {
-  title: "All Tools",
+  title: "All Tools | Beeija",
 
   description:
     "Browse practical calculators and comparison tools for AI costs, cloud pricing, hosting, infrastructure, APIs, SaaS, capacity, usage, and technology planning.",

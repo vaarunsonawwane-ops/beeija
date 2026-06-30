@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Privacy Policy",
+  title: "Privacy Policy | Beeija",
   description:
     "Privacy policy for Beeija tools and website usage.",
 };
