@@ -15,7 +15,7 @@ export default function InfoCard({
 }: InfoCardProps) {
   return (
     <article
-      className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm ${className}`}
+      className={`beeija-feature-card shadow-sm ${className}`}
     >
       {eyebrow ? (
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--yellow-dark)]">
@@ -23,11 +23,11 @@ export default function InfoCard({
         </p>
       ) : null}
 
-      <h3 className="mt-2 text-lg font-semibold text-gray-950">
+      <h3 className="mt-2 beeija-feature-card-title">
         {title}
       </h3>
 
-      <div className="mt-3 text-sm leading-relaxed text-gray-600">
+      <div className="beeija-feature-card-copy">
         {children}
       </div>
     </article>

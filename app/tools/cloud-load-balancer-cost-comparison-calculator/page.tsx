@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
+import BeeijaToolPageHeader from "@/app/components/BeeijaToolPageHeader";
+import InfoCard from "@/app/components/InfoCard";
+import BeeijaOfficialPricingSources from "@/app/components/BeeijaOfficialPricingSources";
+import {
+  BeeijaQuestionList,
+  BeeijaYellowLineList,
+} from "@/app/components/BeeijaContentBlocks";
+import { BeeijaRelatedToolsSection } from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
 const title = "Cloud Load Balancer Cost Comparison Calculator";
@@ -39,117 +45,79 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <nav className="mb-14 text-sm text-slate-500" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-[#165A31]">
-          Home
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href="/tools" className="hover:text-[#165A31]">
-          Tools
-        </Link>
-      </nav>
-
-      <div className="mb-8">
-        <Link
-          href="/tools"
-          className="text-sm font-medium text-[#165A31] hover:underline"
-        >
-          ← Back to Tools
-        </Link>
-      </div>
-
-      <section className="mb-10 max-w-4xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#a67c00]">
-          Cloud Cost Calculators
-        </p>
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-          Cloud Load Balancer Cost Comparison Calculator
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-slate-700">
+    <main className="beeija-page">
+      <BeeijaToolPageHeader
+        title={title}
+        category="Cloud Cost Calculators"
+        pricingCheckedDate="July 7, 2026"
+        description={
+          <>
           Estimate monthly load balancer cost across AWS, Azure, Google Cloud,
           and Cloudflare using the same workload assumptions. Enter the current
           rates from the provider pricing pages, then compare base runtime,
           capacity units, processed traffic, forwarding rules, outbound
           transfer, WAF, logging, and optional setup cost in one clean view.
-        </p>
-        <div className="mt-4 rounded-lg border-l-4 border-[#F2C94C] bg-[#fffdf3] p-4 text-base leading-7 text-slate-700">
-          Pricing model checked: <strong>July 7, 2026</strong>. Prices are not
-          hardcoded because load balancer rates vary by provider, region,
-          product type, account agreement, currency, discounts, and traffic
-          shape.
-        </div>
-      </section>
+          </>
+        }
+        pricingNote={
+          <>
+            Prices are not hardcoded because load balancer rates vary by
+            provider, region, product type, account agreement, currency,
+            discounts, and traffic shape.
+          </>
+        }
+      />
 
       <ToolClient />
 
-      <section className="mt-10 grid gap-5 md:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <h2 className="text-xl font-semibold text-slate-950">
-            Compare real workload shape
-          </h2>
-          <p className="mt-2 text-base leading-7 text-slate-600">
+      <section className="beeija-feature-grid">
+        <InfoCard title="Compare real workload shape" className="rounded-lg">
+          <>
             Load balancer cost is not just one hourly line. The estimate can
             change when traffic grows, more rules are added, capacity units rise,
             or outbound transfer becomes a bigger part of the bill.
-          </p>
-        </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <h2 className="text-xl font-semibold text-slate-950">
-            Keep provider prices editable
-          </h2>
-          <p className="mt-2 text-base leading-7 text-slate-600">
+          </>
+        </InfoCard>
+        <InfoCard title="Keep provider prices editable" className="rounded-lg">
+          <>
             AWS, Azure, Google Cloud, and Cloudflare do not price every load
             balancing setup the same way. Editable rates help you use current
             official numbers instead of trusting an outdated preset.
-          </p>
-        </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <h2 className="text-xl font-semibold text-slate-950">
-            Read the estimate safely
-          </h2>
-          <p className="mt-2 text-base leading-7 text-slate-600">
+          </>
+        </InfoCard>
+        <InfoCard title="Read the estimate safely" className="rounded-lg">
+          <>
             Use the result as a planning number before tax, support plans,
             reserved discounts, committed-use discounts, free tier credits, and
             provider-specific billing rules.
-          </p>
-        </div>
+          </>
+        </InfoCard>
       </section>
 
-      <section className="mt-10 max-w-4xl space-y-5">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+      <section className="beeija-section space-y-5">
+        <h2 className="beeija-section-title">
           When This Load Balancer Calculator Helps
         </h2>
-        <p className="text-base leading-8 text-slate-700">
+        <p className="beeija-copy">
           This calculator is useful when you are choosing between a managed
           application load balancer, gateway, traffic steering service, or CDN
           load balancing setup before moving a project to production. It helps
           compare costs that are easy to miss when you only look at a base
           hourly price.
         </p>
-        <ul className="space-y-3 border-l-4 border-[#F2C94C] pl-5 text-base leading-7 text-slate-700">
-          <li>
-            Estimate monthly cost for one production load balancer.
-          </li>
-          <li>
-            Compare AWS ALB-style pricing with Azure, Google Cloud, or
-            Cloudflare planning inputs.
-          </li>
-          <li>
-            Add WAF, logging, monitoring, data processing, and transfer cost
-            before deciding.
-          </li>
-          <li>
-            Stress test traffic growth without breaking the page layout.
-          </li>
-        </ul>
+        <BeeijaYellowLineList
+          items={[
+            "Estimate monthly cost for one production load balancer.",
+            "Compare AWS ALB-style pricing with Azure, Google Cloud, or Cloudflare planning inputs.",
+            "Add WAF, logging, monitoring, data processing, and transfer cost before deciding.",
+            "Stress test traffic growth without breaking the page layout.",
+          ]}
+        />
       </section>
 
-      <section className="mt-10 max-w-4xl space-y-5">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-          What The Estimate Includes
-        </h2>
-        <p className="text-base leading-8 text-slate-700">
+      <section className="beeija-section space-y-5">
+        <h2 className="beeija-section-title">What The Estimate Includes</h2>
+        <p className="beeija-copy">
           The result can include base hourly runtime, average capacity or LCU
           usage, processed GB, forwarding rule charges, outbound transfer, WAF,
           logging, monitoring, and optional one-time setup cost spread across a
@@ -158,99 +126,53 @@ export default function Page() {
         </p>
       </section>
 
-      <section className="mt-10 max-w-4xl space-y-5">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-          Official Pricing Sources
-        </h2>
-        <p className="text-base leading-8 text-slate-700">
-          The pricing model and billing notes for this calculator were checked
-          against official provider pages on <strong>July 7, 2026</strong>. Use
-          these links to copy the latest rates for your selected region, product
-          type, account agreement, and currency before making a purchase
-          decision.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="https://aws.amazon.com/elasticloadbalancing/pricing/"
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
-          >
-            Amazon Elastic Load Balancing Pricing
-          </a>
-          <a
-            href="https://azure.microsoft.com/en-us/pricing/details/application-gateway/"
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
-          >
-            Azure Application Gateway Pricing
-          </a>
-          <a
-            href="https://cloud.google.com/load-balancing/pricing"
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
-          >
-            Google Cloud Load Balancing Pricing
-          </a>
-          <a
-            href="https://www.cloudflare.com/products/load-balancing/"
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
-          >
-            Cloudflare Load Balancing Pricing
-          </a>
-        </div>
+      <BeeijaOfficialPricingSources
+        checkedDate="July 7, 2026"
+        description="The pricing model and billing notes for this calculator were checked against official provider pages."
+        sources={[
+          {
+            label: "Amazon Elastic Load Balancing Pricing",
+            href: "https://aws.amazon.com/elasticloadbalancing/pricing/",
+          },
+          {
+            label: "Azure Application Gateway Pricing",
+            href: "https://azure.microsoft.com/en-us/pricing/details/application-gateway/",
+          },
+          {
+            label: "Google Cloud Load Balancing Pricing",
+            href: "https://cloud.google.com/load-balancing/pricing",
+          },
+          {
+            label: "Cloudflare Load Balancing Pricing",
+            href: "https://www.cloudflare.com/products/load-balancing/",
+          },
+        ]}
+      />
+
+      <section className="beeija-section space-y-5">
+        <h2 className="beeija-section-title">Common Questions</h2>
+        <BeeijaQuestionList
+          questions={[
+            {
+              question: "Why are the provider prices blank?",
+              answer:
+                "Load balancer pricing changes by provider, service type, region, usage unit, account agreement, currency, and discount. Blank price fields make the estimate safer because you can enter the current rate for the exact setup you are checking.",
+            },
+            {
+              question: "Is this the exact monthly bill?",
+              answer:
+                "No. It is a planning estimate. Final bills can change because of tax, support plans, credits, free tiers, minimum charges, retries, extra services, traffic routing, logs, security rules, discounts, and provider billing updates.",
+            },
+            {
+              question: "Why does outbound transfer matter?",
+              answer:
+                "Many users check only the load balancer hourly price, but internet egress, processed traffic, logs, WAF, and related network services can become a meaningful part of the monthly cost.",
+            },
+          ]}
+        />
       </section>
 
-      <section className="mt-10 max-w-4xl space-y-5">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-          Common Questions
-        </h2>
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold text-slate-950">
-              Why are the provider prices blank?
-            </h3>
-            <p className="mt-3 text-base leading-7 text-slate-700">
-              Load balancer pricing changes by provider, service type, region,
-              usage unit, account agreement, currency, and discount. Blank
-              price fields make the estimate safer because you can enter the
-              current rate for the exact setup you are checking.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-950">
-              Is this the exact monthly bill?
-            </h3>
-            <p className="mt-3 text-base leading-7 text-slate-700">
-              No. It is a planning estimate. Final bills can change because of
-              tax, support plans, credits, free tiers, minimum charges, retries,
-              extra services, traffic routing, logs, security rules, discounts,
-              and provider billing updates.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-950">
-              Why does outbound transfer matter?
-            </h3>
-            <p className="mt-3 text-base leading-7 text-slate-700">
-              Many users check only the load balancer hourly price, but internet
-              egress, processed traffic, logs, WAF, and related network services
-              can become a meaningful part of the monthly cost.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="mb-4 text-2xl font-semibold tracking-tight text-slate-950">
-          Explore Related Cloud Cost Tools
-        </h2>
-        <BeeijaRelatedTools currentHref="/tools/cloud-load-balancer-cost-comparison-calculator" />
-      </section>
+      <BeeijaRelatedToolsSection currentHref="/tools/cloud-load-balancer-cost-comparison-calculator" />
     </main>
   );
 }

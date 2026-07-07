@@ -1,6 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaResultLine from "@/app/components/BeeijaResultLine";
+import {
+  formatBeeijaCurrency,
+  formatBeeijaNumber,
+  parseBeeijaNumber,
+} from "@/app/components/BeeijaFormat";
 
 type ProviderId = "aws" | "azure" | "google" | "cloudflare";
 
@@ -83,51 +90,6 @@ const defaultUsage: UsageFields = {
   migrationMonths: "12",
 };
 
-const MAX_INPUT_LENGTH = 12;
-const MAX_NUMBER = 999_999_999_999;
-
-function cleanNumberInput(value: string) {
-  const cleaned = value.replace(/[^\d.]/g, "");
-  const parts = cleaned.split(".");
-  const normalized =
-    parts.length > 1 ? `${parts[0]}.${parts.slice(1).join("")}` : parts[0];
-
-  return normalized.slice(0, MAX_INPUT_LENGTH);
-}
-
-function parseNumber(value: string) {
-  if (!value.trim()) return 0;
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed < 0) return 0;
-  return Math.min(parsed, MAX_NUMBER);
-}
-
-function hasInputWarning(value: string) {
-  return Number(value) > MAX_NUMBER || value.length >= MAX_INPUT_LENGTH;
-}
-
-function formatCompactNumber(value: number) {
-  if (!Number.isFinite(value)) return "0";
-  if (value >= 999_000_000_000_000) return "Very high value";
-
-  return new Intl.NumberFormat("en-US", {
-    notation: "standard",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function formatCurrency(value: number) {
-  if (!Number.isFinite(value)) return "$0.00";
-  if (value >= 999_000_000_000_000) return "Very high estimate";
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "standard",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
 function safeDivide(value: number, divisor: number) {
   if (!divisor) return 0;
   return value / divisor;
@@ -151,22 +113,22 @@ function calculateCost(
   rates: RateFields,
   usage: UsageFields,
 ): CostBreakdown {
-  const hours = parseNumber(usage.monthlyHours);
-  const units = parseNumber(usage.capacityUnits);
-  const processedGb = parseNumber(usage.processedGb);
-  const outboundGb = parseNumber(usage.outboundGb);
-  const rules = parseNumber(usage.forwardingRules);
-  const migrationMonths = Math.max(parseNumber(usage.migrationMonths), 1);
+  const hours = parseBeeijaNumber(usage.monthlyHours);
+  const units = parseBeeijaNumber(usage.capacityUnits);
+  const processedGb = parseBeeijaNumber(usage.processedGb);
+  const outboundGb = parseBeeijaNumber(usage.outboundGb);
+  const rules = parseBeeijaNumber(usage.forwardingRules);
+  const migrationMonths = Math.max(parseBeeijaNumber(usage.migrationMonths), 1);
 
-  const hourlyBase = hours * parseNumber(rates.loadBalancerHourly);
-  const capacity = hours * units * parseNumber(rates.capacityUnitHourly);
-  const dataProcessing = processedGb * parseNumber(rates.dataProcessingPerGb);
-  const forwardingRules = hours * rules * parseNumber(rates.forwardingRuleHourly);
-  const outboundTransfer = outboundGb * parseNumber(rates.outboundTransferPerGb);
-  const waf = parseNumber(rates.wafMonthly);
-  const logging = parseNumber(rates.loggingMonthly);
+  const hourlyBase = hours * parseBeeijaNumber(rates.loadBalancerHourly);
+  const capacity = hours * units * parseBeeijaNumber(rates.capacityUnitHourly);
+  const dataProcessing = processedGb * parseBeeijaNumber(rates.dataProcessingPerGb);
+  const forwardingRules = hours * rules * parseBeeijaNumber(rates.forwardingRuleHourly);
+  const outboundTransfer = outboundGb * parseBeeijaNumber(rates.outboundTransferPerGb);
+  const waf = parseBeeijaNumber(rates.wafMonthly);
+  const logging = parseBeeijaNumber(rates.loggingMonthly);
   const migrationMonthly = safeDivide(
-    parseNumber(rates.migrationOneTime),
+    parseBeeijaNumber(rates.migrationOneTime),
     migrationMonths,
   );
 
@@ -209,64 +171,16 @@ function NumberInput({
   prefix,
   suffix,
 }: NumberInputProps) {
-  const warning = hasInputWarning(value);
-
   return (
-    <label className="block min-w-0">
-      <span className="mb-1 block text-sm font-medium text-slate-700">
-        {label}
-      </span>
-      <span
-        className={`flex min-w-0 items-center rounded-md border bg-white px-2 ${
-          warning ? "border-amber-500" : "border-slate-300"
-        }`}
-      >
-        {prefix ? (
-          <span className="shrink-0 text-sm text-slate-500">{prefix}</span>
-        ) : null}
-        <input
-          inputMode="decimal"
-          value={value}
-          onChange={(event) => onChange(cleanNumberInput(event.target.value))}
-          className="min-w-0 flex-1 bg-transparent px-1 py-2 text-base text-slate-900 outline-none"
-          placeholder="0"
-          aria-label={label}
-        />
-        {suffix ? (
-          <span className="shrink-0 text-sm text-slate-500">{suffix}</span>
-        ) : null}
-      </span>
-      <span className="mt-1 block text-xs leading-5 text-slate-500">
-        {warning
-          ? "Use a smaller planning value or split the workload into parts."
-          : helper}
-      </span>
-    </label>
-  );
-}
-
-function ResultLine({
-  label,
-  value,
-  muted,
-}: {
-  label: string;
-  value: string;
-  muted?: boolean;
-}) {
-  return (
-    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 rounded-md bg-white px-3 py-2">
-      <span
-        className={`min-w-0 text-base leading-6 ${
-          muted ? "text-slate-500" : "text-slate-700"
-        }`}
-      >
-        {label}
-      </span>
-      <span className="max-w-[9rem] truncate text-right text-base font-semibold tabular-nums text-slate-900 sm:max-w-[12rem]">
-        {value}
-      </span>
-    </div>
+    <BeeijaNumberField
+      label={label}
+      value={value}
+      onChange={onChange}
+      helper={helper}
+      prefix={prefix}
+      suffix={suffix}
+      sanitizeDecimal
+    />
   );
 }
 
@@ -456,7 +370,7 @@ export default function ToolClient() {
               <button
                 type="button"
                 onClick={resetRates}
-                className="rounded-lg border border-[#165A31] bg-white px-4 py-2 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
+                className="beeija-btn-outline"
               >
                 Reset rates
               </button>
@@ -540,7 +454,7 @@ export default function ToolClient() {
             <div className="mt-4 rounded-lg border border-[#d7eadf] bg-white p-4">
               <p className="text-base text-slate-500">Estimated monthly cost</p>
               <p className="mt-2 truncate text-3xl font-semibold tracking-tight text-[#165A31]">
-                {formatCurrency(activeResult.total)}
+                {formatBeeijaCurrency(activeResult.total)}
               </p>
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 This is a planning estimate before tax, discounts, free tier,
@@ -550,29 +464,29 @@ export default function ToolClient() {
             </div>
 
             <div className="mt-4 space-y-2">
-              <ResultLine
+              <BeeijaResultLine
                 label="Base load balancer runtime"
-                value={formatCurrency(activeResult.hourlyBase)}
+                value={formatBeeijaCurrency(activeResult.hourlyBase)}
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="Capacity or LCU usage"
-                value={formatCurrency(activeResult.capacity)}
+                value={formatBeeijaCurrency(activeResult.capacity)}
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="Data processing"
-                value={formatCurrency(activeResult.dataProcessing)}
+                value={formatBeeijaCurrency(activeResult.dataProcessing)}
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="Forwarding rules"
-                value={formatCurrency(activeResult.forwardingRules)}
+                value={formatBeeijaCurrency(activeResult.forwardingRules)}
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="Outbound transfer"
-                value={formatCurrency(activeResult.outboundTransfer)}
+                value={formatBeeijaCurrency(activeResult.outboundTransfer)}
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="WAF, logging, and setup"
-                value={formatCurrency(
+                value={formatBeeijaCurrency(
                   activeResult.waf +
                     activeResult.logging +
                     activeResult.migrationMonthly,
@@ -610,7 +524,7 @@ export default function ToolClient() {
                     </span>
                   </span>
                   <span className="max-w-[7rem] truncate text-right text-base font-semibold tabular-nums text-slate-950 sm:max-w-[10rem]">
-                    {formatCurrency(result.total)}
+                    {formatBeeijaCurrency(result.total)}
                   </span>
                 </button>
               ))}
@@ -622,30 +536,30 @@ export default function ToolClient() {
               Calculation details
             </summary>
             <div className="mt-4 space-y-2">
-              <ResultLine
+              <BeeijaResultLine
                 label="Monthly hours"
-                value={formatCompactNumber(parseNumber(usage.monthlyHours))}
+                value={formatBeeijaNumber(parseBeeijaNumber(usage.monthlyHours))}
                 muted
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="Capacity units"
-                value={formatCompactNumber(parseNumber(usage.capacityUnits))}
+                value={formatBeeijaNumber(parseBeeijaNumber(usage.capacityUnits))}
                 muted
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="Processed data"
-                value={`${formatCompactNumber(parseNumber(usage.processedGb))} GB`}
+                value={`${formatBeeijaNumber(parseBeeijaNumber(usage.processedGb))} GB`}
                 muted
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="Outbound transfer"
-                value={`${formatCompactNumber(parseNumber(usage.outboundGb))} GB`}
+                value={`${formatBeeijaNumber(parseBeeijaNumber(usage.outboundGb))} GB`}
                 muted
               />
-              <ResultLine
+              <BeeijaResultLine
                 label="One-time setup spread"
-                value={`${formatCompactNumber(
-                  Math.max(parseNumber(usage.migrationMonths), 1),
+                value={`${formatBeeijaNumber(
+                  Math.max(parseBeeijaNumber(usage.migrationMonths), 1),
                 )} months`}
                 muted
               />

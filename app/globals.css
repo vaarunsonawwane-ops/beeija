@@ -26,6 +26,8 @@ html {
 body {
   background: white;
   color: var(--dark);
+  font-size: 16px;
+  line-height: 1.7;
 }
 
 button,
@@ -64,7 +66,170 @@ textarea {
 
   /* FONT CONSISTENCY */
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
+}
+
+/* =========================================
+   TOOL PAGE TYPOGRAPHY AND LAYOUT
+========================================= */
+
+.beeija-page {
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .beeija-page {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .beeija-page {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.beeija-breadcrumb {
+  margin-bottom: 3.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+.beeija-back-link {
+  display: inline-flex;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--green);
+  transition: color 0.2s ease;
+}
+
+.beeija-back-link:hover {
+  color: var(--yellow-dark);
+  text-decoration: underline;
+}
+
+.beeija-category-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--yellow-dark);
+}
+
+.beeija-tool-title {
+  margin-top: 1.5rem;
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: #020617;
+}
+
+.beeija-tool-description {
+  margin-top: 1.5rem;
+  max-width: 56rem;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.beeija-pricing-note {
+  margin-top: 1rem;
+  border-left: 4px solid #f2c94c;
+  border-radius: 0.5rem;
+  background: #fffdf3;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #334155;
+}
+
+.beeija-section {
+  margin-top: 2.5rem;
+  max-width: 56rem;
+}
+
+.beeija-section-title {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #020617;
+}
+
+.beeija-copy {
+  font-size: 1rem;
+  line-height: 2;
+  color: #334155;
+}
+
+.beeija-feature-grid {
+  margin-top: 2.5rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .beeija-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.beeija-feature-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  padding: 1.25rem;
+}
+
+.beeija-feature-card-title {
+  font-size: 1.25rem;
+  line-height: 1.35;
+  font-weight: 600;
+  color: #020617;
+}
+
+.beeija-feature-card-copy {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #475569;
+}
+
+.beeija-yellow-line-list {
+  border-left: 4px solid #f2c94c;
+  padding-left: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #334155;
+}
+
+.beeija-yellow-line-list > * + * {
+  margin-top: 0.75rem;
+}
+
+.beeija-question-list > * + * {
+  margin-top: 1.5rem;
+}
+
+.beeija-question-title {
+  font-size: 1.125rem;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #020617;
+}
+
+.beeija-question-answer {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #334155;
 }
 
 /* =========================================
@@ -74,8 +239,9 @@ textarea {
 .beeija-btn {
   background-color: var(--green);
   color: white;
-  padding: 10px 18px;
+  padding: 12px 18px;
   border-radius: 12px;
+  font-size: 1rem;
   font-weight: 500;
   transition:
     background-color 0.2s ease,
@@ -96,18 +262,21 @@ textarea {
   border: 1px solid var(--green);
   color: var(--green);
   background: white;
-  padding: 10px 18px;
+  padding: 12px 18px;
   border-radius: 12px;
+  font-size: 1rem;
   font-weight: 500;
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .beeija-btn-outline:hover {
   background-color: rgba(47, 111, 78, 0.06);
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(22, 90, 49, 0.08);
 }
 
 /* Beeija global select styling */

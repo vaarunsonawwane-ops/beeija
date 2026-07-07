@@ -75,7 +75,7 @@ export default function BeeijaSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className={`relative flex min-h-12 w-full items-center justify-between rounded-xl border bg-white px-4 py-3 text-left text-sm text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
+        className={`relative flex min-h-12 w-full items-center justify-between rounded-xl border bg-white px-4 py-3 text-left text-base text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${
           open
             ? "border-[var(--green)] ring-1 ring-[var(--green)]"
             : "border-gray-300 hover:border-gray-400"
@@ -116,7 +116,7 @@ export default function BeeijaSelect({
                 role="option"
                 aria-selected={active}
                 onClick={() => chooseOption(option.value)}
-                className={`block w-full px-4 py-2.5 text-left text-sm transition ${
+                className={`block w-full px-4 py-2.5 text-left text-base transition ${
                   active
                     ? "bg-[#F5FAF7] font-medium text-[var(--green)]"
                     : "bg-white text-gray-900 hover:bg-[#FFFBEA]"

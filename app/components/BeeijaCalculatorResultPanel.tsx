@@ -58,13 +58,13 @@ export default function BeeijaCalculatorResultPanel({
       </h2>
 
       {description ? (
-        <p className="mt-3 min-w-0 break-words leading-relaxed text-gray-600">
+        <p className="mt-3 min-w-0 break-words text-base leading-7 text-gray-600">
           {description}
         </p>
       ) : null}
 
       <div className="mt-7 min-w-0 max-w-full overflow-hidden rounded-2xl bg-white p-6 shadow-sm">
-        <p className="min-w-0 break-words text-sm font-medium text-gray-500">
+        <p className="min-w-0 break-words text-base font-medium text-gray-500">
           {primaryLabel}
         </p>
 

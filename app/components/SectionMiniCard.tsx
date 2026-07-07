@@ -19,7 +19,7 @@ export default function SectionMiniCard({
         {title}
       </h3>
 
-      <div className="mt-2 text-sm leading-relaxed text-gray-600">
+      <div className="mt-2 text-base leading-7 text-gray-600">
         {children}
       </div>
     </article>
