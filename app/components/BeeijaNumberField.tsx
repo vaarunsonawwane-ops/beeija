@@ -62,7 +62,7 @@ export default function BeeijaNumberField({
           disabled
             ? "opacity-60"
             : warning
-              ? "border-amber-500 focus-within:ring-1 focus-within:ring-amber-500"
+              ? "border-[var(--yellow)] focus-within:ring-1 focus-within:ring-[var(--yellow)]"
               : "focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]"
         }`}
       >
