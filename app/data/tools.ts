@@ -610,6 +610,13 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
 },
 
+{
+  title: "Cloud Load Balancer Cost Comparison Calculator",
+  description:
+    "Compare AWS Application Load Balancer, Azure Application Gateway, Google Cloud Load Balancing, and custom load balancer costs using runtime, capacity units, processed traffic, forwarding rules, outbound transfer, WAF, logging, and migration cost.",
+  href: "/tools/cloud-load-balancer-cost-comparison-calculator",
+  category: "Cloud Cost Calculators",
+},
   
   
   
