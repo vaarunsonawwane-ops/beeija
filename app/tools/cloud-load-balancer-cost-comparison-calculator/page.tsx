@@ -256,10 +256,7 @@ export default function CloudLoadBalancerCostComparisonCalculatorPage() {
           {
             title: "Explore Related Cloud Cost Tools",
             content: (
-              <BeeijaRelatedTools
-                currentHref="/tools/cloud-load-balancer-cost-comparison-calculator"
-                category="Cloud Cost Calculators"
-              />
+              <BeeijaRelatedTools currentHref="/tools/cloud-load-balancer-cost-comparison-calculator" />
             ),
           },
         ]}
