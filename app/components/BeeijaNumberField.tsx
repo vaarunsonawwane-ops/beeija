@@ -53,12 +53,12 @@ export default function BeeijaNumberField({
 
   return (
     <label htmlFor={inputId} className="block min-w-0">
-      <span className="mb-2 block text-sm font-medium leading-6 text-gray-800">
+      <span className="mb-1.5 block text-sm font-semibold leading-6 text-slate-800">
         {label}
       </span>
 
       <div
-        className={`flex min-h-[52px] min-w-0 items-stretch overflow-hidden rounded-xl border border-gray-300 bg-white transition ${
+        className={`relative min-w-0 rounded-lg border border-slate-300 bg-white transition ${
           disabled
             ? "opacity-60"
             : warning
@@ -67,7 +67,7 @@ export default function BeeijaNumberField({
         }`}
       >
         {prefix ? (
-          <span className="flex shrink-0 items-center border-r border-gray-200 px-3 text-sm font-semibold text-[var(--green)]">
+          <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-sm font-semibold text-[var(--green)]">
             {prefix}
           </span>
         ) : null}
@@ -83,18 +83,20 @@ export default function BeeijaNumberField({
           maxLength={sanitizeDecimal ? maxLength : undefined}
           disabled={disabled}
           onChange={handleChange}
-          className="min-w-0 flex-1 bg-transparent px-3 py-3 text-base text-gray-900 outline-none [appearance:textfield] disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className={`min-h-[42px] w-full min-w-0 bg-transparent py-2.5 text-base text-slate-900 outline-none [appearance:textfield] placeholder:text-slate-400 disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+            prefix ? "pl-8" : "pl-3"
+          } ${suffix ? "pr-24" : "pr-3"}`}
         />
 
         {suffix ? (
-          <span className="flex shrink-0 items-center whitespace-nowrap border-l border-gray-200 px-3 text-sm font-semibold text-[var(--yellow-dark)]">
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 whitespace-nowrap text-sm font-medium text-slate-500">
             {suffix}
           </span>
         ) : null}
       </div>
 
       {helper || warning ? (
-        <span className="mt-1 block text-xs leading-5 text-gray-500">
+        <span className="mt-1 block text-sm leading-5 text-slate-500">
           {warning
             ? "Use a smaller planning value or split the workload into parts."
             : helper}

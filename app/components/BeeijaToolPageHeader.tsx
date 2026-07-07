@@ -7,6 +7,7 @@ type BeeijaToolPageHeaderProps = {
   category: string;
   pricingCheckedDate?: string;
   pricingNote?: ReactNode;
+  showBreadcrumb?: boolean;
 };
 
 export default function BeeijaToolPageHeader({
@@ -15,18 +16,21 @@ export default function BeeijaToolPageHeader({
   category,
   pricingCheckedDate,
   pricingNote,
+  showBreadcrumb = false,
 }: BeeijaToolPageHeaderProps) {
   return (
     <>
-      <nav className="beeija-breadcrumb" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-[var(--green)]">
-          Home
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href="/tools" className="hover:text-[var(--green)]">
-          Tools
-        </Link>
-      </nav>
+      {showBreadcrumb ? (
+        <nav className="beeija-breadcrumb" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-[var(--green)]">
+            Home
+          </Link>
+          <span className="mx-2">/</span>
+          <Link href="/tools" className="hover:text-[var(--green)]">
+            Tools
+          </Link>
+        </nav>
+      ) : null}
 
       <div className="mb-8">
         <Link href="/tools" className="beeija-back-link">

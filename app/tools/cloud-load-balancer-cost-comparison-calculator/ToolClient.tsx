@@ -298,15 +298,6 @@ export default function ToolClient() {
             ))}
           </div>
 
-          <div className="mt-5 rounded-lg border border-[#d7eadf] bg-[#f8fcfa] p-4">
-            <h3 className="text-base font-semibold text-slate-950">
-              {activeProvider.name}
-            </h3>
-            <p className="mt-1 text-base leading-7 text-slate-600">
-              {activeProvider.note}
-            </p>
-          </div>
-
           <div className="mt-5">
             <h3 className="text-base font-semibold text-slate-950">
               Shared workload assumptions
@@ -357,15 +348,12 @@ export default function ToolClient() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="mt-6 border-t border-slate-200 pt-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <h3 className="text-lg font-semibold text-slate-950">
-                  {activeProvider.name}
+                  {activeProvider.shortName} price inputs
                 </h3>
-                <p className="mt-1 text-base leading-6 text-slate-600">
-                  {activeProvider.exampleService}
-                </p>
               </div>
               <button
                 type="button"
@@ -375,7 +363,10 @@ export default function ToolClient() {
                 Reset rates
               </button>
             </div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {activeProvider.note}
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <NumberInput
                 label="Load balancer hourly price"
                 value={activeRates.loadBalancerHourly}
