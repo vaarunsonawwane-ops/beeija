@@ -1,266 +1,195 @@
 import type { Metadata } from "next";
-
+import Link from "next/link";
 import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
-import ToolContent from "@/app/components/ToolContent";
-import ToolShell from "@/app/components/ToolShell";
 import ToolClient from "./ToolClient";
 
+const title = "Cloud Load Balancer Cost Comparison Calculator";
+const description =
+  "Compare AWS, Azure, Google Cloud, and Cloudflare load balancer costs using editable hourly, capacity, data processing, transfer, WAF, logging, and setup inputs.";
+const href = "/tools/cloud-load-balancer-cost-comparison-calculator";
+
 export const metadata: Metadata = {
-  title: "Cloud Load Balancer Cost Comparison Calculator",
-  description:
-    "Compare AWS Application Load Balancer, Azure Application Gateway, Google Cloud Load Balancing, and custom load balancer costs using runtime, capacity units, processed traffic, forwarding rules, outbound transfer, WAF, logging, and migration cost.",
-  keywords: [
-    "cloud load balancer cost comparison calculator",
-    "AWS load balancer cost calculator",
-    "AWS ALB cost calculator",
-    "Azure Application Gateway cost calculator",
-    "Google Cloud Load Balancing cost calculator",
-    "load balancer pricing comparison",
-    "ALB LCU calculator",
-    "Application Gateway capacity unit calculator",
-    "Google Cloud forwarding rules cost calculator",
-    "cloud load balancer monthly cost",
-    "load balancer traffic cost calculator",
-    "cloud network cost calculator",
-  ],
+  title: `${title} | Beeija`,
+  description,
   alternates: {
-    canonical:
-      "https://beeija.com/tools/cloud-load-balancer-cost-comparison-calculator",
+    canonical: href,
   },
   openGraph: {
-    title: "Cloud Load Balancer Cost Comparison Calculator",
-    description:
-      "Compare load balancer runtime, capacity, forwarding rules, processed traffic, transfer, logging, WAF, migration, and first-year planning cost.",
-    url: "https://beeija.com/tools/cloud-load-balancer-cost-comparison-calculator",
+    title: `${title} | Beeija`,
+    description,
+    url: href,
     siteName: "Beeija",
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Cloud Load Balancer Cost Comparison Calculator",
-    description:
-      "Estimate and compare AWS, Azure, Google Cloud, and custom load balancer costs before choosing a cloud design.",
+    card: "summary",
+    title: `${title} | Beeija`,
+    description,
   },
+  keywords: [
+    "cloud load balancer cost calculator",
+    "AWS load balancer cost calculator",
+    "Azure application gateway cost calculator",
+    "Google Cloud load balancer cost calculator",
+    "Cloudflare load balancing cost calculator",
+    "load balancer pricing comparison",
+    "cloud cost calculator",
+  ],
 };
 
-const faqs = [
-  {
-    question: "What costs are included in this cloud load balancer estimate?",
-    answer:
-      "The calculator can include load balancer runtime, AWS-style LCU usage, Azure-style capacity units, Google-style forwarding rules, processed inbound and outbound traffic, internet transfer out, WAF cost, logging, support allocation, fixed monthly costs, and amortised migration or setup cost.",
-  },
-  {
-    question: "Why are internet transfer prices blank by default?",
-    answer:
-      "Internet data transfer depends on provider, region, destination, CDN use, private connectivity, monthly tier, and contract. Enter the current rate for the exact traffic path you are comparing.",
-  },
-  {
-    question: "How does the AWS Application Load Balancer estimate work?",
-    answer:
-      "The AWS plan estimates a simplified ALB charge from load balancer hours and the highest LCU dimension entered: new connections, active connections, processed bytes, or rule evaluations. Use AWS Pricing Calculator for final production estimates.",
-  },
-  {
-    question: "How does the Azure Application Gateway estimate work?",
-    answer:
-      "The Azure plan separates a fixed gateway-hour charge from capacity-unit hours. Capacity units depend on connection, throughput, and compute behaviour, so enter the average capacity units you expect or get from Azure sizing guidance.",
-  },
-  {
-    question: "How does the Google Cloud Load Balancing estimate work?",
-    answer:
-      "The Google plan estimates forwarding-rule hours plus load-balancer data processing. Google pricing can differ for global, regional, internal, external, proxy, passthrough, and cross-region designs, so the fields stay editable.",
-  },
-  {
-    question: "Does this include backend compute cost?",
-    answer:
-      "No. Backend VMs, Kubernetes nodes, containers, serverless services, databases, storage, CDN, DNS, certificates, security products, and observability tools are separate unless you add them as fixed monthly cost.",
-  },
-  {
-    question: "Should I choose the lowest monthly result?",
-    answer:
-      "Not automatically. Check Layer 4 versus Layer 7 features, TLS termination, WAF needs, private/internal traffic, zone design, health checks, failover, limits, latency, operational effort, and provider fit before choosing.",
-  },
-];
-
-export default function CloudLoadBalancerCostComparisonCalculatorPage() {
+export default function Page() {
   return (
-    <ToolShell
-      title="Cloud Load Balancer Cost Comparison Calculator"
-      description="Compare AWS, Azure, Google Cloud, and custom load balancer costs using the same traffic workload and editable provider prices."
-      category="Cloud Cost Calculators"
-    >
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-6">
+        <Link
+          href="/tools"
+          className="text-sm font-medium text-[#165A31] hover:underline"
+        >
+          Back to tools
+        </Link>
+      </div>
+
+      <section className="mb-8 max-w-3xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-[#165A31]">
+          Cloud Cost Calculators
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+          Cloud Load Balancer Cost Comparison Calculator
+        </h1>
+        <p className="mt-4 text-base leading-7 text-slate-700">
+          Estimate monthly load balancer cost across AWS, Azure, Google Cloud,
+          and Cloudflare using the same workload assumptions. Enter the current
+          rates from the provider pricing pages, then compare base runtime,
+          capacity units, processed traffic, forwarding rules, outbound
+          transfer, WAF, logging, and optional setup cost in one clean view.
+        </p>
+        <div className="mt-4 rounded-lg border-l-4 border-[#F2C94C] bg-[#fffdf3] p-4 text-sm leading-6 text-slate-700">
+          Pricing model checked: July 7, 2026. Prices are not hardcoded because
+          load balancer rates vary by provider, region, product type, account
+          agreement, currency, discounts, and traffic shape.
+        </div>
+      </section>
+
       <ToolClient />
 
-      <ToolContent
-        intro={
-          <>
-            <p>
-              A cloud load balancer bill can come from more than the base hourly
-              price. Capacity units, processed data, forwarding rules, outbound
-              transfer, WAF, logging, and migration work can change the monthly
-              planning number.
+      <section className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <h2 className="text-lg font-semibold text-slate-950">
+            Compare real workload shape
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Load balancer cost is not just one hourly line. The estimate can
+            change when traffic grows, more rules are added, capacity units rise,
+            or outbound transfer becomes a bigger part of the bill.
+          </p>
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <h2 className="text-lg font-semibold text-slate-950">
+            Keep provider prices editable
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            AWS, Azure, Google Cloud, and Cloudflare do not price every load
+            balancing setup the same way. Editable rates help you use current
+            official numbers instead of trusting an outdated preset.
+          </p>
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <h2 className="text-lg font-semibold text-slate-950">
+            Read the estimate safely
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Use the result as a planning number before tax, support plans,
+            reserved discounts, committed-use discounts, free tier credits, and
+            provider-specific billing rules.
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-10 max-w-4xl space-y-5">
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+          When This Load Balancer Calculator Helps
+        </h2>
+        <p className="text-sm leading-7 text-slate-700">
+          This calculator is useful when you are choosing between a managed
+          application load balancer, gateway, traffic steering service, or CDN
+          load balancing setup before moving a project to production. It helps
+          compare costs that are easy to miss when you only look at a base
+          hourly price.
+        </p>
+        <ul className="grid gap-3 text-sm leading-6 text-slate-700 md:grid-cols-2">
+          <li className="rounded-lg border border-slate-200 bg-white p-4">
+            Estimate monthly cost for one production load balancer.
+          </li>
+          <li className="rounded-lg border border-slate-200 bg-white p-4">
+            Compare AWS ALB-style pricing with Azure, Google Cloud, or
+            Cloudflare planning inputs.
+          </li>
+          <li className="rounded-lg border border-slate-200 bg-white p-4">
+            Add WAF, logging, monitoring, data processing, and transfer cost
+            before deciding.
+          </li>
+          <li className="rounded-lg border border-slate-200 bg-white p-4">
+            Stress test traffic growth without breaking the page layout.
+          </li>
+        </ul>
+      </section>
+
+      <section className="mt-10 max-w-4xl space-y-5">
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+          What The Estimate Includes
+        </h2>
+        <p className="text-sm leading-7 text-slate-700">
+          The result can include base hourly runtime, average capacity or LCU
+          usage, processed GB, forwarding rule charges, outbound transfer, WAF,
+          logging, monitoring, and optional one-time setup cost spread across a
+          planning period. It does not replace the official provider calculator
+          or your final bill.
+        </p>
+      </section>
+
+      <section className="mt-10 max-w-4xl space-y-5">
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+          Common Questions
+        </h2>
+        <div className="space-y-3">
+          <details className="rounded-lg border border-slate-200 bg-white p-4">
+            <summary className="cursor-pointer font-semibold text-slate-950">
+              Why are the provider prices blank?
+            </summary>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              Load balancer pricing changes by provider, service type, region,
+              usage unit, account agreement, currency, and discount. Blank
+              price fields make the estimate safer because you can enter the
+              current rate for the exact setup you are checking.
             </p>
-            <p>
-              Use this calculator when you are comparing a public web
-              application, API gateway layer, internal service entry point, or a
-              multi-cloud migration where the load balancer itself may become a
-              steady recurring cost.
+          </details>
+          <details className="rounded-lg border border-slate-200 bg-white p-4">
+            <summary className="cursor-pointer font-semibold text-slate-950">
+              Is this the exact monthly bill?
+            </summary>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              No. It is a planning estimate. Final bills can change because of
+              tax, support plans, credits, free tiers, minimum charges, retries,
+              extra services, traffic routing, logs, security rules, discounts,
+              and provider billing updates.
             </p>
-          </>
-        }
-        sections={[
-          {
-            title: "Comparing the Same Load Balancing Workload",
-            content: (
-              <>
-                <p>
-                  Start with the shared workload: active hours, number of load
-                  balancers, connection shape, processed traffic, forwarding
-                  rules, outbound transfer, WAF, logging, and budget. The same
-                  workload is applied to every provider plan.
-                </p>
-                <p>
-                  Provider pricing models are different, so this page keeps the
-                  provider fields editable. Replace any default value with the
-                  current regional price from the official provider page, your
-                  cloud calculator, negotiated agreement, or latest invoice.
-                </p>
-              </>
-            ),
-          },
-          {
-            title: "AWS, Azure, and Google Price Models Are Not Identical",
-            content: (
-              <>
-                <p>
-                  AWS Application Load Balancer pricing combines an ALB-hour
-                  charge with LCU usage. LCUs depend on the highest usage
-                  dimension across new connections, active connections,
-                  processed bytes, and rule evaluations.
-                </p>
-                <p>
-                  Azure Application Gateway pricing separates gateway runtime
-                  and capacity units. Google Cloud Load Balancing commonly
-                  includes forwarding-rule charges and load-balancer data
-                  processing, with extra data transfer billed separately.
-                </p>
-                <p>
-                  This calculator is a planning tool, not a replacement for the
-                  official pricing calculator of each provider.
-                </p>
-              </>
-            ),
-          },
-          {
-            title: "Adding Transfer, WAF, Logging, and Migration Costs",
-            content: (
-              <>
-                <p>
-                  Internet transfer out is entered separately because standard
-                  network egress is usually billed outside the base load
-                  balancer charge. Private connectivity, CDN, peering, and
-                  regional traffic paths can change this number.
-                </p>
-                <p>
-                  WAF, access logs, monitoring, certificate operations,
-                  migration work, and routing changes can also affect the first
-                  year cost. Add those costs when they are part of the real
-                  design decision.
-                </p>
-              </>
-            ),
-          },
-          {
-            title: "Official Pricing Sources",
-            content: (
-              <>
-                <p>
-                  Built-in example prices and pricing logic were checked against
-                  official provider pricing pages on 7 July 2026. Prices can
-                  change, and some provider pricing tables vary by region,
-                  currency, offer, agreement, or account.
-                </p>
-                <p>
-                  <a
-                    href="https://aws.amazon.com/elasticloadbalancing/pricing/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Amazon Elastic Load Balancing Pricing
-                  </a>{" "}
-                  ·{" "}
-                  <a
-                    href="https://azure.microsoft.com/en-us/pricing/details/application-gateway/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Azure Application Gateway Pricing
-                  </a>{" "}
-                  ·{" "}
-                  <a
-                    href="https://azure.microsoft.com/en-us/pricing/details/load-balancer/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Azure Load Balancer Pricing
-                  </a>{" "}
-                  ·{" "}
-                  <a
-                    href="https://cloud.google.com/load-balancing/pricing"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Google Cloud Load Balancing Pricing
-                  </a>
-                </p>
-              </>
-            ),
-          },
-          {
-            title: "Using the Result Before Choosing an Architecture",
-            content: (
-              <>
-                <p>
-                  Compare monthly operating cost and first-year cost. A lower
-                  base hourly charge may not stay lower when traffic, rules,
-                  capacity, WAF, and transfer are included.
-                </p>
-                <p>
-                  Before choosing a provider or design, confirm whether you
-                  need Layer 4 or Layer 7 routing, TLS termination, HTTP rules,
-                  WebSockets, private load balancing, static IPs, WAF, multi-zone
-                  resilience, cross-region failover, and observability.
-                </p>
-                <p>
-                  Use the custom plan for a self-managed reverse proxy, NGINX or
-                  HAProxy on VMs, a marketplace appliance, a negotiated provider
-                  price, or another managed load balancing service.
-                </p>
-              </>
-            ),
-          },
-          {
-            title: "Frequently Asked Questions",
-            content: (
-              <div className="space-y-5">
-                {faqs.map((faq) => (
-                  <div key={faq.question}>
-                    <h3 className="text-base font-semibold text-gray-950">
-                      {faq.question}
-                    </h3>
-                    <p className="mt-2 text-gray-700">{faq.answer}</p>
-                  </div>
-                ))}
-              </div>
-            ),
-          },
-          {
-            title: "Explore Related Cloud Cost Tools",
-            content: (
-              <BeeijaRelatedTools currentHref="/tools/cloud-load-balancer-cost-comparison-calculator" />
-            ),
-          },
-        ]}
-      />
-    </ToolShell>
+          </details>
+          <details className="rounded-lg border border-slate-200 bg-white p-4">
+            <summary className="cursor-pointer font-semibold text-slate-950">
+              Why does outbound transfer matter?
+            </summary>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              Many users check only the load balancer hourly price, but internet
+              egress, processed traffic, logs, WAF, and related network services
+              can become a meaningful part of the monthly cost.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <BeeijaRelatedTools currentHref="/tools/cloud-load-balancer-cost-comparison-calculator" />
+      </section>
+    </main>
   );
 }
