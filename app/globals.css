@@ -262,9 +262,9 @@ textarea {
   border: 1px solid var(--green);
   color: var(--green);
   background: white;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-size: 1rem;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  font-size: 0.9375rem;
   font-weight: 500;
   transition:
     background-color 0.2s ease,
