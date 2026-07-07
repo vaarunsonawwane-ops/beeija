@@ -53,7 +53,7 @@ export default function BeeijaNumberField({
 
   return (
     <label htmlFor={inputId} className="block min-w-0">
-      <span className="mb-1 block text-xs font-semibold leading-5 text-slate-800">
+      <span className="mb-1 block text-[11.5px] font-semibold leading-5 text-slate-800">
         {label}
       </span>
 
@@ -67,7 +67,7 @@ export default function BeeijaNumberField({
         }`}
       >
         {prefix ? (
-          <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-sm font-semibold text-[var(--green)]">
+          <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[13.5px] font-semibold text-[var(--green)]">
             {prefix}
           </span>
         ) : null}
@@ -83,20 +83,20 @@ export default function BeeijaNumberField({
           maxLength={sanitizeDecimal ? maxLength : undefined}
           disabled={disabled}
           onChange={handleChange}
-          className={`min-h-[38px] w-full min-w-0 bg-transparent py-2 text-sm text-slate-900 outline-none [appearance:textfield] placeholder:text-slate-400 disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+          className={`min-h-[38px] w-full min-w-0 bg-transparent py-2 text-[13.5px] text-slate-900 outline-none [appearance:textfield] placeholder:text-slate-400 disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
             prefix ? "pl-8" : "pl-3"
           } ${suffix ? "pr-24" : "pr-3"}`}
         />
 
         {suffix ? (
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 whitespace-nowrap text-xs font-medium text-slate-500">
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 whitespace-nowrap text-[11.5px] font-medium text-slate-500">
             {suffix}
           </span>
         ) : null}
       </div>
 
       {helper || warning ? (
-        <span className="mt-1 block text-xs leading-5 text-slate-500">
+        <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
           {warning
             ? "Use a smaller planning value or split the workload into parts."
             : helper}
