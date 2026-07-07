@@ -172,7 +172,7 @@ export default function Page() {
             href="https://aws.amazon.com/elasticloadbalancing/pricing/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] px-4 py-3 text-sm font-semibold text-[#165A31] hover:bg-[#f4fbf6]"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Amazon Elastic Load Balancing Pricing
           </a>
@@ -180,7 +180,7 @@ export default function Page() {
             href="https://azure.microsoft.com/en-us/pricing/details/application-gateway/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] px-4 py-3 text-sm font-semibold text-[#165A31] hover:bg-[#f4fbf6]"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Azure Application Gateway Pricing
           </a>
@@ -188,7 +188,7 @@ export default function Page() {
             href="https://cloud.google.com/load-balancing/pricing"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] px-4 py-3 text-sm font-semibold text-[#165A31] hover:bg-[#f4fbf6]"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Google Cloud Load Balancing Pricing
           </a>
@@ -196,7 +196,7 @@ export default function Page() {
             href="https://www.cloudflare.com/products/load-balancing/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] px-4 py-3 text-sm font-semibold text-[#165A31] hover:bg-[#f4fbf6]"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Cloudflare Load Balancing Pricing
           </a>
@@ -207,8 +207,8 @@ export default function Page() {
         <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
           Common Questions
         </h2>
-        <div className="grid gap-4">
-          <div className="rounded-lg border border-slate-200 bg-white p-4">
+        <div className="space-y-6">
+          <div>
             <h3 className="font-semibold text-slate-950">
               Why are the provider prices blank?
             </h3>
@@ -219,7 +219,7 @@ export default function Page() {
               current rate for the exact setup you are checking.
             </p>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4">
+          <div>
             <h3 className="font-semibold text-slate-950">
               Is this the exact monthly bill?
             </h3>
@@ -230,7 +230,7 @@ export default function Page() {
               and provider billing updates.
             </p>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4">
+          <div>
             <h3 className="font-semibold text-slate-950">
               Why does outbound transfer matter?
             </h3>
@@ -244,6 +244,9 @@ export default function Page() {
       </section>
 
       <section className="mt-10">
+        <h2 className="mb-4 text-2xl font-semibold tracking-tight text-slate-950">
+          Explore Related Cloud Cost Tools
+        </h2>
         <BeeijaRelatedTools currentHref="/tools/cloud-load-balancer-cost-comparison-calculator" />
       </section>
     </main>
