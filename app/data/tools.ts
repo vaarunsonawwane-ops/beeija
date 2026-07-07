@@ -618,7 +618,7 @@ export const tools: BeeijaTool[] = [
   category: "Cloud Cost Calculators",
 },
   
-  
+
   
   
   
