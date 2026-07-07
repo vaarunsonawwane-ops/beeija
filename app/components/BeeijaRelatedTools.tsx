@@ -25,7 +25,7 @@ export default function BeeijaRelatedTools({
   limit = 6,
   title,
   showTitle = false,
-  className = "",
+  className = "beeija-related-tools",
 }: BeeijaRelatedToolsProps) {
   const currentTool = getToolByHref(currentHref);
 
@@ -45,14 +45,14 @@ export default function BeeijaRelatedTools({
   return (
     <section className={className}>
       {showTitle ? (
-        <h2 className="mb-4 text-2xl font-semibold tracking-tight text-gray-950">
+        <h2 className="beeija-section-title">
           {heading}
         </h2>
       ) : null}
 
       <nav
         aria-label={`Related tools in ${currentTool.category}`}
-        className="flex flex-wrap gap-3"
+        className="mt-5 flex flex-wrap gap-3"
       >
         {relatedTools.map((tool) => (
           <Link
