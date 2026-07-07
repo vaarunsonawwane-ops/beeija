@@ -152,7 +152,7 @@ textarea {
 }
 
 .beeija-section {
-  margin-top: 4rem;
+  margin-top: 3.25rem;
   max-width: 56rem;
 }
 
@@ -171,7 +171,7 @@ textarea {
 }
 
 .beeija-feature-grid {
-  margin-top: 4rem;
+  margin-top: 3.25rem;
   display: grid;
   gap: 1.25rem;
 }
@@ -216,7 +216,7 @@ textarea {
 }
 
 .beeija-question-list > * + * {
-  margin-top: 2.25rem;
+  margin-top: 1.5rem;
 }
 
 .beeija-question-title {
@@ -234,7 +234,7 @@ textarea {
 }
 
 .beeija-related-tools {
-  margin-top: 4rem;
+  margin-top: 3.25rem;
   max-width: 62rem;
 }
 
