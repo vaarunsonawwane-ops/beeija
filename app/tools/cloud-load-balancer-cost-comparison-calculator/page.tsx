@@ -73,10 +73,11 @@ export default function Page() {
           capacity units, processed traffic, forwarding rules, outbound
           transfer, WAF, logging, and optional setup cost in one clean view.
         </p>
-        <div className="mt-4 rounded-lg border-l-4 border-[#F2C94C] bg-[#fffdf3] p-4 text-sm leading-6 text-slate-700">
-          Pricing model checked: July 7, 2026. Prices are not hardcoded because
-          load balancer rates vary by provider, region, product type, account
-          agreement, currency, discounts, and traffic shape.
+        <div className="mt-4 rounded-lg border-l-4 border-[#F2C94C] bg-[#fffdf3] p-4 text-base leading-7 text-slate-700">
+          Pricing model checked: <strong>July 7, 2026</strong>. Prices are not
+          hardcoded because load balancer rates vary by provider, region,
+          product type, account agreement, currency, discounts, and traffic
+          shape.
         </div>
       </section>
 
@@ -84,30 +85,30 @@ export default function Page() {
 
       <section className="mt-10 grid gap-5 md:grid-cols-3">
         <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <h2 className="text-lg font-semibold text-slate-950">
+          <h2 className="text-xl font-semibold text-slate-950">
             Compare real workload shape
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-base leading-7 text-slate-600">
             Load balancer cost is not just one hourly line. The estimate can
             change when traffic grows, more rules are added, capacity units rise,
             or outbound transfer becomes a bigger part of the bill.
           </p>
         </div>
         <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <h2 className="text-lg font-semibold text-slate-950">
+          <h2 className="text-xl font-semibold text-slate-950">
             Keep provider prices editable
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-base leading-7 text-slate-600">
             AWS, Azure, Google Cloud, and Cloudflare do not price every load
             balancing setup the same way. Editable rates help you use current
             official numbers instead of trusting an outdated preset.
           </p>
         </div>
         <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <h2 className="text-lg font-semibold text-slate-950">
+          <h2 className="text-xl font-semibold text-slate-950">
             Read the estimate safely
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-base leading-7 text-slate-600">
             Use the result as a planning number before tax, support plans,
             reserved discounts, committed-use discounts, free tier credits, and
             provider-specific billing rules.
@@ -119,26 +120,26 @@ export default function Page() {
         <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
           When This Load Balancer Calculator Helps
         </h2>
-        <p className="text-sm leading-7 text-slate-700">
+        <p className="text-base leading-8 text-slate-700">
           This calculator is useful when you are choosing between a managed
           application load balancer, gateway, traffic steering service, or CDN
           load balancing setup before moving a project to production. It helps
           compare costs that are easy to miss when you only look at a base
           hourly price.
         </p>
-        <ul className="grid gap-3 text-sm leading-6 text-slate-700 md:grid-cols-2">
-          <li className="rounded-lg border border-slate-200 bg-white p-4">
+        <ul className="space-y-3 border-l-4 border-[#F2C94C] pl-5 text-base leading-7 text-slate-700">
+          <li>
             Estimate monthly cost for one production load balancer.
           </li>
-          <li className="rounded-lg border border-slate-200 bg-white p-4">
+          <li>
             Compare AWS ALB-style pricing with Azure, Google Cloud, or
             Cloudflare planning inputs.
           </li>
-          <li className="rounded-lg border border-slate-200 bg-white p-4">
+          <li>
             Add WAF, logging, monitoring, data processing, and transfer cost
             before deciding.
           </li>
-          <li className="rounded-lg border border-slate-200 bg-white p-4">
+          <li>
             Stress test traffic growth without breaking the page layout.
           </li>
         </ul>
@@ -148,7 +149,7 @@ export default function Page() {
         <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
           What The Estimate Includes
         </h2>
-        <p className="text-sm leading-7 text-slate-700">
+        <p className="text-base leading-8 text-slate-700">
           The result can include base hourly runtime, average capacity or LCU
           usage, processed GB, forwarding rule charges, outbound transfer, WAF,
           logging, monitoring, and optional one-time setup cost spread across a
@@ -161,18 +162,19 @@ export default function Page() {
         <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
           Official Pricing Sources
         </h2>
-        <p className="text-sm leading-7 text-slate-700">
+        <p className="text-base leading-8 text-slate-700">
           The pricing model and billing notes for this calculator were checked
-          against official provider pages on July 7, 2026. Use these links to
-          copy the latest rates for your selected region, product type, account
-          agreement, and currency before making a purchase decision.
+          against official provider pages on <strong>July 7, 2026</strong>. Use
+          these links to copy the latest rates for your selected region, product
+          type, account agreement, and currency before making a purchase
+          decision.
         </p>
         <div className="flex flex-wrap gap-3">
           <a
             href="https://aws.amazon.com/elasticloadbalancing/pricing/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Amazon Elastic Load Balancing Pricing
           </a>
@@ -180,7 +182,7 @@ export default function Page() {
             href="https://azure.microsoft.com/en-us/pricing/details/application-gateway/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Azure Application Gateway Pricing
           </a>
@@ -188,7 +190,7 @@ export default function Page() {
             href="https://cloud.google.com/load-balancing/pricing"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Google Cloud Load Balancing Pricing
           </a>
@@ -196,7 +198,7 @@ export default function Page() {
             href="https://www.cloudflare.com/products/load-balancing/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
+            className="rounded-lg border border-[#165A31] bg-white px-4 py-3 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
           >
             Cloudflare Load Balancing Pricing
           </a>
@@ -209,10 +211,10 @@ export default function Page() {
         </h2>
         <div className="space-y-6">
           <div>
-            <h3 className="font-semibold text-slate-950">
+            <h3 className="text-lg font-semibold text-slate-950">
               Why are the provider prices blank?
             </h3>
-            <p className="mt-3 text-sm leading-6 text-slate-700">
+            <p className="mt-3 text-base leading-7 text-slate-700">
               Load balancer pricing changes by provider, service type, region,
               usage unit, account agreement, currency, and discount. Blank
               price fields make the estimate safer because you can enter the
@@ -220,10 +222,10 @@ export default function Page() {
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-slate-950">
+            <h3 className="text-lg font-semibold text-slate-950">
               Is this the exact monthly bill?
             </h3>
-            <p className="mt-3 text-sm leading-6 text-slate-700">
+            <p className="mt-3 text-base leading-7 text-slate-700">
               No. It is a planning estimate. Final bills can change because of
               tax, support plans, credits, free tiers, minimum charges, retries,
               extra services, traffic routing, logs, security rules, discounts,
@@ -231,10 +233,10 @@ export default function Page() {
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-slate-950">
+            <h3 className="text-lg font-semibold text-slate-950">
               Why does outbound transfer matter?
             </h3>
-            <p className="mt-3 text-sm leading-6 text-slate-700">
+            <p className="mt-3 text-base leading-7 text-slate-700">
               Many users check only the load balancer hourly price, but internet
               egress, processed traffic, logs, WAF, and related network services
               can become a meaningful part of the monthly cost.

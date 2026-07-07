@@ -108,23 +108,23 @@ function hasInputWarning(value: string) {
 
 function formatCompactNumber(value: number) {
   if (!Number.isFinite(value)) return "0";
-  if (value >= 999_000_000_000_000) return "999T+";
+  if (value >= 999_000_000_000_000) return "Very high value";
 
   return new Intl.NumberFormat("en-US", {
-    notation: value >= 1_000_000 ? "compact" : "standard",
-    maximumFractionDigits: value >= 1_000_000 ? 2 : 2,
+    notation: "standard",
+    maximumFractionDigits: 2,
   }).format(value);
 }
 
 function formatCurrency(value: number) {
   if (!Number.isFinite(value)) return "$0.00";
-  if (value >= 999_000_000_000_000) return "Over $999T";
+  if (value >= 999_000_000_000_000) return "Very high estimate";
 
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    notation: value >= 1_000_000 ? "compact" : "standard",
-    maximumFractionDigits: value >= 1_000_000 ? 2 : 2,
+    notation: "standard",
+    maximumFractionDigits: 2,
   }).format(value);
 }
 
@@ -213,7 +213,7 @@ function NumberInput({
 
   return (
     <label className="block min-w-0">
-      <span className="mb-1 block text-xs font-medium text-slate-700">
+      <span className="mb-1 block text-sm font-medium text-slate-700">
         {label}
       </span>
       <span
@@ -222,21 +222,21 @@ function NumberInput({
         }`}
       >
         {prefix ? (
-          <span className="shrink-0 text-xs text-slate-500">{prefix}</span>
+          <span className="shrink-0 text-sm text-slate-500">{prefix}</span>
         ) : null}
         <input
           inputMode="decimal"
           value={value}
           onChange={(event) => onChange(cleanNumberInput(event.target.value))}
-          className="min-w-0 flex-1 bg-transparent px-1 py-2 text-sm text-slate-900 outline-none"
+          className="min-w-0 flex-1 bg-transparent px-1 py-2 text-base text-slate-900 outline-none"
           placeholder="0"
           aria-label={label}
         />
         {suffix ? (
-          <span className="shrink-0 text-xs text-slate-500">{suffix}</span>
+          <span className="shrink-0 text-sm text-slate-500">{suffix}</span>
         ) : null}
       </span>
-      <span className="mt-1 block text-[11px] leading-4 text-slate-500">
+      <span className="mt-1 block text-xs leading-5 text-slate-500">
         {warning
           ? "Use a smaller planning value or split the workload into parts."
           : helper}
@@ -257,13 +257,13 @@ function ResultLine({
   return (
     <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 rounded-md bg-white px-3 py-2">
       <span
-        className={`min-w-0 text-sm leading-5 ${
+        className={`min-w-0 text-base leading-6 ${
           muted ? "text-slate-500" : "text-slate-700"
         }`}
       >
         {label}
       </span>
-      <span className="max-w-[9rem] truncate text-right text-sm font-semibold tabular-nums text-slate-900 sm:max-w-[12rem]">
+      <span className="max-w-[9rem] truncate text-right text-base font-semibold tabular-nums text-slate-900 sm:max-w-[12rem]">
         {value}
       </span>
     </div>
@@ -289,10 +289,10 @@ function ProviderCard({
           : "border-slate-200 bg-white hover:border-[#165A31]"
       }`}
     >
-      <span className="block truncate text-sm font-semibold text-slate-900">
+      <span className="block truncate text-base font-semibold text-slate-900">
         {provider.name}
       </span>
-      <span className="mt-1 block text-xs leading-5 text-slate-600">
+      <span className="mt-1 block text-sm leading-5 text-slate-600">
         {provider.exampleService}
       </span>
     </button>
@@ -359,13 +359,13 @@ export default function ToolClient() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
         <section className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#165A31]">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#165A31]">
               Configure workload
             </p>
             <h2 className="mt-1 text-xl font-semibold text-slate-950">
               Select provider and enter current prices
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <p className="mt-2 text-base leading-7 text-slate-600">
               Load balancer pricing depends on the provider, region, product
               type, traffic, rules, and account discounts. Beeija keeps rates
               editable so you can copy the current numbers from official
@@ -388,7 +388,7 @@ export default function ToolClient() {
             <h3 className="text-base font-semibold text-slate-950">
               {activeProvider.name}
             </h3>
-            <p className="mt-1 text-sm leading-6 text-slate-600">
+            <p className="mt-1 text-base leading-7 text-slate-600">
               {activeProvider.note}
             </p>
           </div>
@@ -449,14 +449,14 @@ export default function ToolClient() {
                 <h3 className="text-lg font-semibold text-slate-950">
                   {activeProvider.name}
                 </h3>
-                <p className="mt-1 text-sm leading-5 text-slate-600">
+                <p className="mt-1 text-base leading-6 text-slate-600">
                   {activeProvider.exampleService}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={resetRates}
-                className="rounded-lg border border-[#165A31] bg-white px-4 py-2 text-sm font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
+                className="rounded-lg border border-[#165A31] bg-white px-4 py-2 text-base font-semibold text-[#165A31] transition hover:-translate-y-0.5 hover:bg-[#f4fbf6] hover:shadow-sm"
               >
                 Reset rates
               </button>
@@ -531,18 +531,18 @@ export default function ToolClient() {
 
         <aside className="min-w-0 space-y-4">
           <section className="min-w-0 rounded-lg border border-slate-200 bg-[#f8fcfa] p-4 shadow-sm sm:p-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#165A31]">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#165A31]">
               Estimate summary
             </p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-950">
+            <h2 className="mt-1 text-xl font-semibold text-slate-950">
               {activeProvider.shortName} monthly planning cost
             </h2>
             <div className="mt-4 rounded-lg border border-[#d7eadf] bg-white p-4">
-              <p className="text-sm text-slate-500">Estimated monthly cost</p>
+              <p className="text-base text-slate-500">Estimated monthly cost</p>
               <p className="mt-2 truncate text-3xl font-semibold tracking-tight text-[#165A31]">
                 {formatCurrency(activeResult.total)}
               </p>
-              <p className="mt-2 text-xs leading-5 text-slate-500">
+              <p className="mt-2 text-sm leading-6 text-slate-500">
                 This is a planning estimate before tax, discounts, free tier,
                 support plans, currency conversion, account agreements, and
                 provider-specific billing rules.
@@ -582,10 +582,10 @@ export default function ToolClient() {
           </section>
 
           <section className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <h2 className="text-lg font-semibold text-slate-950">
+            <h2 className="text-xl font-semibold text-slate-950">
               Provider comparison
             </h2>
-            <p className="mt-1 text-sm leading-6 text-slate-600">
+            <p className="mt-1 text-base leading-7 text-slate-600">
               Enter rates for each provider, then compare totals using the same
               workload assumptions.
             </p>
@@ -602,14 +602,14 @@ export default function ToolClient() {
                   }`}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-slate-900">
+                    <span className="block truncate text-base font-semibold text-slate-900">
                       {result.provider.name}
                     </span>
-                    <span className="block truncate text-xs text-slate-500">
+                    <span className="block truncate text-sm text-slate-500">
                       {result.provider.exampleService}
                     </span>
                   </span>
-                  <span className="max-w-[7rem] truncate text-right text-sm font-semibold tabular-nums text-slate-950 sm:max-w-[10rem]">
+                  <span className="max-w-[7rem] truncate text-right text-base font-semibold tabular-nums text-slate-950 sm:max-w-[10rem]">
                     {formatCurrency(result.total)}
                   </span>
                 </button>
@@ -650,7 +650,7 @@ export default function ToolClient() {
                 muted
               />
             </div>
-            <p className="mt-4 text-xs leading-5 text-slate-500">
+            <p className="mt-4 text-sm leading-6 text-slate-500">
               Beeija keeps these details compact so very large test values do
               not break the page. For real planning, split unusually large
               traffic across services, regions, or environments and verify the
@@ -658,7 +658,7 @@ export default function ToolClient() {
             </p>
           </details>
 
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-base leading-7 text-amber-900">
             <strong>* Important:</strong> Current load balancer prices can vary
             by region, product type, account agreement, tax, discounts, and
             traffic pattern. Use this result as a planning estimate, not a final
