@@ -9,7 +9,7 @@ const description =
 const href = "/tools/cloud-load-balancer-cost-comparison-calculator";
 
 export const metadata: Metadata = {
-  title: `${title} | Beeija`,
+  title,
   description,
   alternates: {
     canonical: href,
