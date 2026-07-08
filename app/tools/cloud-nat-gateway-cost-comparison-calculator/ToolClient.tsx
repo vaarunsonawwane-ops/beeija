@@ -175,14 +175,20 @@ const initialPlans: PlanInput[] = [
   },
 ];
 
-const pricingModeOptions: { value: GatewayPricingMode; label: string }[] = [
+const pricingModeOptions: {
+  value: GatewayPricingMode;
+  label: string;
+  description: string;
+}[] = [
   {
     value: "per-gateway",
-    label: "Direct hourly price per gateway",
+    label: "Direct gateway hourly price",
+    description: "Use when the provider bills each NAT gateway by hour.",
   },
   {
     value: "per-instance-capped",
-    label: "Per assigned instance, then capped per gateway",
+    label: "Instance-based with cap",
+    description: "Use for Google-style instance pricing with a gateway cap.",
   },
 ];
 
@@ -353,7 +359,7 @@ function TextInput({
   );
 }
 
-function CompactSelect<TValue extends string>({
+function ChoiceCards<TValue extends string>({
   label,
   value,
   onChange,
@@ -363,31 +369,47 @@ function CompactSelect<TValue extends string>({
   label: string;
   value: TValue;
   onChange: (value: TValue) => void;
-  options: { value: TValue; label: string }[];
+  options: { value: TValue; label: string; description?: string }[];
   helper?: string;
 }) {
   return (
-    <label className="block min-w-0">
-      <span className="mb-1 block text-[11.5px] font-semibold leading-5 text-slate-800">
+    <div className="block min-w-0">
+      <p className="mb-1 block text-[11.5px] font-semibold leading-5 text-slate-800">
         {label}
-      </span>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value as TValue)}
-        className="min-h-[38px] w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-[13.5px] text-slate-900 outline-none transition focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      </p>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {options.map((option) => {
+          const selected = option.value === value;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange(option.value)}
+              className={`min-w-0 rounded-lg border px-3 py-2 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${
+                selected
+                  ? "border-[#165A31] bg-[#f4fbf6]"
+                  : "border-slate-200 bg-white hover:border-[#165A31]"
+              }`}
+            >
+              <span className="block text-[13.5px] font-semibold leading-5 text-slate-900">
+                {option.label}
+              </span>
+              {option.description ? (
+                <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
+                  {option.description}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
       {helper ? (
         <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
           {helper}
         </span>
       ) : null}
-    </label>
+    </div>
   );
 }
 
@@ -555,15 +577,15 @@ export default function ToolClient() {
                 helper="Regional or cross-zone network transfer."
                 suffix="GiB"
               />
-              <CompactSelect<"no" | "yes">
+              <ChoiceCards<"no" | "yes">
                 label="Include flow-log cost"
                 value={workload.includeFlowLogs}
                 onChange={(value) =>
                   setWorkload((current) => ({ ...current, includeFlowLogs: value }))
                 }
                 options={[
-                  { value: "no", label: "No" },
-                  { value: "yes", label: "Yes" },
+                  { value: "no", label: "No", description: "Do not add flow-log cost." },
+                  { value: "yes", label: "Yes", description: "Add monthly flow-log cost." },
                 ]}
                 helper="Add logging cost only when you plan to use it."
               />
@@ -607,12 +629,15 @@ export default function ToolClient() {
                 value={activePlan.serviceName}
                 onChange={(value) => updatePlan("serviceName", value)}
               />
-              <CompactSelect<GatewayPricingMode>
-                label="Gateway runtime pricing method"
-                value={activePlan.gatewayPricingMode}
-                onChange={(value) => updatePlan("gatewayPricingMode", value)}
-                options={pricingModeOptions}
-              />
+              <div className="sm:col-span-2">
+                <ChoiceCards<GatewayPricingMode>
+                  label="Gateway runtime pricing method"
+                  value={activePlan.gatewayPricingMode}
+                  onChange={(value) => updatePlan("gatewayPricingMode", value)}
+                  options={pricingModeOptions}
+                  helper="Choose the pricing structure that matches the provider page you are using."
+                />
+              </div>
 
               {activePlan.gatewayPricingMode === "per-gateway" ? (
                 <NumberInput
