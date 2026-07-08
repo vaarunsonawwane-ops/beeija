@@ -45,11 +45,13 @@ export default function BeeijaProviderPlanTabs({
                 : "border-gray-200 bg-white hover:border-[var(--green)]"
             }`}
           >
-            <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-              {plan.label}
-            </span>
+            {plan.label && !/^plan\s+\d+$/i.test(plan.label.trim()) ? (
+              <span className="block text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
+                {plan.label}
+              </span>
+            ) : null}
 
-            <span className="mt-1 block break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
+            <span className={`${plan.label && !/^plan\s+\d+$/i.test(plan.label.trim()) ? "mt-1" : ""} block break-words font-semibold text-gray-950 [overflow-wrap:anywhere]`}>
               {plan.title}
             </span>
 

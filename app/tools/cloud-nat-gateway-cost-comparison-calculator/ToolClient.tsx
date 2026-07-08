@@ -15,6 +15,11 @@ import BeeijaComparisonCalculatorLayout, {
 } from "@/app/components/BeeijaComparisonCalculatorLayout";
 import BeeijaWorkloadSummary from "@/app/components/BeeijaWorkloadSummary";
 import BeeijaProviderPlanTabs from "@/app/components/BeeijaProviderPlanTabs";
+import {
+  formatBeeijaCurrency,
+  formatBeeijaNumber,
+  parseBeeijaNumber,
+} from "@/app/components/BeeijaFormat";
 
 type GatewayPricingMode =
   | "per-gateway"
@@ -173,47 +178,31 @@ const initialPlans: PlanInput[] = [
 ];
 
 function toNumber(value: string) {
-  const parsed = Number.parseFloat(value);
-
-  if (!Number.isFinite(parsed) || parsed < 0) {
-    return 0;
-  }
-
-  return parsed;
+  return parseBeeijaNumber(value);
 }
 
 function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 6,
-  }).format(value);
+  return formatBeeijaCurrency(value);
 }
 
 function formatNumber(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(value);
+  return formatBeeijaNumber(value);
 }
 
 function formatInteger(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatBeeijaNumber(Math.round(value));
 }
 
 function formatVisibleMoney(value: number) {
-  return formatMoney(value).replace(/,/g, ",\u200B");
+  return formatMoney(value);
 }
 
 function formatVisibleNumber(value: number) {
-  return formatNumber(value).replace(/,/g, ",\u200B");
+  return formatNumber(value);
 }
 
 function formatVisibleInteger(value: number) {
-  return formatInteger(value).replace(/,/g, ",\u200B");
+  return formatInteger(value);
 }
 
 function countEnteredPrices(plan: PlanInput) {
@@ -730,6 +719,7 @@ export default function ToolClient() {
             onChange={setGatewayCount}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -740,6 +730,7 @@ export default function ToolClient() {
             max="730"
             step="1"
             suffix="hours"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -748,6 +739,7 @@ export default function ToolClient() {
             onChange={setProtectedInstanceCount}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -756,6 +748,7 @@ export default function ToolClient() {
             onChange={setPublicIpCount}
             min="0"
             step="1"
+            sanitizeDecimal
           />
         </FieldSection>
 
@@ -767,6 +760,7 @@ export default function ToolClient() {
             min="0"
             step="0.01"
             suffix="GiB"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -776,6 +770,7 @@ export default function ToolClient() {
             min="0"
             step="0.01"
             suffix="GiB"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -785,6 +780,7 @@ export default function ToolClient() {
             min="0"
             step="0.01"
             suffix="GiB"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -794,6 +790,7 @@ export default function ToolClient() {
             min="0"
             step="0.01"
             suffix="GiB"
+            sanitizeDecimal
           />
         </FieldSection>
 
@@ -816,6 +813,7 @@ export default function ToolClient() {
             min="0"
             step="0.01"
             prefix="$"
+            sanitizeDecimal
           />
 
 
@@ -900,7 +898,7 @@ export default function ToolClient() {
           <BeeijaProviderPlanTabs
             plans={plans.map((plan, index) => ({
               id: plan.id,
-              label: `Plan ${index + 1}`,
+              label: "",
               title: plan.providerName,
               subtitle: plan.regionLabel,
             }))}
@@ -912,7 +910,7 @@ export default function ToolClient() {
           <div
             className="mt-5"
             role="tabpanel"
-            aria-label={`NAT gateway comparison plan ${activeEditorPlanNumber}`}
+            aria-label={`NAT gateway pricing inputs for ${activeEditorPlan.providerName}`}
           >
             <ProviderPlanCard
               key={activeEditorPlan.id}
@@ -929,8 +927,7 @@ export default function ToolClient() {
           </div>
 
           <p className="mt-3 text-sm text-gray-500">
-            Select Plan 1, 2, 3, or 4 above to edit it. All four plans remain
-            included in the ranked comparison.
+            Select a provider above to edit its regional price inputs. All configured providers remain included in the ranked comparison.
           </p>
         </div>
 
@@ -1172,7 +1169,6 @@ function FieldSection({
 }
 
 function ProviderPlanCard({
-  planNumber,
   plan,
   onChange,
 }: {
@@ -1198,9 +1194,6 @@ function ProviderPlanCard({
   return (
     <section className="min-w-0 rounded-2xl border border-gray-200 bg-[#F9FBFA] p-5 md:p-6">
       <div className="min-w-0">
-        <p className="text-xs font-medium uppercase tracking-wide text-[var(--yellow-dark)]">
-          Plan {planNumber}
-        </p>
 
         <h3 className="mt-1 break-words text-xl font-semibold text-gray-950 [overflow-wrap:anywhere]">
           {plan.providerName}
@@ -1260,6 +1253,7 @@ function ProviderPlanCard({
             min="0"
             step="0.000001"
             prefix="$"
+            sanitizeDecimal
           />
         ) : (
           <BeeijaNumberField
@@ -1276,6 +1270,7 @@ function ProviderPlanCard({
             min="0"
             step="0.000001"
             prefix="$"
+            sanitizeDecimal
           />
         )}
 
@@ -1296,6 +1291,7 @@ function ProviderPlanCard({
               min="1"
               step="1"
               suffix="instances"
+              sanitizeDecimal
             />
 
             <BeeijaNumberField
@@ -1312,6 +1308,7 @@ function ProviderPlanCard({
               min="0"
               step="0.000001"
               prefix="$"
+              sanitizeDecimal
             />
           </>
         )}
@@ -1330,6 +1327,7 @@ function ProviderPlanCard({
           min="0"
           step="0.000001"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1344,6 +1342,7 @@ function ProviderPlanCard({
           min="0"
           step="0.000001"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1360,6 +1359,7 @@ function ProviderPlanCard({
           min="0"
           step="0.000001"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1376,6 +1376,7 @@ function ProviderPlanCard({
           min="0"
           step="0.000001"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1390,6 +1391,7 @@ function ProviderPlanCard({
           min="0"
           step="0.01"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1404,6 +1406,7 @@ function ProviderPlanCard({
           min="0"
           step="0.01"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1418,6 +1421,7 @@ function ProviderPlanCard({
           min="0"
           step="0.01"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1434,6 +1438,7 @@ function ProviderPlanCard({
           min="1"
           step="1"
           suffix="months"
+          sanitizeDecimal
         />
       </div>
     </section>
@@ -1451,7 +1456,7 @@ function TextField({
 }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-2 block break-words text-sm font-medium text-gray-700 [overflow-wrap:anywhere]">
+      <span className="mb-1 block break-words text-[11.5px] font-semibold leading-5 text-slate-800 [overflow-wrap:anywhere]">
         {label}
       </span>
 
@@ -1463,7 +1468,7 @@ function TextField({
         ) =>
           onChange(event.target.value)
         }
-        className="min-h-12 w-full min-w-0 rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
+        className="min-h-[38px] w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-[13.5px] text-slate-900 outline-none transition hover:border-slate-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
       />
     </label>
   );
