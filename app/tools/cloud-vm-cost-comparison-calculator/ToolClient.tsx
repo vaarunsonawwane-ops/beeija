@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
-import BeeijaTextField from "@/app/components/BeeijaTextField";
 import BeeijaResultLine from "@/app/components/BeeijaResultLine";
+import BeeijaSelect from "@/app/components/BeeijaSelect";
 import {
   formatBeeijaCurrency,
   formatBeeijaNumber,
@@ -118,6 +118,41 @@ const defaultWorkload: WorkloadFields = {
   loadBalancerCount: "1",
   loadBalancerDataGb: "2000",
   monthlyBudget: "",
+};
+
+
+const regionOptionsByProvider: Record<ProviderId, string[]> = {
+  aws: [
+    "US East (N. Virginia)",
+    "US East (Ohio)",
+    "US West (Oregon)",
+    "Europe (Ireland)",
+    "Asia Pacific (Mumbai)",
+    "Asia Pacific (Singapore)",
+  ],
+  azure: [
+    "East US",
+    "West US 2",
+    "North Europe",
+    "UK South",
+    "Central India",
+    "Southeast Asia",
+  ],
+  google: [
+    "us-central1",
+    "us-east1",
+    "europe-west1",
+    "asia-south1",
+    "asia-southeast1",
+    "asia-east1",
+  ],
+  custom: [
+    "Private quote",
+    "Custom region",
+    "Marketplace quote",
+    "Internal chargeback",
+    "Your pricing page",
+  ],
 };
 
 const initialPlans: PlanInput[] = [
@@ -639,15 +674,12 @@ export default function ToolClient() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="mt-6 border-t border-slate-200 pt-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <h3 className="text-lg font-semibold text-slate-950">
                   {activePlan.shortName} price inputs
                 </h3>
-                <p className="mt-1 text-base leading-6 text-slate-600">
-                  {activePlan.note}
-                </p>
               </div>
               <button
                 type="button"
@@ -657,26 +689,29 @@ export default function ToolClient() {
                 Reset rates
               </button>
             </div>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {activePlan.note}
+            </p>
 
-            <div className="mt-3 grid items-start gap-3 sm:grid-cols-2">
-              <BeeijaTextField
-                label="Provider name"
-                value={activePlan.providerName}
-                onChange={(value) => updatePlan("providerName", value)}
-                helper="Useful for private quotes or custom providers."
-              />
-              <BeeijaTextField
-                label="Service, VM, or pricing scope"
-                value={activePlan.serviceName}
-                onChange={(value) => updatePlan("serviceName", value)}
-                helper="Example: EC2, Azure VM, Compute Engine."
-              />
-              <BeeijaTextField
+            <div className="mt-4">
+              <BeeijaSelect
                 label="Region or pricing page scope"
+                name="regionLabel"
                 value={activePlan.regionLabel}
-                onChange={(value) => updatePlan("regionLabel", value)}
-                helper="Use the same region as your official estimate."
+                onChange={(event) => updatePlan("regionLabel", event.target.value)}
+                options={regionOptionsByProvider[activePlan.id].map((region) => ({
+                  label: region,
+                  value: region,
+                }))}
               />
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                Select the same region or pricing scope you are checking on the
+                official provider calculator. Prices are still entered manually
+                below.
+              </p>
+            </div>
+
+            <div className="mt-4 grid items-start gap-3 sm:grid-cols-2">
               <BeeijaNumberField
                 label="vCPUs per VM"
                 value={activePlan.vcpuPerVm}
