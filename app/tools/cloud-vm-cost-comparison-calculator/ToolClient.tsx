@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaResultLine from "@/app/components/BeeijaResultLine";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
+import BeeijaAdvancedSection from "@/app/components/BeeijaAdvancedSection";
 import {
   formatBeeijaCurrency,
   formatBeeijaNumber,
@@ -625,16 +626,12 @@ export default function ToolClient() {
               />
             </div>
 
-            <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
-              <summary className="cursor-pointer text-sm font-semibold text-slate-950">
-                Storage, network, and optional service assumptions
-              </summary>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Open this when your VM estimate must include storage,
-                snapshots, outbound transfer, public IPv4, or load balancer
-                usage. These inputs stay shared across every provider.
-              </p>
-              <div className="mt-3 grid items-start gap-3 sm:grid-cols-2">
+            <BeeijaAdvancedSection
+              className="mt-4"
+              title="Storage, network, and optional service assumptions"
+              description="Open this when your VM estimate must include storage, snapshots, outbound transfer, public IPv4, or load balancer usage. These inputs stay shared across every provider."
+            >
+              <div className="grid items-start gap-3 sm:grid-cols-2">
                 <BeeijaNumberField
                   label="Persistent storage"
                   value={workload.persistentStorageGb}
@@ -684,7 +681,7 @@ export default function ToolClient() {
                   sanitizeDecimal
                 />
               </div>
-            </details>
+            </BeeijaAdvancedSection>
           </div>
 
           <div className="mt-6 border-t border-slate-200 pt-5">
@@ -750,16 +747,12 @@ export default function ToolClient() {
               />
             </div>
 
-            <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
-              <summary className="cursor-pointer text-sm font-semibold text-slate-950">
-                Optional discounts, storage, network, and commitment rates
-              </summary>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Open this when your estimate needs commitment discounts, Spot
-                capacity, OS licence cost, storage, public IPs, load balancers,
-                fixed monthly services, or upfront reservation cost.
-              </p>
-              <div className="mt-3 grid items-start gap-3 sm:grid-cols-2">
+            <BeeijaAdvancedSection
+              className="mt-4"
+              title="Optional discounts, storage, network, and commitment rates"
+              description="Open this when your estimate needs commitment discounts, Spot capacity, OS licence cost, storage, public IPs, load balancers, fixed monthly services, or upfront reservation cost."
+            >
+              <div className="grid items-start gap-3 sm:grid-cols-2">
                 <BeeijaNumberField
                   label="Commitment or reservation discount"
                   value={activePlan.commitmentDiscountPercent}
@@ -879,7 +872,7 @@ export default function ToolClient() {
                   sanitizeDecimal
                 />
               </div>
-            </details>
+            </BeeijaAdvancedSection>
           </div>
         </section>
 
@@ -1011,11 +1004,8 @@ export default function ToolClient() {
             </div>
           </section>
 
-          <details className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <summary className="cursor-pointer text-base font-semibold text-slate-950">
-              Calculation details
-            </summary>
-            <div className="mt-4 space-y-2">
+          <BeeijaAdvancedSection title="Calculation details" variant="card">
+            <div className="space-y-2">
               <BeeijaResultLine
                 label="Base instance-hours"
                 value={formatBeeijaNumber(result.rawBaseInstanceHours)}
@@ -1107,7 +1097,7 @@ export default function ToolClient() {
               the official provider calculator for your exact region, OS, and
               account terms.
             </p>
-          </details>
+          </BeeijaAdvancedSection>
 
           <div className="rounded-lg border border-[var(--yellow)] bg-[#fffdf3] p-4 text-base leading-7 text-amber-900">
             <strong>* Important:</strong> Current VM prices can vary by region,
