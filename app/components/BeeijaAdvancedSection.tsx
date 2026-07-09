@@ -29,7 +29,7 @@ export default function BeeijaAdvancedSection({
   const bodySpacing = contentClassName ?? (variant === "card" ? "mt-4" : "mt-3");
 
   return (
-    <details defaultOpen={defaultOpen} className={`${wrapperClass} group ${className}`.trim()}>
+    <details open={defaultOpen} className={`${wrapperClass} group ${className}`.trim()}>
       <summary
         className={`flex cursor-pointer list-none items-center justify-between gap-3 ${titleClass} font-semibold text-slate-950 [&::-webkit-details-marker]:hidden`}
       >
