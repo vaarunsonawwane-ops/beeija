@@ -616,54 +616,6 @@ export default function ToolClient() {
                 sanitizeDecimal
               />
               <BeeijaNumberField
-                label="Persistent storage"
-                value={workload.persistentStorageGb}
-                onChange={(value) =>
-                  updateWorkload("persistentStorageGb", value)
-                }
-                suffix="GB"
-                helper="Total provisioned disk capacity."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Snapshot storage"
-                value={workload.snapshotStorageGb}
-                onChange={(value) => updateWorkload("snapshotStorageGb", value)}
-                suffix="GB"
-                helper="Backup/snapshot storage retained."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Outbound data transfer"
-                value={workload.outboundDataGb}
-                onChange={(value) => updateWorkload("outboundDataGb", value)}
-                suffix="GB"
-                helper="Internet egress or billable outbound transfer."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Public IPv4 address count"
-                value={workload.publicIpCount}
-                onChange={(value) => updateWorkload("publicIpCount", value)}
-                helper="Billable public IPv4 addresses."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Load balancer count"
-                value={workload.loadBalancerCount}
-                onChange={(value) => updateWorkload("loadBalancerCount", value)}
-                helper="Optional load balancers for the VM workload."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Load balancer data processed"
-                value={workload.loadBalancerDataGb}
-                onChange={(value) => updateWorkload("loadBalancerDataGb", value)}
-                suffix="GB"
-                helper="Traffic processed by load balancers."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
                 label="Target monthly VM budget"
                 value={workload.monthlyBudget}
                 onChange={(value) => updateWorkload("monthlyBudget", value)}
@@ -672,6 +624,67 @@ export default function ToolClient() {
                 sanitizeDecimal
               />
             </div>
+
+            <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+              <summary className="cursor-pointer text-sm font-semibold text-slate-950">
+                Storage, network, and optional service assumptions
+              </summary>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Open this when your VM estimate must include storage,
+                snapshots, outbound transfer, public IPv4, or load balancer
+                usage. These inputs stay shared across every provider.
+              </p>
+              <div className="mt-3 grid items-start gap-3 sm:grid-cols-2">
+                <BeeijaNumberField
+                  label="Persistent storage"
+                  value={workload.persistentStorageGb}
+                  onChange={(value) =>
+                    updateWorkload("persistentStorageGb", value)
+                  }
+                  suffix="GB"
+                  helper="Total provisioned disk capacity."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Snapshot storage"
+                  value={workload.snapshotStorageGb}
+                  onChange={(value) => updateWorkload("snapshotStorageGb", value)}
+                  suffix="GB"
+                  helper="Backup/snapshot storage retained."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Outbound data transfer"
+                  value={workload.outboundDataGb}
+                  onChange={(value) => updateWorkload("outboundDataGb", value)}
+                  suffix="GB"
+                  helper="Internet egress or billable outbound transfer."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Public IPv4 address count"
+                  value={workload.publicIpCount}
+                  onChange={(value) => updateWorkload("publicIpCount", value)}
+                  helper="Billable public IPv4 addresses."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Load balancer count"
+                  value={workload.loadBalancerCount}
+                  onChange={(value) => updateWorkload("loadBalancerCount", value)}
+                  helper="Optional load balancers for the VM workload."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Load balancer data processed"
+                  value={workload.loadBalancerDataGb}
+                  onChange={(value) => updateWorkload("loadBalancerDataGb", value)}
+                  suffix="GB"
+                  helper="Traffic processed by load balancers."
+                  sanitizeDecimal
+                />
+              </div>
+            </details>
           </div>
 
           <div className="mt-6 border-t border-slate-200 pt-5">
@@ -735,125 +748,138 @@ export default function ToolClient() {
                 helper="Required for this provider to show a real estimate."
                 sanitizeDecimal
               />
-              <BeeijaNumberField
-                label="Commitment or reservation discount"
-                value={activePlan.commitmentDiscountPercent}
-                onChange={(value) =>
-                  updatePlan("commitmentDiscountPercent", value)
-                }
-                suffix="%"
-                helper="Applies to non-Spot compute share."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Instance-hours using Spot capacity"
-                value={activePlan.spotSharePercent}
-                onChange={(value) => updatePlan("spotSharePercent", value)}
-                suffix="%"
-                helper="Share of instance-hours planned as Spot/preemptible."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Spot discount from VM base rate"
-                value={activePlan.spotDiscountPercent}
-                onChange={(value) => updatePlan("spotDiscountPercent", value)}
-                suffix="%"
-                helper="Use your effective Spot/preemptible discount."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="OS or software licence per VM-hour"
-                value={activePlan.osLicenseHourlyPrice}
-                onChange={(value) => updatePlan("osLicenseHourlyPrice", value)}
-                prefix="$"
-                helper="Set 0 if included or not applicable."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Persistent storage price per GB-month"
-                value={activePlan.storagePricePerGbMonth}
-                onChange={(value) =>
-                  updatePlan("storagePricePerGbMonth", value)
-                }
-                prefix="$"
-                helper="Disk/storage price for the selected class."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Snapshot price per GB-month"
-                value={activePlan.snapshotPricePerGbMonth}
-                onChange={(value) =>
-                  updatePlan("snapshotPricePerGbMonth", value)
-                }
-                prefix="$"
-                helper="Backup or snapshot storage price."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Outbound data price per GB"
-                value={activePlan.egressPricePerGb}
-                onChange={(value) => updatePlan("egressPricePerGb", value)}
-                prefix="$"
-                helper="Internet egress or effective outbound transfer rate."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Public IPv4 price per address-hour"
-                value={activePlan.publicIpHourlyPrice}
-                onChange={(value) => updatePlan("publicIpHourlyPrice", value)}
-                prefix="$"
-                helper="Set 0 if not billed separately."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Load balancer price per hour"
-                value={activePlan.loadBalancerHourlyPrice}
-                onChange={(value) =>
-                  updatePlan("loadBalancerHourlyPrice", value)
-                }
-                prefix="$"
-                helper="Optional if the workload uses load balancers."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Load balancer data price per GB"
-                value={activePlan.loadBalancerDataPricePerGb}
-                onChange={(value) =>
-                  updatePlan("loadBalancerDataPricePerGb", value)
-                }
-                prefix="$"
-                helper="Set 0 if included or not applicable."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Other fixed monthly services"
-                value={activePlan.fixedMonthlyCost}
-                onChange={(value) => updatePlan("fixedMonthlyCost", value)}
-                prefix="$"
-                helper="Monitoring, backup, security, support allocation."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Upfront commitment or reservation cost"
-                value={activePlan.upfrontCommitmentCost}
-                onChange={(value) =>
-                  updatePlan("upfrontCommitmentCost", value)
-                }
-                prefix="$"
-                helper="Optional upfront cost to spread across months."
-                sanitizeDecimal
-              />
-              <BeeijaNumberField
-                label="Upfront-cost amortisation period"
-                value={activePlan.commitmentAmortizationMonths}
-                onChange={(value) =>
-                  updatePlan("commitmentAmortizationMonths", value)
-                }
-                suffix="months"
-                helper="Used only when upfront cost is entered."
-                sanitizeDecimal
-              />
             </div>
+
+            <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+              <summary className="cursor-pointer text-sm font-semibold text-slate-950">
+                Optional discounts, storage, network, and commitment rates
+              </summary>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Open this when your estimate needs commitment discounts, Spot
+                capacity, OS licence cost, storage, public IPs, load balancers,
+                fixed monthly services, or upfront reservation cost.
+              </p>
+              <div className="mt-3 grid items-start gap-3 sm:grid-cols-2">
+                <BeeijaNumberField
+                  label="Commitment or reservation discount"
+                  value={activePlan.commitmentDiscountPercent}
+                  onChange={(value) =>
+                    updatePlan("commitmentDiscountPercent", value)
+                  }
+                  suffix="%"
+                  helper="Applies to non-Spot compute share."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Instance-hours using Spot capacity"
+                  value={activePlan.spotSharePercent}
+                  onChange={(value) => updatePlan("spotSharePercent", value)}
+                  suffix="%"
+                  helper="Share of instance-hours planned as Spot/preemptible."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Spot discount from VM base rate"
+                  value={activePlan.spotDiscountPercent}
+                  onChange={(value) => updatePlan("spotDiscountPercent", value)}
+                  suffix="%"
+                  helper="Use your effective Spot/preemptible discount."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="OS or software licence per VM-hour"
+                  value={activePlan.osLicenseHourlyPrice}
+                  onChange={(value) => updatePlan("osLicenseHourlyPrice", value)}
+                  prefix="$"
+                  helper="Set 0 if included or not applicable."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Persistent storage price per GB-month"
+                  value={activePlan.storagePricePerGbMonth}
+                  onChange={(value) =>
+                    updatePlan("storagePricePerGbMonth", value)
+                  }
+                  prefix="$"
+                  helper="Disk/storage price for the selected class."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Snapshot price per GB-month"
+                  value={activePlan.snapshotPricePerGbMonth}
+                  onChange={(value) =>
+                    updatePlan("snapshotPricePerGbMonth", value)
+                  }
+                  prefix="$"
+                  helper="Backup or snapshot storage price."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Outbound data price per GB"
+                  value={activePlan.egressPricePerGb}
+                  onChange={(value) => updatePlan("egressPricePerGb", value)}
+                  prefix="$"
+                  helper="Internet egress or effective outbound transfer rate."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Public IPv4 price per address-hour"
+                  value={activePlan.publicIpHourlyPrice}
+                  onChange={(value) => updatePlan("publicIpHourlyPrice", value)}
+                  prefix="$"
+                  helper="Set 0 if not billed separately."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Load balancer price per hour"
+                  value={activePlan.loadBalancerHourlyPrice}
+                  onChange={(value) =>
+                    updatePlan("loadBalancerHourlyPrice", value)
+                  }
+                  prefix="$"
+                  helper="Optional if the workload uses load balancers."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Load balancer data price per GB"
+                  value={activePlan.loadBalancerDataPricePerGb}
+                  onChange={(value) =>
+                    updatePlan("loadBalancerDataPricePerGb", value)
+                  }
+                  prefix="$"
+                  helper="Set 0 if included or not applicable."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Other fixed monthly services"
+                  value={activePlan.fixedMonthlyCost}
+                  onChange={(value) => updatePlan("fixedMonthlyCost", value)}
+                  prefix="$"
+                  helper="Monitoring, backup, security, support allocation."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Upfront commitment or reservation cost"
+                  value={activePlan.upfrontCommitmentCost}
+                  onChange={(value) =>
+                    updatePlan("upfrontCommitmentCost", value)
+                  }
+                  prefix="$"
+                  helper="Optional upfront cost to spread across months."
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Upfront-cost amortisation period"
+                  value={activePlan.commitmentAmortizationMonths}
+                  onChange={(value) =>
+                    updatePlan("commitmentAmortizationMonths", value)
+                  }
+                  suffix="months"
+                  helper="Used only when upfront cost is entered."
+                  sanitizeDecimal
+                />
+              </div>
+            </details>
           </div>
         </section>
 
