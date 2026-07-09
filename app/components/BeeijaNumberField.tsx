@@ -95,13 +95,20 @@ export default function BeeijaNumberField({
         ) : null}
       </div>
 
-      {helper || warning ? (
-        <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
-          {warning
+      <span
+        title={
+          warning
             ? "Use a smaller planning value or split the workload into parts."
-            : helper}
-        </span>
-      ) : null}
+            : typeof helper === "string"
+              ? helper
+              : undefined
+        }
+        className={`mt-1 block min-h-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11.5px] leading-5 ${
+          warning ? "text-slate-600" : "text-slate-500"
+        }`}
+      >
+        {warning ? "Use a smaller value or split this workload." : helper || " "}
+      </span>
     </label>
   );
 }
