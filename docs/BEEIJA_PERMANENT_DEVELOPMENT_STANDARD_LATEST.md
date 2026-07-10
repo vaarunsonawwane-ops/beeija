@@ -1,6 +1,6 @@
 # BEEIJA_PERMANENT_DEVELOPMENT_STANDARD
 
-Last updated: July 2026
+Last updated: July 10, 2026
 
 This is the locked permanent development standard for Beeija. Use this as the single source of truth for every future Beeija tool, UI update, shared component update, content update, SEO update, and production correction.
 
@@ -984,78 +984,182 @@ Do not update all live tools blindly.
 
 ---
 
-## 40. Current Approved Reference Tool
+## 40. Current Approved Reference Pattern
 
-The fixed and deployed reference tool is:
+The current locked Beeija reference pattern is:
 
-**Cloud Load Balancer Cost Comparison Calculator**
+**Cloud VM + Cloud NAT Gateway + Cloud Load Balancer**
 
-Use it as the reference for:
+Use these three tools together as the active reference for long Beeija calculators.
 
-- Cloud Cost UI
-- pricing-source section
-- visible Common Questions
-- spacing
-- font
-- button shape
-- input style
-- yellow focus/warning color
+This reference pattern includes:
+
+- clean two-column calculator layout
+- main decision inputs visible upfront
+- advanced and optional inputs collapsed with shared `BeeijaAdvancedSection`
+- dropdowns used only where the tool truthfully needs them, through shared `BeeijaSelect`
+- no raw/native browser dropdown styling when it looks unpolished
+- provider/service/plan identity fields non-editable
+- provider pricing/rate fields editable where prices may change
+- shared `BeeijaNumberField` with stable helper/warning row so warnings do not push rows down
+- right-side estimate summary
+- provider comparison section
+- calculation details collapsed
+- official pricing sources with checked date
+- open/readable common questions
 - automatic related tools
-- lean `tools.ts`
-- estimate wording
+- no unnecessary long input walls
+- no shortcut fixes
+
+The reference pattern is not only visual. It also includes content quality, tool-specific wording, pricing truthfulness, and production safety.
 
 ---
 
-## 41. Current Migration Direction
+## 41. Truth Over Agreement Rule
 
-After fixing Load Balancer, apply shared improvements one by one to existing Cloud Cost tools.
+Always prioritize truth over agreement.
 
-Recommended first migration target:
+Do not simply agree with the user if the suggestion is incomplete, wrong, or only partly correct.
 
-**Cloud NAT Gateway Cost Comparison Calculator**
+For every Beeija decision:
 
-Reason:
+- check the actual issue
+- identify the root cause
+- compare against the approved Beeija standard
+- say whether the user suggestion is right, partly right, or not the best solution
+- avoid assumptions
+- avoid shortcut fixes
+- fix the real problem instead of avoiding it
+- ask for missing files when needed
+- do not generate production files until the solution is complete
 
-- closest existing reference
-- same cloud comparison category
-- similar provider/pricing structure
-- good candidate to validate shared UI migration
+Example:
 
-Then continue with:
-
-- Cloud VM
-- Cloud Object Storage
-- Cloud PostgreSQL
-- Cloud MySQL
-- Cloud Redis
-- Cloud SQL Server
-- Cloud Kubernetes
-- Cloud Serverless Functions
-- Cloud Block Storage
-- remaining Cloud tools
+If a dropdown looks bad, do not remove the dropdown just to avoid the problem. First decide whether the tool truthfully needs a dropdown. If it does, fix or use the shared dropdown component centrally.
 
 ---
 
-## 42. Final Permanent Workflow
+## 42. 192-Tool Creation Rule
+
+Beeija is going to 192 tools. Every tool must be created as if it is already part of the final 192-tool website.
+
+Do not build first and polish later.
+
+The lesson from Yoryantra is that late polishing becomes expensive when many tools are already live. Beeija must avoid that by building each tool with final-level quality from day one.
+
+Every new tool and every migrated tool must be reviewed for:
+
+- useful functionality
+- correct pricing logic
+- official-source accuracy
+- shared component usage
+- clean layout
+- stable input behavior
+- tool-specific content
+- natural SEO
+- trust-first disclaimers
+- production safety
+
+Do not create repeated template content that will require a second content-polishing cycle later.
+
+---
+
+## 43. 10-Step Beeija 360° Tool Creation Workflow
+
+Before giving production files for any Beeija tool, complete this 10-step review.
+
+1. **Tool selection check**  
+   Confirm the tool is commercially useful, practical, high-intent, and not filler.
+
+2. **Pricing/source check**  
+   Use current official pricing pages where needed. Do not rely on remembered pricing.
+
+3. **Functionality check**  
+   Inputs must match how the service is actually priced, used, and planned.
+
+4. **UI/layout check**  
+   Use VM + NAT + Load Balancer as the reference pattern for long calculators.
+
+5. **Shared component check**  
+   Use shared components first. Do not recreate fields, dropdowns, advanced sections, result rows, source boxes, related tools, or common UI patterns per tool.
+
+6. **Content quality check**  
+   Every content block must be tool-specific. No repeated AI-template copy. No generic card text that will appear across many tools.
+
+7. **SEO check**  
+   Match search intent naturally with useful headings and specific terms. Avoid keyword stuffing, generic SEO filler, and repeated “Free Online” style language.
+
+8. **Trust check**  
+   Keep estimate-only wording, official sources, checked date, pricing caveats, and honest limitations. Do not claim exact bill accuracy.
+
+9. **Technical check**  
+   Check TSX/type safety, supported props, imports, long-number behavior, stable helper rows, dropdown behavior, and layout shifts.
+
+10. **Final 360° review before packaging**  
+    Review UI, content, SEO, functionality, code, shared components, and long-term 192-tool scalability before creating the final zip.
+
+A tool is not ready just because it compiles. It is ready only when it passes this complete review.
+
+---
+
+## 44. Tool-Specific Content at Scale
+
+Shared layout is allowed. Shared copy is not.
+
+Every Beeija tool may reuse the same structural content pattern, but the actual wording must be written for that tool.
+
+Approved card/content pattern for supporting sections:
+
+- Card 1: explain the real workload shape for that service
+- Card 2: explain provider-specific pricing/rate editing for that service
+- Card 3: explain how to use the estimate safely for that service
+
+The card titles and paragraphs must change per tool.
+
+Avoid repeated headings such as:
+
+- Keep provider prices editable
+- Compare real workload shape
+- Read the estimate safely
+
+These can be used as a thinking pattern, not repeated as final copy across many pages.
+
+Better examples:
+
+- Model NAT traffic paths clearly
+- Check NAT pricing by provider and region
+- Plan the network design, not only the lowest price
+- Model traffic, rules, and capacity together
+- Update load balancer rates by provider
+- Use the estimate before deployment
+- Adjust VM prices by region
+- Compare base and peak VM usage
+
+Every content block should answer: “What does this specific tool help the user understand before spending money?”
+
+---
+
+## 45. Final Permanent Workflow
 
 For every future Beeija task:
 
-1. Understand whether it is new tool, polish, central component, or live issue.
+1. Understand whether it is a new tool, polish, central component, or live issue.
 2. If central/shared, ask for missing global/shared files before generating final code.
 3. Verify pricing from official sources when pricing is involved.
-4. Use the Load Balancer approved UI standard.
+4. Use the VM + NAT + Load Balancer approved reference pattern.
 5. Use shared components.
 6. Keep content natural and tool-specific.
 7. Keep `tools.ts` minimal.
 8. Avoid unrelated edits.
-9. Check TypeScript/build compatibility.
-10. Deploy one controlled change.
-11. Visually inspect.
-12. Only then move to the next tool.
+9. Complete the 10-step Beeija 360° Tool Creation Workflow.
+10. Check TypeScript/build compatibility.
+11. Deploy one controlled change.
+12. Visually inspect.
+13. Only then move to the next tool.
 
 ---
 
-## 43. Non-Negotiable Rules
+## 46. Non-Negotiable Rules
 
 These must not be forgotten:
 
@@ -1070,8 +1174,11 @@ These must not be forgotten:
 - Do not create one-off UI when a shared component is needed.
 - Do not touch unrelated files.
 - Do not use generic AI-template content.
+- Do not repeat the same card copy across many tools.
 - Do not claim exact billing accuracy.
 - Do not rely on remembered pricing.
+- Do not avoid a broken UI pattern by removing the feature.
+- Do not build first and polish later.
 - Do not move to the next tool until the current one is properly fixed.
 
 ---

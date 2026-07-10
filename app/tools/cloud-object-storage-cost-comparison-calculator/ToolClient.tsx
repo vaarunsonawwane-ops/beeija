@@ -3,6 +3,8 @@
 import { useMemo, useState, type ReactNode } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaAdvancedSection from "@/app/components/BeeijaAdvancedSection";
+import BeeijaTextField from "@/app/components/BeeijaTextField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 import BeeijaComparisonCalculatorLayout, {
   BeeijaComparisonInputPanel,
@@ -740,7 +742,7 @@ export default function ToolClient() {
                 </p>
               </div>
 
-              <FieldSection title="Stored Data and Tier Mix">
+              <FieldSection title="Core Storage Workload">
                 <BeeijaNumberField
                   label="Average primary data stored"
                   value={averageStoredDataGb}
@@ -748,6 +750,7 @@ export default function ToolClient() {
                   min="0"
                   step="1"
                   suffix="GB"
+                  sanitizeDecimal
                 />
 
                 <BeeijaNumberField
@@ -757,6 +760,7 @@ export default function ToolClient() {
                   min="0"
                   step="1"
                   suffix="GB"
+                  sanitizeDecimal
                 />
 
                 <BeeijaNumberField
@@ -767,6 +771,7 @@ export default function ToolClient() {
                   max="100"
                   step="1"
                   suffix="%"
+                  sanitizeDecimal
                 />
 
                 <BeeijaNumberField
@@ -777,6 +782,7 @@ export default function ToolClient() {
                   max="100"
                   step="1"
                   suffix="%"
+                  sanitizeDecimal
                 />
 
                 <BeeijaNumberField
@@ -787,108 +793,124 @@ export default function ToolClient() {
                   max="100"
                   step="1"
                   suffix="%"
+                  sanitizeDecimal
                 />
 
                 <BeeijaNumberField
-                  label="Data with one additional replicated copy"
-                  value={replicatedSharePercent}
-                  onChange={setReplicatedSharePercent}
-                  min="0"
-                  max="100"
-                  step="1"
-                  suffix="%"
-                />
-              </FieldSection>
-
-              <FieldSection title="Requests and Lifecycle Activity">
-                <BeeijaNumberField
-                  label="Write, create, or update requests"
-                  value={writeRequests}
-                  onChange={setWriteRequests}
-                  min="0"
-                  step="1"
-                />
-
-                <BeeijaNumberField
-                  label="Read or GET requests"
-                  value={readRequests}
-                  onChange={setReadRequests}
-                  min="0"
-                  step="1"
-                />
-
-                <BeeijaNumberField
-                  label="List and metadata requests"
-                  value={listRequests}
-                  onChange={setListRequests}
-                  min="0"
-                  step="1"
-                />
-
-                <BeeijaNumberField
-                  label="Lifecycle transition requests"
-                  value={lifecycleTransitions}
-                  onChange={setLifecycleTransitions}
-                  min="0"
-                  step="1"
-                />
-              </FieldSection>
-
-              <FieldSection title="Retrieval, Transfer, and Management">
-                <BeeijaNumberField
-                  label="Data retrieved from cool storage"
-                  value={coolRetrievedGb}
-                  onChange={setCoolRetrievedGb}
-                  min="0"
-                  step="1"
-                  suffix="GB"
-                />
-
-                <BeeijaNumberField
-                  label="Data retrieved or restored from archive"
-                  value={archiveRetrievedGb}
-                  onChange={setArchiveRetrievedGb}
-                  min="0"
-                  step="1"
-                  suffix="GB"
-                />
-
-                <BeeijaNumberField
-                  label="Internet or cross-region data transfer"
-                  value={internetEgressGb}
-                  onChange={setInternetEgressGb}
-                  min="0"
-                  step="1"
-                  suffix="GB"
-                />
-
-                <BeeijaNumberField
-                  label="Managed object count"
-                  value={objectCountMillions}
-                  onChange={setObjectCountMillions}
-                  min="0"
-                  step="0.1"
-                  suffix="million"
-                />
-
-                <BeeijaNumberField
-                  label="Data deleted before minimum duration"
-                  value={earlyDeletedDataGb}
-                  onChange={setEarlyDeletedDataGb}
-                  min="0"
-                  step="1"
-                  suffix="GB"
-                />
-
-                <BeeijaNumberField
-                  label="Target monthly object storage budget"
+                  label="Target monthly storage budget"
                   value={monthlyBudget}
                   onChange={setMonthlyBudget}
                   min="0"
                   step="1"
                   prefix="$"
+                  sanitizeDecimal
                 />
               </FieldSection>
+
+              <BeeijaAdvancedSection
+                title="Advanced workload assumptions"
+                description="Open this when you need to include replication, request volume, retrieval, transfer, object-management, or early-deletion assumptions."
+                className="mt-7"
+              >
+                <FieldGrid>
+                  <BeeijaNumberField
+                    label="Data with one additional replicated copy"
+                    value={replicatedSharePercent}
+                    onChange={setReplicatedSharePercent}
+                    min="0"
+                    max="100"
+                    step="1"
+                    suffix="%"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Write, create, or update requests"
+                    value={writeRequests}
+                    onChange={setWriteRequests}
+                    min="0"
+                    step="1"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Read or GET requests"
+                    value={readRequests}
+                    onChange={setReadRequests}
+                    min="0"
+                    step="1"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="List and metadata requests"
+                    value={listRequests}
+                    onChange={setListRequests}
+                    min="0"
+                    step="1"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Lifecycle transition requests"
+                    value={lifecycleTransitions}
+                    onChange={setLifecycleTransitions}
+                    min="0"
+                    step="1"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Data retrieved from cool storage"
+                    value={coolRetrievedGb}
+                    onChange={setCoolRetrievedGb}
+                    min="0"
+                    step="1"
+                    suffix="GB"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Data retrieved or restored from archive"
+                    value={archiveRetrievedGb}
+                    onChange={setArchiveRetrievedGb}
+                    min="0"
+                    step="1"
+                    suffix="GB"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Internet or cross-region data transfer"
+                    value={internetEgressGb}
+                    onChange={setInternetEgressGb}
+                    min="0"
+                    step="1"
+                    suffix="GB"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Managed object count"
+                    value={objectCountMillions}
+                    onChange={setObjectCountMillions}
+                    min="0"
+                    step="0.1"
+                    suffix="million"
+                    sanitizeDecimal
+                  />
+
+                  <BeeijaNumberField
+                    label="Data deleted before minimum duration"
+                    value={earlyDeletedDataGb}
+                    onChange={setEarlyDeletedDataGb}
+                    min="0"
+                    step="1"
+                    suffix="GB"
+                    sanitizeDecimal
+                  />
+                </FieldGrid>
+              </BeeijaAdvancedSection>
 
               <BeeijaWorkloadSummary title="Normalized monthly storage workload">
         <div className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2">
@@ -1068,19 +1090,23 @@ export default function ToolClient() {
                       </p>
                     </div>
 
-                    <div className="space-y-4">
-                      {selectedRows.map((row) => (
-                        <BreakdownRow
-                          key={row.label}
-                          label={row.label}
-                          detail={row.detail}
-                          value={row.value}
-                          entered={row.entered}
-                        />
-                      ))}
-                    </div>
+                    <BeeijaAdvancedSection title="Calculation details" variant="card">
+                      <div className="space-y-4">
+                        {selectedRows.map((row) => (
+                          <BreakdownRow
+                            key={row.label}
+                            label={row.label}
+                            detail={row.detail}
+                            value={row.value}
+                            entered={row.entered}
+                          />
+                        ))}
+                      </div>
 
-                    <ComparisonTable rows={result.comparisonRows} />
+                      <div className="mt-6">
+                        <ComparisonTable rows={result.comparisonRows} />
+                      </div>
+                    </BeeijaAdvancedSection>
                   </div>
                 }
                 totals={
@@ -1259,10 +1285,11 @@ function PlanEditor({
         />
 
         {plan.regionId === "other" ? (
-          <TextField
-            label="Enter the exact provider region or location"
+          <BeeijaTextField
+            label="Exact provider region or location"
             value={plan.customRegion}
             onChange={(value) => onChange("customRegion", value)}
+            helper="Use the region name from the provider pricing page."
           />
         ) : null}
 
@@ -1330,7 +1357,7 @@ function PlanEditor({
         </p>
       </div>
 
-      <div className="mt-5 grid items-start gap-5 md:grid-cols-2 md:[&>label>span:first-child]:flex md:[&>label>span:first-child]:min-h-[2.7rem] md:[&>label>span:first-child]:items-end">
+      <FieldGrid>
         <BeeijaNumberField
           label={`${classes.hot} price per GB-month`}
           value={plan.standardStoragePrice}
@@ -1340,6 +1367,7 @@ function PlanEditor({
           min="0"
           step="0.000001"
           prefix="$"
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1356,6 +1384,7 @@ function PlanEditor({
           step="0.000001"
           prefix="$"
           disabled={!coolEnabled}
+          sanitizeDecimal
         />
 
         <BeeijaNumberField
@@ -1372,161 +1401,191 @@ function PlanEditor({
           step="0.000001"
           prefix="$"
           disabled={!archiveEnabled}
+          sanitizeDecimal
         />
+      </FieldGrid>
 
-        <BeeijaNumberField
-          label="Write operations per 10,000"
-          value={plan.writePricePerTenThousand}
-          onChange={(value) =>
-            onChange("writePricePerTenThousand", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+      <BeeijaAdvancedSection
+        title="Advanced request, retrieval, and transfer rates"
+        description="Open this to include request charges, retrieval or restore rates, data transfer, replication, object-management, and early-deletion costs."
+        className="mt-6"
+      >
+        <FieldGrid>
+          <BeeijaNumberField
+            label="Write operations per 10,000"
+            value={plan.writePricePerTenThousand}
+            onChange={(value) =>
+              onChange("writePricePerTenThousand", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="Read operations per 10,000"
-          value={plan.readPricePerTenThousand}
-          onChange={(value) =>
-            onChange("readPricePerTenThousand", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="Read operations per 10,000"
+            value={plan.readPricePerTenThousand}
+            onChange={(value) =>
+              onChange("readPricePerTenThousand", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="List or metadata operations per 10,000"
-          value={plan.listPricePerTenThousand}
-          onChange={(value) =>
-            onChange("listPricePerTenThousand", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="List or metadata operations per 10,000"
+            value={plan.listPricePerTenThousand}
+            onChange={(value) =>
+              onChange("listPricePerTenThousand", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="Lifecycle transitions per 10,000"
-          value={plan.transitionPricePerTenThousand}
-          onChange={(value) =>
-            onChange("transitionPricePerTenThousand", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="Lifecycle transitions per 10,000"
+            value={plan.transitionPricePerTenThousand}
+            onChange={(value) =>
+              onChange("transitionPricePerTenThousand", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label={
-            coolEnabled
-              ? `${classes.cool} retrieval price per GB`
-              : "Cool-tier retrieval price per GB"
-          }
-          value={plan.coolRetrievalPricePerGb}
-          onChange={(value) =>
-            onChange("coolRetrievalPricePerGb", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-          disabled={!coolEnabled}
-        />
+          <BeeijaNumberField
+            label={
+              coolEnabled
+                ? `${classes.cool} retrieval price per GB`
+                : "Cool-tier retrieval price per GB"
+            }
+            value={plan.coolRetrievalPricePerGb}
+            onChange={(value) =>
+              onChange("coolRetrievalPricePerGb", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            disabled={!coolEnabled}
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label={
-            archiveEnabled
-              ? `${classes.archive} retrieval or restore per GB`
-              : "Archive retrieval or restore per GB"
-          }
-          value={plan.archiveRetrievalPricePerGb}
-          onChange={(value) =>
-            onChange("archiveRetrievalPricePerGb", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-          disabled={!archiveEnabled}
-        />
+          <BeeijaNumberField
+            label={
+              archiveEnabled
+                ? `${classes.archive} retrieval or restore per GB`
+                : "Archive retrieval or restore per GB"
+            }
+            value={plan.archiveRetrievalPricePerGb}
+            onChange={(value) =>
+              onChange("archiveRetrievalPricePerGb", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            disabled={!archiveEnabled}
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="Effective egress price per GB"
-          value={plan.egressPricePerGb}
-          onChange={(value) =>
-            onChange("egressPricePerGb", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="Effective egress price per GB"
+            value={plan.egressPricePerGb}
+            onChange={(value) =>
+              onChange("egressPricePerGb", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="Replication transfer price per GB"
-          value={plan.replicationTransferPricePerGb}
-          onChange={(value) =>
-            onChange("replicationTransferPricePerGb", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="Replication transfer price per GB"
+            value={plan.replicationTransferPricePerGb}
+            onChange={(value) =>
+              onChange("replicationTransferPricePerGb", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="Management price per million objects"
-          value={plan.managementPricePerMillionObjects}
-          onChange={(value) =>
-            onChange("managementPricePerMillionObjects", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="Management price per million objects"
+            value={plan.managementPricePerMillionObjects}
+            onChange={(value) =>
+              onChange("managementPricePerMillionObjects", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="Early-deletion charge per affected GB"
-          value={plan.earlyDeletionPricePerGb}
-          onChange={(value) =>
-            onChange("earlyDeletionPricePerGb", value)
-          }
-          min="0"
-          step="0.0001"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="Early-deletion charge per affected GB"
+            value={plan.earlyDeletionPricePerGb}
+            onChange={(value) =>
+              onChange("earlyDeletionPricePerGb", value)
+            }
+            min="0"
+            step="0.0001"
+            prefix="$"
+            sanitizeDecimal
+          />
+        </FieldGrid>
+      </BeeijaAdvancedSection>
 
-        <BeeijaNumberField
-          label="Other fixed monthly storage services"
-          value={plan.fixedMonthlyCost}
-          onChange={(value) =>
-            onChange("fixedMonthlyCost", value)
-          }
-          min="0"
-          step="1"
-          prefix="$"
-        />
+      <BeeijaAdvancedSection
+        title="Fixed, migration, and amortized planning costs"
+        description="Open this if you need to add storage inventory, analytics, monitoring, support, migration labour, or one-time movement costs."
+        className="mt-6"
+      >
+        <FieldGrid>
+          <BeeijaNumberField
+            label="Other fixed monthly storage services"
+            value={plan.fixedMonthlyCost}
+            onChange={(value) =>
+              onChange("fixedMonthlyCost", value)
+            }
+            min="0"
+            step="1"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="One-time migration cost"
-          value={plan.oneTimeMigrationCost}
-          onChange={(value) =>
-            onChange("oneTimeMigrationCost", value)
-          }
-          min="0"
-          step="1"
-          prefix="$"
-        />
+          <BeeijaNumberField
+            label="One-time migration cost"
+            value={plan.oneTimeMigrationCost}
+            onChange={(value) =>
+              onChange("oneTimeMigrationCost", value)
+            }
+            min="0"
+            step="1"
+            prefix="$"
+            sanitizeDecimal
+          />
 
-        <BeeijaNumberField
-          label="Migration amortisation period"
-          value={plan.migrationAmortizationMonths}
-          onChange={(value) =>
-            onChange("migrationAmortizationMonths", value)
-          }
-          min="1"
-          step="1"
-          suffix="mo"
-        />
-      </div>
+          <BeeijaNumberField
+            label="Migration amortisation period"
+            value={plan.migrationAmortizationMonths}
+            onChange={(value) =>
+              onChange("migrationAmortizationMonths", value)
+            }
+            min="1"
+            step="1"
+            suffix="mo"
+            sanitizeDecimal
+          />
+        </FieldGrid>
+      </BeeijaAdvancedSection>
     </div>
   );
 }
@@ -1543,35 +1602,16 @@ function FieldSection({
       <h3 className="text-lg font-semibold text-gray-950">
         {title}
       </h3>
-      <div className="mt-5 grid gap-5 md:grid-cols-2">
-        {children}
-      </div>
+      <FieldGrid>{children}</FieldGrid>
     </div>
   );
 }
 
-function TextField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
+function FieldGrid({ children }: { children: ReactNode }) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium text-gray-700">
-        {label}
-      </span>
-
-      <input
-        type="text"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
-      />
-    </label>
+    <div className="mt-5 grid items-start gap-5 md:grid-cols-2 md:[&>div>label:first-child]:flex md:[&>div>label:first-child]:min-h-[2.7rem] md:[&>div>label:first-child]:items-end md:[&>label>span:first-child]:flex md:[&>label>span:first-child]:min-h-[2.7rem] md:[&>label>span:first-child]:items-end">
+      {children}
+    </div>
   );
 }
 
