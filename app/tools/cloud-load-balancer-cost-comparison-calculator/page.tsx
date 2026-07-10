@@ -71,25 +71,25 @@ export default function Page() {
       <ToolClient />
 
       <section className="beeija-feature-grid">
-        <InfoCard title="Compare real workload shape" className="rounded-lg">
+        <InfoCard title="Model traffic, rules, and capacity together" className="rounded-lg">
           <>
-            Load balancer cost is not just one hourly line. The estimate can
-            change when traffic grows, more rules are added, capacity units rise,
-            or outbound transfer becomes a bigger part of the bill.
+            A load balancer bill is rarely only an hourly charge. Listener 
+            rules, processed traffic, new connections, capacity units, public 
+            IP use, and outbound transfer can all change the monthly estimate.
           </>
         </InfoCard>
-        <InfoCard title="Keep provider prices editable" className="rounded-lg">
+        <InfoCard title="Update load balancer rates by provider" className="rounded-lg">
           <>
-            AWS, Azure, Google Cloud, and Cloudflare do not price every load
-            balancing setup the same way. Editable rates help you use current
-            official numbers instead of trusting an outdated preset.
+            AWS, Azure, Google Cloud, and Cloudflare price load balancing in 
+            different ways. Editable rate fields let you copy current official 
+            prices for the exact region, traffic pattern, and product tier you are checking.
           </>
         </InfoCard>
-        <InfoCard title="Read the estimate safely" className="rounded-lg">
+        <InfoCard title="Use the estimate before deployment" className="rounded-lg">
           <>
-            Use the result as a planning number before tax, support plans,
-            reserved discounts, committed-use discounts, free tier credits, and
-            provider-specific billing rules.
+            Use the result as a planning estimate before launching, scaling, or 
+            changing traffic. Final bills can still change because of tax, 
+            support plans, reserved discounts, free tier credits, and provider-specific billing rules.
           </>
         </InfoCard>
       </section>
