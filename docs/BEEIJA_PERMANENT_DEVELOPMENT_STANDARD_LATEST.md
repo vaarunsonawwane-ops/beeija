@@ -1181,6 +1181,29 @@ These must not be forgotten:
 - Do not build first and polish later.
 - Do not move to the next tool until the current one is properly fixed.
 
+
+---
+
+## 47. Tool-Level Composition Rule
+
+Shared components alone are not enough. A Beeija tool must match the approved page-level composition from VM + NAT + Load Balancer.
+
+For long comparison calculators:
+
+- Use the approved two-column page composition: left configuration panel and right estimate/comparison panel.
+- Main workload inputs must be visible upfront.
+- Optional workload assumptions and optional rate inputs must be inside `BeeijaAdvancedSection`.
+- Provider cards should use the approved hover-lift card style.
+- Provider/service identity should be fixed by the selected provider card, not edited as normal pricing inputs.
+- Region, scope, redundancy, and class selections can use `BeeijaSelect` when they truthfully affect the estimate.
+- Price/rate fields must remain editable.
+- Avoid nested old-style gray editor boxes inside the main panel.
+- Avoid labels like “Comparison Plan 1” when they do not help the user.
+- The right side should contain estimate summary, provider comparison, and collapsed calculation details.
+- Do not use an older generic comparison layout when the latest approved reference pattern requires the VM + NAT + Load Balancer composition.
+
+Before giving files, check not only whether shared components are imported, but whether the complete visual composition matches the approved reference tools.
+
 ---
 
 End of standard.
