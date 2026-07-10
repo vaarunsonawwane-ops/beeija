@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaResultLine from "@/app/components/BeeijaResultLine";
+import BeeijaAdvancedSection from "@/app/components/BeeijaAdvancedSection";
 import {
   formatBeeijaCurrency,
   formatBeeijaNumber,
@@ -324,27 +325,37 @@ export default function ToolClient() {
                 helper="Traffic processed by the load balancer."
                 suffix="GB"
               />
-              <NumberInput
-                label="Outbound transfer"
-                value={usage.outboundGb}
-                onChange={(value) => updateUsage("outboundGb", value)}
-                helper="Internet egress or billable outbound transfer."
-                suffix="GB"
-              />
-              <NumberInput
-                label="Forwarding rules"
-                value={usage.forwardingRules}
-                onChange={(value) => updateUsage("forwardingRules", value)}
-                helper="Use 0 if your provider does not bill this separately."
-                suffix="rules"
-              />
-              <NumberInput
-                label="Spread one-time cost over"
-                value={usage.migrationMonths}
-                onChange={(value) => updateUsage("migrationMonths", value)}
-                helper="Used for setup or migration planning."
-                suffix="months"
-              />
+            </div>
+
+            <div className="mt-4">
+              <BeeijaAdvancedSection
+                title="Optional traffic and setup assumptions"
+                description="Use these only when outbound transfer, forwarding rules, or setup costs are part of your estimate."
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <NumberInput
+                    label="Outbound transfer"
+                    value={usage.outboundGb}
+                    onChange={(value) => updateUsage("outboundGb", value)}
+                    helper="Internet egress or billable outbound transfer."
+                    suffix="GB"
+                  />
+                  <NumberInput
+                    label="Forwarding rules"
+                    value={usage.forwardingRules}
+                    onChange={(value) => updateUsage("forwardingRules", value)}
+                    helper="Use 0 if your provider does not bill this separately."
+                    suffix="rules"
+                  />
+                  <NumberInput
+                    label="Spread one-time cost over"
+                    value={usage.migrationMonths}
+                    onChange={(value) => updateUsage("migrationMonths", value)}
+                    helper="Used for setup or migration planning."
+                    suffix="months"
+                  />
+                </div>
+              </BeeijaAdvancedSection>
             </div>
           </div>
 
@@ -391,45 +402,55 @@ export default function ToolClient() {
                 prefix="$"
                 suffix="/GB"
               />
-              <NumberInput
-                label="Forwarding rule hourly price"
-                value={activeRates.forwardingRuleHourly}
-                onChange={(value) => updateRate("forwardingRuleHourly", value)}
-                helper="Mostly useful for Google-style pricing."
-                prefix="$"
-                suffix="/rule-hour"
-              />
-              <NumberInput
-                label="Outbound transfer price"
-                value={activeRates.outboundTransferPerGb}
-                onChange={(value) => updateRate("outboundTransferPerGb", value)}
-                helper="Internet egress, if billed separately."
-                prefix="$"
-                suffix="/GB"
-              />
-              <NumberInput
-                label="WAF monthly cost"
-                value={activeRates.wafMonthly}
-                onChange={(value) => updateRate("wafMonthly", value)}
-                helper="Add WAF, rules, or managed security cost."
-                prefix="$"
-                suffix="/month"
-              />
-              <NumberInput
-                label="Logging and monitoring"
-                value={activeRates.loggingMonthly}
-                onChange={(value) => updateRate("loggingMonthly", value)}
-                helper="Access logs, metrics, storage, and alerting."
-                prefix="$"
-                suffix="/month"
-              />
-              <NumberInput
-                label="Setup or migration cost"
-                value={activeRates.migrationOneTime}
-                onChange={(value) => updateRate("migrationOneTime", value)}
-                helper="Optional one-time cost spread across months."
-                prefix="$"
-              />
+            </div>
+
+            <div className="mt-4">
+              <BeeijaAdvancedSection
+                title="Optional provider rates"
+                description="Open this only when the provider bills forwarding rules, outbound transfer, WAF, logging, or setup separately."
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <NumberInput
+                    label="Forwarding rule hourly price"
+                    value={activeRates.forwardingRuleHourly}
+                    onChange={(value) => updateRate("forwardingRuleHourly", value)}
+                    helper="Mostly useful for Google-style pricing."
+                    prefix="$"
+                    suffix="/rule-hour"
+                  />
+                  <NumberInput
+                    label="Outbound transfer price"
+                    value={activeRates.outboundTransferPerGb}
+                    onChange={(value) => updateRate("outboundTransferPerGb", value)}
+                    helper="Internet egress, if billed separately."
+                    prefix="$"
+                    suffix="/GB"
+                  />
+                  <NumberInput
+                    label="WAF monthly cost"
+                    value={activeRates.wafMonthly}
+                    onChange={(value) => updateRate("wafMonthly", value)}
+                    helper="Add WAF, rules, or managed security cost."
+                    prefix="$"
+                    suffix="/month"
+                  />
+                  <NumberInput
+                    label="Logging and monitoring"
+                    value={activeRates.loggingMonthly}
+                    onChange={(value) => updateRate("loggingMonthly", value)}
+                    helper="Access logs, metrics, storage, and alerting."
+                    prefix="$"
+                    suffix="/month"
+                  />
+                  <NumberInput
+                    label="Setup or migration cost"
+                    value={activeRates.migrationOneTime}
+                    onChange={(value) => updateRate("migrationOneTime", value)}
+                    helper="Optional one-time cost spread across months."
+                    prefix="$"
+                  />
+                </div>
+              </BeeijaAdvancedSection>
             </div>
           </div>
         </section>
@@ -522,11 +543,8 @@ export default function ToolClient() {
             </div>
           </section>
 
-          <details className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <summary className="cursor-pointer text-base font-semibold text-slate-950">
-              Calculation details
-            </summary>
-            <div className="mt-4 space-y-2">
+          <BeeijaAdvancedSection title="Calculation details" variant="card">
+            <div className="space-y-2">
               <BeeijaResultLine
                 label="Monthly hours"
                 value={formatBeeijaNumber(parseBeeijaNumber(usage.monthlyHours))}
@@ -561,7 +579,7 @@ export default function ToolClient() {
               traffic across services, regions, or environments and verify the
               result in the provider calculator before purchase.
             </p>
-          </details>
+          </BeeijaAdvancedSection>
 
           <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-base leading-7 text-amber-900">
             <strong>* Important:</strong> Current load balancer prices can vary

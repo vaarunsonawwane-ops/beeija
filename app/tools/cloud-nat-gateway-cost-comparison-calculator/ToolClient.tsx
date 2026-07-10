@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useMemo, useState } from "react";
+import BeeijaAdvancedSection from "@/app/components/BeeijaAdvancedSection";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaResultLine from "@/app/components/BeeijaResultLine";
+import BeeijaSelect from "@/app/components/BeeijaSelect";
 import {
   formatBeeijaCurrency,
   formatBeeijaNumber,
@@ -192,6 +194,36 @@ const pricingModeOptions: {
   },
 ];
 
+const regionOptionsByPlan: Record<PlanId, { label: string; value: string }[]> = {
+  "aws-nat-gateway": [
+    { label: "US East (Ohio)", value: "US East (Ohio)" },
+    { label: "US East (N. Virginia)", value: "US East (N. Virginia)" },
+    { label: "US West (Oregon)", value: "US West (Oregon)" },
+    { label: "Asia Pacific (Mumbai)", value: "Asia Pacific (Mumbai)" },
+    { label: "Europe (Ireland)", value: "Europe (Ireland)" },
+  ],
+  "azure-nat-gateway": [
+    { label: "East US", value: "East US" },
+    { label: "East US 2", value: "East US 2" },
+    { label: "West US 2", value: "West US 2" },
+    { label: "Central India", value: "Central India" },
+    { label: "West Europe", value: "West Europe" },
+  ],
+  "google-cloud-nat": [
+    { label: "Iowa (us-central1)", value: "Iowa (us-central1)" },
+    { label: "Oregon (us-west1)", value: "Oregon (us-west1)" },
+    { label: "N. Virginia (us-east4)", value: "N. Virginia (us-east4)" },
+    { label: "Mumbai (asia-south1)", value: "Mumbai (asia-south1)" },
+    { label: "Belgium (europe-west1)", value: "Belgium (europe-west1)" },
+  ],
+  custom: [
+    { label: "Your region", value: "Your region" },
+    { label: "Custom quote or your provider region", value: "Custom quote or your provider region" },
+    { label: "Your private pricing scope", value: "Your private pricing scope" },
+    { label: "Marketplace or reseller quote", value: "Marketplace or reseller quote" },
+  ],
+};
+
 function formatRate(value: number) {
   return formatBeeijaCurrency(value);
 }
@@ -328,37 +360,6 @@ function NumberInput({ label, value, onChange, helper, prefix, suffix }: NumberI
   );
 }
 
-function TextInput({
-  label,
-  value,
-  onChange,
-  helper,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  helper?: string;
-}) {
-  return (
-    <label className="block min-w-0">
-      <span className="mb-1 block text-[11.5px] font-semibold leading-5 text-slate-800">
-        {label}
-      </span>
-      <input
-        type="text"
-        value={value}
-        onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value)}
-        className="min-h-[38px] w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-[13.5px] text-slate-900 outline-none transition focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
-      />
-      {helper ? (
-        <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
-          {helper}
-        </span>
-      ) : null}
-    </label>
-  );
-}
-
 function ChoiceCards<TValue extends string>({
   label,
   value,
@@ -449,6 +450,7 @@ export default function ToolClient() {
 
   const activePlan =
     plans.find((plan) => plan.id === activePlanId) ?? plans[0];
+  const activeRegionOptions = regionOptionsByPlan[activePlan.id];
 
   const results = useMemo(
     () => orderResults(plans.map((plan) => calculatePlan(plan, workload))),
@@ -544,12 +546,6 @@ export default function ToolClient() {
                 helper="VMs, nodes, or workloads using this NAT path."
               />
               <NumberInput
-                label="Public IPv4 addresses"
-                value={workload.publicIpCount}
-                onChange={(value) => updateWorkload("publicIpCount", value)}
-                helper="Public IPs attached to NAT gateways."
-              />
-              <NumberInput
                 label="Outbound traffic processed by NAT"
                 value={workload.outboundProcessedGib}
                 onChange={(value) => updateWorkload("outboundProcessedGib", value)}
@@ -564,38 +560,54 @@ export default function ToolClient() {
                 suffix="GiB"
               />
               <NumberInput
-                label="Internet data transfer out"
-                value={workload.internetEgressGib}
-                onChange={(value) => updateWorkload("internetEgressGib", value)}
-                helper="Internet egress, if billed separately."
-                suffix="GiB"
-              />
-              <NumberInput
-                label="Cross-zone or regional transfer"
-                value={workload.crossZoneTransferGib}
-                onChange={(value) => updateWorkload("crossZoneTransferGib", value)}
-                helper="Regional or cross-zone network transfer."
-                suffix="GiB"
-              />
-              <ChoiceCards<"no" | "yes">
-                label="Include flow-log cost"
-                value={workload.includeFlowLogs}
-                onChange={(value) =>
-                  setWorkload((current) => ({ ...current, includeFlowLogs: value }))
-                }
-                options={[
-                  { value: "no", label: "No", description: "Do not add flow-log cost." },
-                  { value: "yes", label: "Yes", description: "Add monthly flow-log cost." },
-                ]}
-                helper="Add logging cost only when you plan to use it."
-              />
-              <NumberInput
                 label="Monthly planning budget"
                 value={workload.monthlyBudget}
                 onChange={(value) => updateWorkload("monthlyBudget", value)}
                 helper="Optional budget check for this NAT setup."
                 prefix="$"
               />
+            </div>
+
+            <div className="mt-4">
+              <BeeijaAdvancedSection
+                title="Optional transfer, IP, and logging assumptions"
+                description="Use these only when public IPs, internet egress, regional transfer, or flow logs are part of this NAT estimate."
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <NumberInput
+                    label="Public IPv4 addresses"
+                    value={workload.publicIpCount}
+                    onChange={(value) => updateWorkload("publicIpCount", value)}
+                    helper="Public IPs attached to NAT gateways."
+                  />
+                  <NumberInput
+                    label="Internet data transfer out"
+                    value={workload.internetEgressGib}
+                    onChange={(value) => updateWorkload("internetEgressGib", value)}
+                    helper="Internet egress, if billed separately."
+                    suffix="GiB"
+                  />
+                  <NumberInput
+                    label="Cross-zone or regional transfer"
+                    value={workload.crossZoneTransferGib}
+                    onChange={(value) => updateWorkload("crossZoneTransferGib", value)}
+                    helper="Regional or cross-zone network transfer."
+                    suffix="GiB"
+                  />
+                  <ChoiceCards<"no" | "yes">
+                    label="Include flow-log cost"
+                    value={workload.includeFlowLogs}
+                    onChange={(value) =>
+                      setWorkload((current) => ({ ...current, includeFlowLogs: value }))
+                    }
+                    options={[
+                      { value: "no", label: "No", description: "Do not add flow-log cost." },
+                      { value: "yes", label: "Yes", description: "Add monthly flow-log cost." },
+                    ]}
+                    helper="Add logging cost only when you plan to use it."
+                  />
+                </div>
+              </BeeijaAdvancedSection>
             </div>
           </div>
 
@@ -619,16 +631,23 @@ export default function ToolClient() {
             </p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <TextInput
+              <BeeijaSelect
                 label="Region or pricing scope"
                 value={activePlan.regionLabel}
-                onChange={(value) => updatePlan("regionLabel", value)}
+                onChange={(event) => updatePlan("regionLabel", event.target.value)}
+                options={activeRegionOptions}
               />
-              <TextInput
-                label="Service or plan name"
-                value={activePlan.serviceName}
-                onChange={(value) => updatePlan("serviceName", value)}
-              />
+              <div className="block min-w-0">
+                <span className="mb-2 block text-sm font-medium text-gray-700">
+                  Service or plan name
+                </span>
+                <div className="flex min-h-12 w-full min-w-0 items-center rounded-xl border border-gray-300 bg-slate-50 px-4 py-3 text-base text-gray-900">
+                  <span className="truncate">{activePlan.serviceName}</span>
+                </div>
+                <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
+                  Fixed by the selected provider plan. Edit only the pricing rates below.
+                </span>
+              </div>
               <div className="sm:col-span-2">
                 <ChoiceCards<GatewayPricingMode>
                   label="Gateway runtime pricing method"
@@ -692,50 +711,60 @@ export default function ToolClient() {
                 prefix="$"
                 suffix="/IP-hour"
               />
-              <NumberInput
-                label="Internet transfer-out price"
-                value={activePlan.internetEgressRatePerGib}
-                onChange={(value) => updatePlan("internetEgressRatePerGib", value)}
-                helper="Set blank or 0 if checked elsewhere."
-                prefix="$"
-                suffix="/GiB"
-              />
-              <NumberInput
-                label="Cross-zone or regional transfer price"
-                value={activePlan.crossZoneTransferRatePerGib}
-                onChange={(value) => updatePlan("crossZoneTransferRatePerGib", value)}
-                helper="Used when regional transfer applies."
-                prefix="$"
-                suffix="/GiB"
-              />
-              <NumberInput
-                label="Estimated monthly flow-log cost"
-                value={activePlan.flowLogsMonthlyCost}
-                onChange={(value) => updatePlan("flowLogsMonthlyCost", value)}
-                prefix="$"
-                suffix="/month"
-              />
-              <NumberInput
-                label="Other fixed monthly cost"
-                value={activePlan.fixedMonthlyCost}
-                onChange={(value) => updatePlan("fixedMonthlyCost", value)}
-                helper="Monitoring, support allocation, or extra services."
-                prefix="$"
-                suffix="/month"
-              />
-              <NumberInput
-                label="One-time migration or setup cost"
-                value={activePlan.oneTimeMigrationCost}
-                onChange={(value) => updatePlan("oneTimeMigrationCost", value)}
-                prefix="$"
-              />
-              <NumberInput
-                label="Spread one-time cost over"
-                value={activePlan.migrationAmortizationMonths}
-                onChange={(value) => updatePlan("migrationAmortizationMonths", value)}
-                helper="Used for migration planning."
-                suffix="months"
-              />
+            </div>
+
+            <div className="mt-4">
+              <BeeijaAdvancedSection
+                title="Optional transfer, logging, and setup rates"
+                description="Open this only when internet transfer, regional transfer, flow logs, fixed charges, or migration costs apply."
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <NumberInput
+                    label="Internet transfer-out price"
+                    value={activePlan.internetEgressRatePerGib}
+                    onChange={(value) => updatePlan("internetEgressRatePerGib", value)}
+                    helper="Set blank or 0 if checked elsewhere."
+                    prefix="$"
+                    suffix="/GiB"
+                  />
+                  <NumberInput
+                    label="Cross-zone or regional transfer price"
+                    value={activePlan.crossZoneTransferRatePerGib}
+                    onChange={(value) => updatePlan("crossZoneTransferRatePerGib", value)}
+                    helper="Used when regional transfer applies."
+                    prefix="$"
+                    suffix="/GiB"
+                  />
+                  <NumberInput
+                    label="Estimated monthly flow-log cost"
+                    value={activePlan.flowLogsMonthlyCost}
+                    onChange={(value) => updatePlan("flowLogsMonthlyCost", value)}
+                    prefix="$"
+                    suffix="/month"
+                  />
+                  <NumberInput
+                    label="Other fixed monthly cost"
+                    value={activePlan.fixedMonthlyCost}
+                    onChange={(value) => updatePlan("fixedMonthlyCost", value)}
+                    helper="Monitoring, support allocation, or extra services."
+                    prefix="$"
+                    suffix="/month"
+                  />
+                  <NumberInput
+                    label="One-time migration or setup cost"
+                    value={activePlan.oneTimeMigrationCost}
+                    onChange={(value) => updatePlan("oneTimeMigrationCost", value)}
+                    prefix="$"
+                  />
+                  <NumberInput
+                    label="Spread one-time cost over"
+                    value={activePlan.migrationAmortizationMonths}
+                    onChange={(value) => updatePlan("migrationAmortizationMonths", value)}
+                    helper="Used for migration planning."
+                    suffix="months"
+                  />
+                </div>
+              </BeeijaAdvancedSection>
             </div>
           </div>
         </section>
@@ -829,11 +858,8 @@ export default function ToolClient() {
             </div>
           </section>
 
-          <details className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <summary className="cursor-pointer text-base font-semibold text-slate-950">
-              Calculation details
-            </summary>
-            <div className="mt-4 space-y-2">
+          <BeeijaAdvancedSection title="Calculation details" variant="card">
+            <div className="space-y-2">
               <BeeijaResultLine
                 label="Gateway runtime"
                 value={`${formatBeeijaNumber(activeResult.gatewayHours)} gateway-hours`}
@@ -876,7 +902,7 @@ export default function ToolClient() {
               transfer, logging volume, discounts, and provider-specific rules.
               Verify the final estimate in the provider calculator before purchase.
             </p>
-          </details>
+          </BeeijaAdvancedSection>
 
           <div className="rounded-lg border border-[#F2C94C] bg-[#fffdf3] p-4 text-base leading-7 text-slate-700">
             <strong>* Important:</strong> Current NAT gateway prices can vary by
