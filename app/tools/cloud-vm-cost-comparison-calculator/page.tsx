@@ -74,29 +74,30 @@ export default function Page() {
       <ToolClient />
 
       <section className="beeija-feature-grid">
-        <InfoCard title="Compare full VM workload cost" className="rounded-lg">
+        <InfoCard title="Model the full VM workload" className="rounded-lg">
           <>
-            A virtual machine bill is not only the compute hourly price. Storage,
-            snapshots, outbound transfer, public IPs, load balancers, licences,
-            commitments, and fixed services can materially change the real
-            planning number.
+            A virtual machine bill is not only the compute hourly price. Base 
+            instances, peak capacity, vCPU and memory shape, attached storage, 
+            snapshots, public IPs, outbound transfer, load balancing, and 
+            commitment choices can all change the monthly estimate.
           </>
         </InfoCard>
 
-        <InfoCard title="Keep provider rates editable" className="rounded-lg">
+        <InfoCard title="Adjust VM rates by region and plan" className="rounded-lg">
           <>
-            AWS, Azure, Google Cloud, and private quotes can price the same VM
-            shape differently by region, OS, family, and commitment. Editable
-            fields let you enter current rates from official calculators or your
-            invoice.
+            AWS, Azure, Google Cloud, and private quotes can price the same VM 
+            shape differently by region, operating system, machine family, 
+            discount model, and account agreement. Editable rate fields help 
+            you use current official prices instead of relying on an old preset.
           </>
         </InfoCard>
 
-        <InfoCard title="Read the estimate safely" className="rounded-lg">
+        <InfoCard title="Use the VM estimate before sizing infrastructure" className="rounded-lg">
           <>
-            Use the result before tax, support plans, credits, enterprise
-            discounts, minimum billing rules, migration labour, managed services,
-            and provider-specific billing adjustments.
+            Use the result before choosing VM size, uptime hours, autoscaling 
+            capacity, storage size, or commitment options. Final bills can 
+            still change because of taxes, support plans, credits, enterprise 
+			discounts, managed services, and provider-specific billing rules.
           </>
         </InfoCard>
       </section>
