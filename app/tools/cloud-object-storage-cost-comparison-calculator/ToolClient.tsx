@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaAdvancedSection from "@/app/components/BeeijaAdvancedSection";
-import BeeijaTextField from "@/app/components/BeeijaTextField";
 import BeeijaResultLine from "@/app/components/BeeijaResultLine";
 import {
   getObjectStorageOptionLabel,
@@ -123,6 +122,65 @@ const initialPlans: PlanInput[] = [
   createPlan("plan-c", "gcp"),
 ];
 
+
+type ProviderDisplay = {
+  providerName: string;
+  serviceName: string;
+  shortName: string;
+};
+
+const providerDisplayById: Record<string, ProviderDisplay> = {
+  aws: {
+    providerName: "Amazon Web Services",
+    serviceName: "Amazon S3",
+    shortName: "AWS",
+  },
+  azure: {
+    providerName: "Microsoft Azure",
+    serviceName: "Azure Blob Storage",
+    shortName: "Azure",
+  },
+  gcp: {
+    providerName: "Google Cloud",
+    serviceName: "Cloud Storage",
+    shortName: "Google Cloud",
+  },
+  custom: {
+    providerName: "Custom provider",
+    serviceName: "Custom object storage service",
+    shortName: "Custom",
+  },
+};
+
+function getProviderDisplay(provider: ObjectStorageProvider): ProviderDisplay {
+  return (
+    providerDisplayById[provider.id] ?? {
+      providerName: provider.providerName,
+      serviceName: provider.serviceName,
+      shortName: provider.providerName,
+    }
+  );
+}
+
+function shortenRegionLabel(label: string) {
+  return label
+    .replace(/\s+—\s+[a-z]{2,}(?:-[a-z]+)*-\d+$/i, "")
+    .replace(/\s+—\s+[a-z]+[a-z0-9-]*$/i, "")
+    .replace(/\s+\(([^)]*)\s+—\s+[^)]*\)/i, " ($1)")
+    .trim();
+}
+
+function getRegionOptions(provider: ObjectStorageProvider) {
+  return provider.regions.map((option) => ({
+    ...option,
+    label: option.value === "other" ? option.label : shortenRegionLabel(option.label),
+  }));
+}
+
+function getProviderShortName(provider: ObjectStorageProvider) {
+  return getProviderDisplay(provider).shortName;
+}
+
 function toNumber(value: string) {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
@@ -161,7 +219,7 @@ function getRegionLabel(plan: PlanInput, provider: ObjectStorageProvider) {
     return plan.customRegion.trim() || "Other region";
   }
 
-  return getObjectStorageOptionLabel(provider.regions, plan.regionId);
+  return getObjectStorageOptionLabel(getRegionOptions(provider), plan.regionId);
 }
 
 function getClassLabels(plan: PlanInput, provider: ObjectStorageProvider) {
@@ -183,7 +241,7 @@ function getClassLabels(plan: PlanInput, provider: ObjectStorageProvider) {
 
 function getDisplayName(plan: PlanInput) {
   const provider = getObjectStorageProvider(plan.providerId);
-  return `${provider.serviceName} — ${getRegionLabel(plan, provider)}`;
+  return `${getProviderDisplay(provider).serviceName} — ${getRegionLabel(plan, provider)}`;
 }
 
 function getClassSummary(plan: PlanInput) {
@@ -422,8 +480,8 @@ export default function ToolClient() {
       return {
         id: plan.id,
         providerId: provider.id,
-        providerName: provider.providerName,
-        serviceName: provider.serviceName,
+        providerName: getProviderDisplay(provider).providerName,
+        serviceName: getProviderDisplay(provider).serviceName,
         displayName: getDisplayName(plan),
         regionLabel: getRegionLabel(plan, provider),
         resilienceLabel: getObjectStorageOptionLabel(
@@ -671,9 +729,6 @@ export default function ToolClient() {
   const activeEditorPlan =
     plans.find((plan) => plan.id === activeEditorPlanId) ??
     plans[0];
-  const activeEditorPlanNumber =
-    plans.findIndex((plan) => plan.id === activeEditorPlan.id) + 1;
-
   const openPlanEditor = (planId: string) => {
     setActiveEditorPlanId(planId);
     setSelectedPlanId(planId);
@@ -753,17 +808,17 @@ export default function ToolClient() {
               Configure workload
             </p>
             <h2 className="mt-1 text-xl font-semibold text-slate-950">
-              Select provider and enter current storage prices
+              Select provider and enter current prices
             </h2>
             <p className="mt-2 text-base leading-7 text-slate-600">
-              Object storage pricing depends on region, redundancy, storage
-              class, request type, retrieval method, replication, transfer, and
-              lifecycle behaviour. Beeija keeps rates editable so you can enter
-              current provider prices for the exact bucket setup you are planning.
+              Object storage pricing depends on stored data, region, redundancy,
+              storage class, requests, retrieval, transfer, replication, and
+              lifecycle rules. Beeija keeps provider prices editable so you can
+              compare the same workload with current pricing.
             </p>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {plans.map((plan) => {
               const provider = getObjectStorageProvider(plan.providerId);
               const selected = plan.id === activeEditorPlanId;
@@ -780,10 +835,10 @@ export default function ToolClient() {
                   }`}
                 >
                   <span className="block truncate text-base font-semibold text-slate-900">
-                    {provider.serviceName}
+                    {getProviderDisplay(provider).providerName}
                   </span>
-                  <span className="mt-1 block text-sm leading-5 text-slate-600">
-                    {getRegionLabel(plan, provider)}
+                  <span className="mt-1 block truncate text-sm leading-5 text-slate-600">
+                    {getProviderDisplay(provider).serviceName}
                   </span>
                 </button>
               );
@@ -952,17 +1007,13 @@ export default function ToolClient() {
 
           <div
             className="mt-6 border-t border-slate-200 pt-5"
-            aria-label={`Active object storage plan ${activeEditorPlanNumber}`}
+            aria-label={`${getProviderShortName(selectedProvider)} object storage price inputs`}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <h3 className="text-lg font-semibold text-slate-950">
-                  {selectedProvider.serviceName} price inputs
+                  {getProviderShortName(selectedProvider)} price inputs
                 </h3>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
-                  Region, redundancy, and storage-class choices identify the
-                  setup. Enter only the current rates you want Beeija to calculate.
-                </p>
               </div>
               <button
                 type="button"
@@ -972,6 +1023,11 @@ export default function ToolClient() {
                 Reset rates
               </button>
             </div>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Good for {getProviderDisplay(selectedProvider).serviceName} planning with storage
+              class rates, request charges, retrieval, transfer, replication,
+              and lifecycle cost inputs.
+            </p>
 
             <div className="mt-4">
               <PlanEditor
@@ -1002,7 +1058,7 @@ export default function ToolClient() {
               Estimate summary
             </p>
             <h2 className="mt-1 text-xl font-semibold text-slate-950">
-              {selectedProvider.serviceName} monthly planning cost
+              {getProviderShortName(selectedProvider)} monthly planning cost
             </h2>
 
             <div className="mt-4 rounded-lg border border-[#d7eadf] bg-white p-4">
@@ -1104,10 +1160,10 @@ export default function ToolClient() {
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-base font-semibold text-slate-900">
-                      {row.serviceName}
+                      {row.providerName}
                     </span>
                     <span className="block truncate text-sm text-slate-500">
-                      {row.regionLabel}
+                      {row.serviceName}
                     </span>
                   </span>
                   <span className="max-w-[7rem] truncate text-right text-base font-semibold tabular-nums text-slate-950 sm:max-w-[10rem]">
@@ -1169,29 +1225,29 @@ function PlanEditor({
   return (
     <div className="space-y-4">
       <div className="grid items-start gap-3 sm:grid-cols-2">
-        <div className="block min-w-0">
-          <span className="mb-2 block text-sm font-medium text-gray-700">
-            Object storage service
-          </span>
-          <div className="flex min-h-12 w-full min-w-0 items-center rounded-xl border border-gray-300 bg-slate-50 px-4 py-3 text-base text-gray-900">
-            <span className="truncate">{provider.serviceName}</span>
-          </div>
-          <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
-            Fixed by the selected provider card. Edit only the pricing rates below.
-          </span>
-        </div>
-
         <BeeijaSelect
-          label="Region or bucket location"
+          label="Region or pricing scope"
           value={plan.regionId}
           onChange={(event) =>
             onChange("regionId", event.target.value)
           }
-          options={provider.regions}
+          options={getRegionOptions(provider)}
         />
 
+        <div className="block min-w-0">
+          <span className="mb-2 block text-sm font-medium text-gray-700">
+            Service or plan name
+          </span>
+          <div className="flex min-h-12 w-full min-w-0 items-center rounded-xl border border-gray-300 bg-slate-50 px-4 py-3 text-base text-gray-900">
+            <span className="truncate">{getProviderDisplay(provider).serviceName}</span>
+          </div>
+          <span className="mt-1 block text-[11.5px] leading-5 text-slate-500">
+            Fixed by the selected provider plan. Edit only the pricing rates below.
+          </span>
+        </div>
+
         {plan.regionId === "other" ? (
-          <BeeijaTextField
+          <InlineTextField
             label="Exact provider region or location"
             value={plan.customRegion}
             onChange={(value) => onChange("customRegion", value)}
@@ -1446,6 +1502,35 @@ function PlanEditor({
     </div>
   );
 }
+function InlineTextField({
+  label,
+  value,
+  onChange,
+  helper,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  helper?: string;
+}) {
+  return (
+    <label className="block min-w-0">
+      <span className="mb-2 block text-sm font-medium text-gray-700">
+        {label}
+      </span>
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="flex min-h-12 w-full min-w-0 items-center rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 outline-none transition hover:border-gray-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
+      />
+      <span className="mt-1 block min-h-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11.5px] leading-5 text-slate-500">
+        {helper || " "}
+      </span>
+    </label>
+  );
+}
+
 function BreakdownRow({
   label,
   detail,

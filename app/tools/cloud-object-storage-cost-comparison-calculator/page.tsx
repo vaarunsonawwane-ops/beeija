@@ -71,28 +71,28 @@ export default function Page() {
       <ToolClient />
 
       <section className="beeija-feature-grid">
-        <InfoCard title="Model storage tiers and access together" className="rounded-lg">
+        <InfoCard title="Model storage behaviour clearly" className="rounded-lg">
           <>
-            Object storage cost is not only a GB-month line. Tier mix, request
-            volume, retrievals, lifecycle transitions, replication, outbound
-            transfer, object management, and early deletion can all change the
-            monthly estimate.
+            Object storage cost is not only stored GB. Request volume, retrieval
+            pattern, lifecycle tiering, replication, object management, early
+            deletion, and outbound transfer can all change the monthly planning
+            number.
           </>
         </InfoCard>
-        <InfoCard title="Use current storage rates by class" className="rounded-lg">
+        <InfoCard title="Use current storage rates by provider" className="rounded-lg">
           <>
-            Amazon S3, Azure Blob Storage, and Google Cloud Storage price hot,
-            cool, archive, operations, retrieval, and transfer differently.
-            Editable rate fields help you use current official prices for the
-            exact region and storage class you are checking.
+            AWS, Azure, and Google Cloud price object storage differently by
+            region, redundancy, storage class, request type, retrieval method,
+            transfer path, and account agreement. Editable rates help you use
+            current official prices.
           </>
         </InfoCard>
-        <InfoCard title="Plan before moving large data sets" className="rounded-lg">
+        <InfoCard title="Plan before choosing a storage tier" className="rounded-lg">
           <>
-            Use the estimate before choosing storage classes, redundancy,
-            lifecycle rules, replication, migration timing, or archive restore
-            strategy. Final bills can still change because of taxes, credits,
-            support plans, discounts, and provider-specific billing rules.
+            Use the estimate before choosing standard, infrequent-access,
+            archive, replication, or lifecycle rules. The lowest storage price
+            may not be the lowest total cost after requests, retrieval, restore,
+            and data transfer are included.
           </>
         </InfoCard>
       </section>
