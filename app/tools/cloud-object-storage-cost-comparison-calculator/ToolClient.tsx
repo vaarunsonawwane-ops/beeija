@@ -177,6 +177,30 @@ function getRegionOptions(provider: ObjectStorageProvider) {
   }));
 }
 
+function shortenStorageClassLabel(label: string) {
+  return label
+    .replace("S3 Glacier Instant Retrieval", "S3 Glacier Instant")
+    .replace("S3 Glacier Flexible Retrieval", "S3 Glacier Flexible")
+    .replace("S3 Intelligent-Tiering — Frequent Access", "S3 Intelligent Frequent")
+    .replace("S3 Intelligent-Tiering — Infrequent Access", "S3 Intelligent Infrequent")
+    .replace("S3 Intelligent-Tiering — Archive Access", "S3 Intelligent Archive")
+    .replace("S3 Intelligent-Tiering — Deep Archive Access", "S3 Intelligent Deep Archive")
+    .replace("Locally redundant storage (LRS)", "LRS — Locally redundant")
+    .replace("Zone-redundant storage (ZRS)", "ZRS — Zone redundant")
+    .replace("Geo-redundant storage (GRS)", "GRS — Geo redundant")
+    .replace("Read-access geo-redundant storage (RA-GRS)", "RA-GRS — Read-access geo redundant")
+    .replace("Geo-zone-redundant storage (GZRS)", "GZRS — Geo-zone redundant")
+    .replace("Read-access geo-zone-redundant storage (RA-GZRS)", "RA-GZRS — Read-access geo-zone")
+    .trim();
+}
+
+function getCompactOptions(options: { value: string; label: string }[]) {
+  return options.map((option) => ({
+    ...option,
+    label: shortenStorageClassLabel(option.label),
+  }));
+}
+
 function getProviderShortName(provider: ObjectStorageProvider) {
   return getProviderDisplay(provider).shortName;
 }
@@ -1223,7 +1247,7 @@ function PlanEditor({
   const archiveEnabled = plan.archiveClassId !== "not-used";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="grid items-start gap-3 sm:grid-cols-2">
         <BeeijaSelect
           label="Region or pricing scope"
@@ -1261,7 +1285,7 @@ function PlanEditor({
           onChange={(event) =>
             onResilienceChange(event.target.value)
           }
-          options={provider.resilienceOptions}
+          options={getCompactOptions(provider.resilienceOptions)}
         />
 
         <BeeijaSelect
@@ -1270,7 +1294,7 @@ function PlanEditor({
           onChange={(event) =>
             onChange("hotClassId", event.target.value)
           }
-          options={provider.hotClasses}
+          options={getCompactOptions(provider.hotClasses)}
         />
 
         <BeeijaSelect
@@ -1279,7 +1303,7 @@ function PlanEditor({
           onChange={(event) =>
             onChange("coolClassId", event.target.value)
           }
-          options={provider.coolClasses}
+          options={getCompactOptions(provider.coolClasses)}
         />
 
         <BeeijaSelect
@@ -1288,13 +1312,13 @@ function PlanEditor({
           onChange={(event) =>
             onChange("archiveClassId", event.target.value)
           }
-          options={
+          options={getCompactOptions(
             isAzureArchiveUnsupported(plan)
               ? provider.archiveClasses.filter(
                   (option) => option.value === "not-used",
                 )
-              : provider.archiveClasses
-          }
+              : provider.archiveClasses,
+          )}
         />
       </div>
 
@@ -1305,9 +1329,9 @@ function PlanEditor({
         </div>
       ) : null}
 
-      <div className="grid items-start gap-3 sm:grid-cols-2">
+      <div className="grid items-start gap-x-3 gap-y-2 sm:grid-cols-2">
         <BeeijaNumberField
-          label={`${classes.hot} price per GB-month`}
+          label={`${shortenStorageClassLabel(classes.hot)} price per GB-month`}
           value={plan.standardStoragePrice}
           onChange={(value) =>
             onChange("standardStoragePrice", value)
@@ -1320,7 +1344,7 @@ function PlanEditor({
         <BeeijaNumberField
           label={
             coolEnabled
-              ? `${classes.cool} price per GB-month`
+              ? `${shortenStorageClassLabel(classes.cool)} price per GB-month`
               : "Infrequent-access storage price"
           }
           value={plan.coolStoragePrice}
@@ -1336,7 +1360,7 @@ function PlanEditor({
         <BeeijaNumberField
           label={
             archiveEnabled
-              ? `${classes.archive} price per GB-month`
+              ? `${shortenStorageClassLabel(classes.archive)} price per GB-month`
               : "Archive storage price"
           }
           value={plan.archiveStoragePrice}
@@ -1352,9 +1376,9 @@ function PlanEditor({
 
       <BeeijaAdvancedSection
         title="Advanced request, retrieval, and transfer rates"
-        description="Open this when request charges, retrieval or restore rates, data transfer, replication, object-management, or early-deletion costs apply."
+        description="Open this only when request charges, retrieval or restore rates, transfer, replication, object-management, or early-deletion costs apply."
+        contentClassName="mt-3 grid items-start gap-x-3 gap-y-2 sm:grid-cols-2"
       >
-        <div className="grid items-start gap-3 sm:grid-cols-2">
           <BeeijaNumberField
             label="Write operations per 10,000"
             value={plan.writePricePerTenThousand}
@@ -1398,7 +1422,7 @@ function PlanEditor({
           <BeeijaNumberField
             label={
               coolEnabled
-                ? `${classes.cool} retrieval price per GB`
+                ? `${shortenStorageClassLabel(classes.cool)} retrieval price per GB`
                 : "Cool-tier retrieval price per GB"
             }
             value={plan.coolRetrievalPricePerGb}
@@ -1413,7 +1437,7 @@ function PlanEditor({
           <BeeijaNumberField
             label={
               archiveEnabled
-                ? `${classes.archive} retrieval or restore per GB`
+                ? `${shortenStorageClassLabel(classes.archive)} retrieval or restore per GB`
                 : "Archive retrieval or restore per GB"
             }
             value={plan.archiveRetrievalPricePerGb}
@@ -1462,14 +1486,13 @@ function PlanEditor({
             prefix="$"
             sanitizeDecimal
           />
-        </div>
       </BeeijaAdvancedSection>
 
       <BeeijaAdvancedSection
         title="Fixed, migration, and amortized planning costs"
-        description="Open this if you need to add storage inventory, analytics, monitoring, support allocation, migration labour, or one-time movement costs."
+        description="Open this only when storage inventory, analytics, monitoring, support allocation, migration labour, or one-time movement costs matter."
+        contentClassName="mt-3 grid items-start gap-x-3 gap-y-2 sm:grid-cols-2"
       >
-        <div className="grid items-start gap-3 sm:grid-cols-2">
           <BeeijaNumberField
             label="Other fixed monthly storage services"
             value={plan.fixedMonthlyCost}
@@ -1497,7 +1520,6 @@ function PlanEditor({
             suffix="months"
             sanitizeDecimal
           />
-        </div>
       </BeeijaAdvancedSection>
     </div>
   );

@@ -71,28 +71,28 @@ export default function Page() {
       <ToolClient />
 
       <section className="beeija-feature-grid">
-        <InfoCard title="Model storage behaviour clearly" className="rounded-lg">
+        <InfoCard title="Model the full storage workload" className="rounded-lg">
           <>
-            Object storage cost is not only stored GB. Request volume, retrieval
-            pattern, lifecycle tiering, replication, object management, early
-            deletion, and outbound transfer can all change the monthly planning
-            number.
+            An object storage bill is not only the stored GB price. Storage tier
+            mix, request volume, retrieval pattern, lifecycle movement,
+            replication, early deletion, object management, and outbound transfer
+            can all change the monthly estimate.
           </>
         </InfoCard>
-        <InfoCard title="Use current storage rates by provider" className="rounded-lg">
+        <InfoCard title="Use current object storage rates" className="rounded-lg">
           <>
             AWS, Azure, and Google Cloud price object storage differently by
             region, redundancy, storage class, request type, retrieval method,
-            transfer path, and account agreement. Editable rates help you use
-            current official prices.
+            transfer path, and account agreement. Editable rate fields help you
+            copy the latest official prices for the setup you are checking.
           </>
         </InfoCard>
-        <InfoCard title="Plan before choosing a storage tier" className="rounded-lg">
+        <InfoCard title="Plan tiers before moving data" className="rounded-lg">
           <>
-            Use the estimate before choosing standard, infrequent-access,
-            archive, replication, or lifecycle rules. The lowest storage price
-            may not be the lowest total cost after requests, retrieval, restore,
-            and data transfer are included.
+            Use the estimate before setting lifecycle rules, moving backups,
+            storing media, archiving logs, or migrating application files. The
+            cheapest storage tier can cost more when requests, restores, and data
+            transfer are included.
           </>
         </InfoCard>
       </section>
