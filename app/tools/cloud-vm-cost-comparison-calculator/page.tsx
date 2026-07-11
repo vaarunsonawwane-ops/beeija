@@ -76,28 +76,25 @@ export default function Page() {
       <section className="beeija-feature-grid">
         <InfoCard title="Model the full VM workload" className="rounded-lg">
           <>
-            A virtual machine bill is not only the compute hourly price. Base 
-            instances, peak capacity, vCPU and memory shape, attached storage, 
-            snapshots, public IPs, outbound transfer, load balancing, and 
-            commitment choices can all change the monthly estimate.
+            VM cost can change with instance count, peak capacity, vCPU,
+            memory, storage, snapshots, public IPs, outbound transfer, load
+            balancing, and commitments.
           </>
         </InfoCard>
 
         <InfoCard title="Adjust VM rates by region and plan" className="rounded-lg">
           <>
-            AWS, Azure, Google Cloud, and private quotes can price the same VM 
-            shape differently by region, operating system, machine family, 
-            discount model, and account agreement. Editable rate fields help 
-            you use current official prices instead of relying on an old preset.
+            AWS, Azure, Google Cloud, and private quotes vary by region,
+            operating system, machine family, discount model, and account.
+            Enter current rates for the plan you are checking.
           </>
         </InfoCard>
 
         <InfoCard title="Use the VM estimate before sizing infrastructure" className="rounded-lg">
           <>
-            Use the result before choosing VM size, uptime hours, autoscaling 
-            capacity, storage size, or commitment options. Final bills can 
-            still change because of taxes, support plans, credits, enterprise 
-			discounts, managed services, and provider-specific billing rules.
+            Use the result before choosing VM size, uptime, autoscaling,
+            storage, or commitments. Final bills may change because of taxes,
+            support, credits, discounts, and managed services.
           </>
         </InfoCard>
       </section>

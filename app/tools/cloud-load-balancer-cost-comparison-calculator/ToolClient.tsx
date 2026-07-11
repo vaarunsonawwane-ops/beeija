@@ -315,14 +315,14 @@ export default function ToolClient() {
                 label="Average capacity units"
                 value={usage.capacityUnits}
                 onChange={(value) => updateUsage("capacityUnits", value)}
-                helper="Use LCU, capacity unit, or similar provider unit."
+                helper="LCU or equivalent provider units."
                 suffix="units"
               />
               <NumberInput
                 label="Processed data"
                 value={usage.processedGb}
                 onChange={(value) => updateUsage("processedGb", value)}
-                helper="Traffic processed by the load balancer."
+                helper="Processed load balancer traffic."
                 suffix="GB"
               />
             </div>
@@ -337,21 +337,21 @@ export default function ToolClient() {
                     label="Outbound transfer"
                     value={usage.outboundGb}
                     onChange={(value) => updateUsage("outboundGb", value)}
-                    helper="Internet egress or billable outbound transfer."
+                    helper="Billable outbound transfer."
                     suffix="GB"
                   />
                   <NumberInput
                     label="Forwarding rules"
                     value={usage.forwardingRules}
                     onChange={(value) => updateUsage("forwardingRules", value)}
-                    helper="Use 0 if your provider does not bill this separately."
+                    helper="Use 0 when not billed separately."
                     suffix="rules"
                   />
                   <NumberInput
                     label="Spread one-time cost over"
                     value={usage.migrationMonths}
                     onChange={(value) => updateUsage("migrationMonths", value)}
-                    helper="Used for setup or migration planning."
+                    helper="Months used to spread setup cost."
                     suffix="months"
                   />
                 </div>
@@ -382,7 +382,7 @@ export default function ToolClient() {
                 label="Load balancer hourly price"
                 value={activeRates.loadBalancerHourly}
                 onChange={(value) => updateRate("loadBalancerHourly", value)}
-                helper="Base hourly or provisioned time price."
+                helper="Base hourly load balancer price."
                 prefix="$"
                 suffix="/hour"
               />
@@ -390,7 +390,7 @@ export default function ToolClient() {
                 label="Capacity unit hourly price"
                 value={activeRates.capacityUnitHourly}
                 onChange={(value) => updateRate("capacityUnitHourly", value)}
-                helper="LCU, capacity unit, or equivalent."
+                helper="LCU or equivalent provider unit."
                 prefix="$"
                 suffix="/unit-hour"
               />
@@ -398,7 +398,7 @@ export default function ToolClient() {
                 label="Data processing price"
                 value={activeRates.dataProcessingPerGb}
                 onChange={(value) => updateRate("dataProcessingPerGb", value)}
-                helper="Set 0 if included in your plan."
+                helper="Use 0 when included."
                 prefix="$"
                 suffix="/GB"
               />
@@ -414,7 +414,7 @@ export default function ToolClient() {
                     label="Forwarding rule hourly price"
                     value={activeRates.forwardingRuleHourly}
                     onChange={(value) => updateRate("forwardingRuleHourly", value)}
-                    helper="Mostly useful for Google-style pricing."
+                    helper="Mainly for Google-style pricing."
                     prefix="$"
                     suffix="/rule-hour"
                   />
@@ -422,7 +422,7 @@ export default function ToolClient() {
                     label="Outbound transfer price"
                     value={activeRates.outboundTransferPerGb}
                     onChange={(value) => updateRate("outboundTransferPerGb", value)}
-                    helper="Internet egress, if billed separately."
+                    helper="Billable internet egress."
                     prefix="$"
                     suffix="/GB"
                   />
@@ -430,7 +430,7 @@ export default function ToolClient() {
                     label="WAF monthly cost"
                     value={activeRates.wafMonthly}
                     onChange={(value) => updateRate("wafMonthly", value)}
-                    helper="Add WAF, rules, or managed security cost."
+                    helper="Monthly WAF or security cost."
                     prefix="$"
                     suffix="/month"
                   />
@@ -438,7 +438,7 @@ export default function ToolClient() {
                     label="Logging and monitoring"
                     value={activeRates.loggingMonthly}
                     onChange={(value) => updateRate("loggingMonthly", value)}
-                    helper="Access logs, metrics, storage, and alerting."
+                    helper="Monthly logging and monitoring cost."
                     prefix="$"
                     suffix="/month"
                   />
@@ -446,7 +446,7 @@ export default function ToolClient() {
                     label="Setup or migration cost"
                     value={activeRates.migrationOneTime}
                     onChange={(value) => updateRate("migrationOneTime", value)}
-                    helper="Optional one-time cost spread across months."
+                    helper="One-time cost spread across months."
                     prefix="$"
                   />
                 </div>

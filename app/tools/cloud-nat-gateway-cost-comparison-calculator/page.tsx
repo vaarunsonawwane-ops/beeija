@@ -86,25 +86,23 @@ export default function CloudNatGatewayCostComparisonCalculatorPage() {
       <section className="beeija-feature-grid">
         <InfoCard title="Model NAT traffic paths clearly">
           <p>
-            NAT gateway cost is not only a gateway-hour line. Data processing, 
-            public IPv4 addresses, internet transfer, cross-zone traffic, flow 
-            logs, and migration choices can all change the monthly estimate.
+            NAT cost can change with runtime, processed traffic, public IPv4,
+            internet transfer, cross-zone traffic, flow logs, and migration.
           </p>
         </InfoCard>
 
         <InfoCard title="Check NAT pricing by provider and region">
           <p>
-            AWS, Azure, and Google Cloud price managed NAT differently. 
-            Editable rate fields let you use current official prices for the 
-            exact region, account agreement, and traffic path you are planning.
+            AWS, Azure, and Google Cloud price managed NAT differently. Enter
+            current official rates for the region, account, and traffic path
+            you are checking.
           </p>
         </InfoCard>
 
         <InfoCard title="Plan the network design, not only the lowest price">
           <p>
-            Use the comparison before choosing central NAT, one gateway per 
-            zone, private endpoints, or another network design. The lowest 
-            monthly estimate is only one part of the architecture decision.
+            Compare central NAT, per-zone gateways, private endpoints, or
+            another design. Cost is only one part of the architecture decision.
           </p>
         </InfoCard>
       </section>

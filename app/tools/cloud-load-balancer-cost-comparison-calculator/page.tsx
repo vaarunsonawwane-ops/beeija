@@ -73,23 +73,22 @@ export default function Page() {
       <section className="beeija-feature-grid">
         <InfoCard title="Model traffic, rules, and capacity together" className="rounded-lg">
           <>
-            A load balancer bill is rarely only an hourly charge. Listener 
-            rules, processed traffic, new connections, capacity units, public 
-            IP use, and outbound transfer can all change the monthly estimate.
+            Load balancer cost can change with runtime, capacity units,
+            rules, processed traffic, public IPs, and outbound transfer.
           </>
         </InfoCard>
         <InfoCard title="Update load balancer rates by provider" className="rounded-lg">
           <>
-            AWS, Azure, Google Cloud, and Cloudflare price load balancing in 
-            different ways. Editable rate fields let you copy current official 
-            prices for the exact region, traffic pattern, and product tier you are checking.
+            AWS, Azure, Google Cloud, and Cloudflare price load balancing
+            differently. Enter current official rates for the region, traffic
+            pattern, and product tier you are checking.
           </>
         </InfoCard>
         <InfoCard title="Use the estimate before deployment" className="rounded-lg">
           <>
-            Use the result as a planning estimate before launching, scaling, or 
-            changing traffic. Final bills can still change because of tax, 
-            support plans, reserved discounts, free tier credits, and provider-specific billing rules.
+            Use the result as a planning estimate. Final bills may change
+            because of tax, support plans, discounts, credits, and provider
+            billing rules.
           </>
         </InfoCard>
       </section>

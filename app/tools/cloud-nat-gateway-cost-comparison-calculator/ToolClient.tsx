@@ -530,7 +530,7 @@ export default function ToolClient() {
                 label="Number of NAT gateways"
                 value={workload.gatewayCount}
                 onChange={(value) => updateWorkload("gatewayCount", value)}
-                helper="Use one or more gateways for production planning."
+                helper="Gateways used in the design."
               />
               <NumberInput
                 label="Monthly running hours"
@@ -543,27 +543,27 @@ export default function ToolClient() {
                 label="Protected instances or nodes"
                 value={workload.protectedInstanceCount}
                 onChange={(value) => updateWorkload("protectedInstanceCount", value)}
-                helper="VMs, nodes, or workloads using this NAT path."
+                helper="Workloads using this NAT path."
               />
               <NumberInput
                 label="Outbound traffic processed by NAT"
                 value={workload.outboundProcessedGib}
                 onChange={(value) => updateWorkload("outboundProcessedGib", value)}
-                helper="Traffic going out through the NAT gateway."
+                helper="Outbound traffic through NAT."
                 suffix="GiB"
               />
               <NumberInput
                 label="Return traffic processed by NAT"
                 value={workload.returnProcessedGib}
                 onChange={(value) => updateWorkload("returnProcessedGib", value)}
-                helper="Return traffic that may be counted by the provider."
+                helper="Return traffic counted by the provider."
                 suffix="GiB"
               />
               <NumberInput
                 label="Monthly planning budget"
                 value={workload.monthlyBudget}
                 onChange={(value) => updateWorkload("monthlyBudget", value)}
-                helper="Optional budget check for this NAT setup."
+                helper="Optional monthly budget."
                 prefix="$"
               />
             </div>
@@ -578,20 +578,20 @@ export default function ToolClient() {
                     label="Public IPv4 addresses"
                     value={workload.publicIpCount}
                     onChange={(value) => updateWorkload("publicIpCount", value)}
-                    helper="Public IPs attached to NAT gateways."
+                    helper="Public IPs attached to NAT."
                   />
                   <NumberInput
                     label="Internet data transfer out"
                     value={workload.internetEgressGib}
                     onChange={(value) => updateWorkload("internetEgressGib", value)}
-                    helper="Internet egress, if billed separately."
+                    helper="Billable internet egress."
                     suffix="GiB"
                   />
                   <NumberInput
                     label="Cross-zone or regional transfer"
                     value={workload.crossZoneTransferGib}
                     onChange={(value) => updateWorkload("crossZoneTransferGib", value)}
-                    helper="Regional or cross-zone network transfer."
+                    helper="Regional or cross-zone transfer."
                     suffix="GiB"
                   />
                   <ChoiceCards<"no" | "yes">
@@ -604,7 +604,7 @@ export default function ToolClient() {
                       { value: "no", label: "No", description: "Do not add flow-log cost." },
                       { value: "yes", label: "Yes", description: "Add monthly flow-log cost." },
                     ]}
-                    helper="Add logging cost only when you plan to use it."
+                    helper="Add only when using flow logs."
                   />
                 </div>
               </BeeijaAdvancedSection>
@@ -654,7 +654,7 @@ export default function ToolClient() {
                   value={activePlan.gatewayPricingMode}
                   onChange={(value) => updatePlan("gatewayPricingMode", value)}
                   options={pricingModeOptions}
-                  helper="Choose the pricing structure that matches the provider page you are using."
+                  helper="Match the provider's pricing method."
                 />
               </div>
 
@@ -682,7 +682,7 @@ export default function ToolClient() {
                     label="Instance threshold per gateway"
                     value={activePlan.instanceThresholdPerGateway}
                     onChange={(value) => updatePlan("instanceThresholdPerGateway", value)}
-                    helper="Used before gateway-level capped pricing applies."
+                    helper="Threshold before capped pricing."
                     suffix="instances"
                   />
                   <NumberInput
@@ -707,7 +707,7 @@ export default function ToolClient() {
                 label="Public IPv4 price"
                 value={activePlan.publicIpHourlyRate}
                 onChange={(value) => updatePlan("publicIpHourlyRate", value)}
-                helper="Public IP charge, if billed separately."
+                helper="Billable public IP charge."
                 prefix="$"
                 suffix="/IP-hour"
               />
@@ -723,7 +723,7 @@ export default function ToolClient() {
                     label="Internet transfer-out price"
                     value={activePlan.internetEgressRatePerGib}
                     onChange={(value) => updatePlan("internetEgressRatePerGib", value)}
-                    helper="Set blank or 0 if checked elsewhere."
+                    helper="Use 0 if counted elsewhere."
                     prefix="$"
                     suffix="/GiB"
                   />
@@ -731,7 +731,7 @@ export default function ToolClient() {
                     label="Cross-zone or regional transfer price"
                     value={activePlan.crossZoneTransferRatePerGib}
                     onChange={(value) => updatePlan("crossZoneTransferRatePerGib", value)}
-                    helper="Used when regional transfer applies."
+                    helper="Use when regional transfer applies."
                     prefix="$"
                     suffix="/GiB"
                   />
@@ -746,7 +746,7 @@ export default function ToolClient() {
                     label="Other fixed monthly cost"
                     value={activePlan.fixedMonthlyCost}
                     onChange={(value) => updatePlan("fixedMonthlyCost", value)}
-                    helper="Monitoring, support allocation, or extra services."
+                    helper="Monthly monitoring or support cost."
                     prefix="$"
                     suffix="/month"
                   />
@@ -760,7 +760,7 @@ export default function ToolClient() {
                     label="Spread one-time cost over"
                     value={activePlan.migrationAmortizationMonths}
                     onChange={(value) => updatePlan("migrationAmortizationMonths", value)}
-                    helper="Used for migration planning."
+                    helper="Months used to spread setup cost."
                     suffix="months"
                   />
                 </div>

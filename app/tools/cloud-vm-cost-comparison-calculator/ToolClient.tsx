@@ -595,7 +595,7 @@ export default function ToolClient() {
                 value={workload.peakHoursPerDay}
                 onChange={(value) => updateWorkload("peakHoursPerDay", value)}
                 suffix="hours"
-                helper="Daily peak/autoscaling window."
+                helper="Daily peak or autoscaling hours."
                 sanitizeDecimal
               />
               <BeeijaNumberField
@@ -613,7 +613,7 @@ export default function ToolClient() {
                   updateWorkload("capacityOverheadPercent", value)
                 }
                 suffix="%"
-                helper="Headroom for scaling and deployment overlap."
+                helper="Capacity buffer for scaling or deployments."
                 sanitizeDecimal
               />
               <BeeijaNumberField
@@ -621,7 +621,7 @@ export default function ToolClient() {
                 value={workload.monthlyBudget}
                 onChange={(value) => updateWorkload("monthlyBudget", value)}
                 prefix="$"
-                helper="Optional budget comparison."
+                helper="Optional monthly budget."
                 sanitizeDecimal
               />
             </div>
@@ -639,7 +639,7 @@ export default function ToolClient() {
                     updateWorkload("persistentStorageGb", value)
                   }
                   suffix="GB"
-                  helper="Total provisioned disk capacity."
+                  helper="Provisioned disk capacity."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -647,7 +647,7 @@ export default function ToolClient() {
                   value={workload.snapshotStorageGb}
                   onChange={(value) => updateWorkload("snapshotStorageGb", value)}
                   suffix="GB"
-                  helper="Backup/snapshot storage retained."
+                  helper="Retained backup or snapshot storage."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -655,7 +655,7 @@ export default function ToolClient() {
                   value={workload.outboundDataGb}
                   onChange={(value) => updateWorkload("outboundDataGb", value)}
                   suffix="GB"
-                  helper="Internet egress or billable outbound transfer."
+                  helper="Billable outbound transfer."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -669,7 +669,7 @@ export default function ToolClient() {
                   label="Load balancer count"
                   value={workload.loadBalancerCount}
                   onChange={(value) => updateWorkload("loadBalancerCount", value)}
-                  helper="Optional load balancers for the VM workload."
+                  helper="Load balancers used by the workload."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -726,7 +726,7 @@ export default function ToolClient() {
                 label="vCPUs per VM"
                 value={activePlan.vcpuPerVm}
                 onChange={(value) => updatePlan("vcpuPerVm", value)}
-                helper="Used for all-in vCPU-hour result."
+                helper="Used for the vCPU-hour result."
                 sanitizeDecimal
               />
               <BeeijaNumberField
@@ -734,7 +734,7 @@ export default function ToolClient() {
                 value={activePlan.memoryGbPerVm}
                 onChange={(value) => updatePlan("memoryGbPerVm", value)}
                 suffix="GB"
-                helper="Used for memory GB-hour result."
+                helper="Used for the memory GB-hour result."
                 sanitizeDecimal
               />
               <BeeijaNumberField
@@ -742,7 +742,7 @@ export default function ToolClient() {
                 value={activePlan.vmHourlyPrice}
                 onChange={(value) => updatePlan("vmHourlyPrice", value)}
                 prefix="$"
-                helper="Required for this provider to show a real estimate."
+                helper="Required for a provider estimate."
                 sanitizeDecimal
               />
             </div>
@@ -760,7 +760,7 @@ export default function ToolClient() {
                     updatePlan("commitmentDiscountPercent", value)
                   }
                   suffix="%"
-                  helper="Applies to non-Spot compute share."
+                  helper="Discount on non-Spot compute."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -768,7 +768,7 @@ export default function ToolClient() {
                   value={activePlan.spotSharePercent}
                   onChange={(value) => updatePlan("spotSharePercent", value)}
                   suffix="%"
-                  helper="Share of instance-hours planned as Spot/preemptible."
+                  helper="Instance-hours using Spot capacity."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -776,7 +776,7 @@ export default function ToolClient() {
                   value={activePlan.spotDiscountPercent}
                   onChange={(value) => updatePlan("spotDiscountPercent", value)}
                   suffix="%"
-                  helper="Use your effective Spot/preemptible discount."
+                  helper="Effective Spot discount."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -784,7 +784,7 @@ export default function ToolClient() {
                   value={activePlan.osLicenseHourlyPrice}
                   onChange={(value) => updatePlan("osLicenseHourlyPrice", value)}
                   prefix="$"
-                  helper="Set 0 if included or not applicable."
+                  helper="Use 0 if included."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -794,7 +794,7 @@ export default function ToolClient() {
                     updatePlan("storagePricePerGbMonth", value)
                   }
                   prefix="$"
-                  helper="Disk/storage price for the selected class."
+                  helper="Selected disk or storage class price."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -812,7 +812,7 @@ export default function ToolClient() {
                   value={activePlan.egressPricePerGb}
                   onChange={(value) => updatePlan("egressPricePerGb", value)}
                   prefix="$"
-                  helper="Internet egress or effective outbound transfer rate."
+                  helper="Billable outbound transfer rate."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -820,7 +820,7 @@ export default function ToolClient() {
                   value={activePlan.publicIpHourlyPrice}
                   onChange={(value) => updatePlan("publicIpHourlyPrice", value)}
                   prefix="$"
-                  helper="Set 0 if not billed separately."
+                  helper="Use 0 when not billed."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -830,7 +830,7 @@ export default function ToolClient() {
                     updatePlan("loadBalancerHourlyPrice", value)
                   }
                   prefix="$"
-                  helper="Optional if the workload uses load balancers."
+                  helper="Use when load balancers are included."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -840,7 +840,7 @@ export default function ToolClient() {
                     updatePlan("loadBalancerDataPricePerGb", value)
                   }
                   prefix="$"
-                  helper="Set 0 if included or not applicable."
+                  helper="Use 0 if included."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -848,7 +848,7 @@ export default function ToolClient() {
                   value={activePlan.fixedMonthlyCost}
                   onChange={(value) => updatePlan("fixedMonthlyCost", value)}
                   prefix="$"
-                  helper="Monitoring, backup, security, support allocation."
+                  helper="Monthly monitoring or support cost."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -858,7 +858,7 @@ export default function ToolClient() {
                     updatePlan("upfrontCommitmentCost", value)
                   }
                   prefix="$"
-                  helper="Optional upfront cost to spread across months."
+                  helper="One-time cost spread across months."
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
@@ -868,7 +868,7 @@ export default function ToolClient() {
                     updatePlan("commitmentAmortizationMonths", value)
                   }
                   suffix="months"
-                  helper="Used only when upfront cost is entered."
+                  helper="Months used to spread upfront cost."
                   sanitizeDecimal
                 />
               </div>
