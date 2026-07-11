@@ -73,25 +73,23 @@ export default function Page() {
       <section className="beeija-feature-grid">
         <InfoCard title="Compare real storage workload" className="rounded-lg">
           <>
-            Object storage cost is not only the stored GB line. Tier mix,
-            request volume, retrieval pattern, lifecycle movement, replication,
-            early deletion, object management, and outbound transfer can all
-            change the monthly planning number.
+            Storage cost can change with tier mix, requests, retrieval,
+            lifecycle movement, replication, early deletion, object management,
+            and outbound transfer.
           </>
         </InfoCard>
         <InfoCard title="Keep provider prices editable" className="rounded-lg">
           <>
-            AWS, Azure, and Google Cloud price object storage differently by
-            region, redundancy, storage class, request type, retrieval method,
-            transfer path, and account agreement. Editable fields let you use
-            current official rates instead of an old preset.
+            AWS, Azure, and Google Cloud price storage differently. Enter
+            current official rates for the region, class, request pattern, and
+            account you are checking.
           </>
         </InfoCard>
         <InfoCard title="Read the estimate safely" className="rounded-lg">
           <>
-            Use the result as a planning estimate before tax, support plans,
-            free allowances, negotiated discounts, minimum object sizes, restore
-            speed premiums, and provider-specific billing rules.
+            Use the result as a planning estimate. Final bills may change
+            because of taxes, support plans, allowances, discounts, restore
+            speed, and provider billing rules.
           </>
         </InfoCard>
       </section>
