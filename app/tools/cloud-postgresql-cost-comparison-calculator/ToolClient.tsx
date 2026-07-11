@@ -226,8 +226,8 @@ function shortenOptionLabel(label: string) {
     "Other Azure storage option": "Other storage option",
     "Other Cloud SQL storage option": "Other storage option",
     "Combined database instance hourly rate": "Combined node rate",
-    "Separate vCPU and memory hourly rates": "Separate vCPU and memory",
-    "Separate vCore and memory hourly rates": "Separate vCore and memory",
+    "Separate vCPU and memory hourly rates": "vCPU + memory rates",
+    "Separate vCore and memory hourly rates": "vCore + memory rates",
     "Combined server hourly rate": "Combined node rate",
     "Combined instance hourly rate": "Combined node rate",
   };
