@@ -1496,7 +1496,7 @@ function PlanEditor({
 
       <BeeijaAdvancedSection
         title="Fixed, migration, and amortized planning costs"
-        description="Open this only when inventory, monitoring, support allocation, migration labour, or one-time movement costs matter."
+        description="Open only for fixed monthly or one-time migration costs."
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <BeeijaNumberField
@@ -1505,7 +1505,7 @@ function PlanEditor({
             onChange={(value) => onChange("fixedMonthlyCost", value)}
             prefix="$"
             suffix="/month"
-            helper="Inventory, analytics, monitoring, or support."
+            helper="Monthly storage-related services."
             sanitizeDecimal
           />
 
@@ -1516,7 +1516,7 @@ function PlanEditor({
               onChange("oneTimeMigrationCost", value)
             }
             prefix="$"
-            helper="Optional one-time cost spread across months."
+            helper="One-time migration cost."
             sanitizeDecimal
           />
 
@@ -1527,7 +1527,7 @@ function PlanEditor({
               onChange("migrationAmortizationMonths", value)
             }
             suffix="months"
-            helper="Months used to spread one-time migration cost."
+            helper="Months used to spread the cost."
             sanitizeDecimal
           />
         </div>
