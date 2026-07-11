@@ -71,28 +71,27 @@ export default function Page() {
       <ToolClient />
 
       <section className="beeija-feature-grid">
-        <InfoCard title="Model the full storage workload" className="rounded-lg">
+        <InfoCard title="Compare real storage workload" className="rounded-lg">
           <>
-            An object storage bill is not only the stored GB price. Storage tier
-            mix, request volume, retrieval pattern, lifecycle movement,
-            replication, early deletion, object management, and outbound transfer
-            can all change the monthly estimate.
+            Object storage cost is not only the stored GB line. Tier mix,
+            request volume, retrieval pattern, lifecycle movement, replication,
+            early deletion, object management, and outbound transfer can all
+            change the monthly planning number.
           </>
         </InfoCard>
-        <InfoCard title="Use current object storage rates" className="rounded-lg">
+        <InfoCard title="Keep provider prices editable" className="rounded-lg">
           <>
             AWS, Azure, and Google Cloud price object storage differently by
             region, redundancy, storage class, request type, retrieval method,
-            transfer path, and account agreement. Editable rate fields help you
-            copy the latest official prices for the setup you are checking.
+            transfer path, and account agreement. Editable fields let you use
+            current official rates instead of an old preset.
           </>
         </InfoCard>
-        <InfoCard title="Plan tiers before moving data" className="rounded-lg">
+        <InfoCard title="Read the estimate safely" className="rounded-lg">
           <>
-            Use the estimate before setting lifecycle rules, moving backups,
-            storing media, archiving logs, or migrating application files. The
-            cheapest storage tier can cost more when requests, restores, and data
-            transfer are included.
+            Use the result as a planning estimate before tax, support plans,
+            free allowances, negotiated discounts, minimum object sizes, restore
+            speed premiums, and provider-specific billing rules.
           </>
         </InfoCard>
       </section>

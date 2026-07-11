@@ -1329,175 +1329,183 @@ function PlanEditor({
         </div>
       ) : null}
 
-      <div className="grid items-start gap-x-3 gap-y-2 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <BeeijaNumberField
-          label={`${shortenStorageClassLabel(classes.hot)} price per GB-month`}
+          label="Standard storage price"
           value={plan.standardStoragePrice}
           onChange={(value) =>
             onChange("standardStoragePrice", value)
           }
           prefix="$"
-          helper="Required for this provider to show storage cost."
+          suffix="/GB-month"
+          helper={`${shortenStorageClassLabel(classes.hot)} class.`}
           sanitizeDecimal
         />
 
         <BeeijaNumberField
-          label={
-            coolEnabled
-              ? `${shortenStorageClassLabel(classes.cool)} price per GB-month`
-              : "Infrequent-access storage price"
-          }
+          label="Infrequent-access storage price"
           value={plan.coolStoragePrice}
           onChange={(value) =>
             onChange("coolStoragePrice", value)
           }
           prefix="$"
+          suffix="/GB-month"
           disabled={!coolEnabled}
-          helper="Set blank or 0 when this tier is not used."
+          helper={
+            coolEnabled
+              ? `${shortenStorageClassLabel(classes.cool)} class.`
+              : "Set blank or 0 when this tier is not used."
+          }
           sanitizeDecimal
         />
 
         <BeeijaNumberField
-          label={
-            archiveEnabled
-              ? `${shortenStorageClassLabel(classes.archive)} price per GB-month`
-              : "Archive storage price"
-          }
+          label="Archive storage price"
           value={plan.archiveStoragePrice}
           onChange={(value) =>
             onChange("archiveStoragePrice", value)
           }
           prefix="$"
+          suffix="/GB-month"
           disabled={!archiveEnabled}
-          helper="Set blank or 0 when archive is not used."
+          helper={
+            archiveEnabled
+              ? `${shortenStorageClassLabel(classes.archive)} class.`
+              : "Set blank or 0 when archive is not used."
+          }
           sanitizeDecimal
         />
       </div>
 
       <BeeijaAdvancedSection
         title="Advanced request, retrieval, and transfer rates"
-        description="Open this only when request charges, retrieval or restore rates, transfer, replication, object-management, or early-deletion costs apply."
-        contentClassName="mt-3 grid items-start gap-x-3 gap-y-2 sm:grid-cols-2"
+        description="Open this only when request charges, retrieval, restore, transfer, replication, management, or early-deletion costs apply."
       >
+        <div className="grid items-start gap-3 sm:grid-cols-2">
           <BeeijaNumberField
-            label="Write operations per 10,000"
+            label="Write operation price"
             value={plan.writePricePerTenThousand}
             onChange={(value) =>
               onChange("writePricePerTenThousand", value)
             }
             prefix="$"
+            helper="Per 10,000 write requests."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="Read operations per 10,000"
+            label="Read operation price"
             value={plan.readPricePerTenThousand}
             onChange={(value) =>
               onChange("readPricePerTenThousand", value)
             }
             prefix="$"
+            helper="Per 10,000 read requests."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="List or metadata operations per 10,000"
+            label="List or metadata price"
             value={plan.listPricePerTenThousand}
             onChange={(value) =>
               onChange("listPricePerTenThousand", value)
             }
             prefix="$"
+            helper="Per 10,000 list or metadata requests."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="Lifecycle transitions per 10,000"
+            label="Lifecycle transition price"
             value={plan.transitionPricePerTenThousand}
             onChange={(value) =>
               onChange("transitionPricePerTenThousand", value)
             }
             prefix="$"
+            helper="Per 10,000 lifecycle transitions."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label={
-              coolEnabled
-                ? `${shortenStorageClassLabel(classes.cool)} retrieval price per GB`
-                : "Cool-tier retrieval price per GB"
-            }
+            label="Cool retrieval price"
             value={plan.coolRetrievalPricePerGb}
             onChange={(value) =>
               onChange("coolRetrievalPricePerGb", value)
             }
             prefix="$"
             disabled={!coolEnabled}
+            helper="Per GB retrieved from IA or cool storage."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label={
-              archiveEnabled
-                ? `${shortenStorageClassLabel(classes.archive)} retrieval or restore per GB`
-                : "Archive retrieval or restore per GB"
-            }
+            label="Archive restore price"
             value={plan.archiveRetrievalPricePerGb}
             onChange={(value) =>
               onChange("archiveRetrievalPricePerGb", value)
             }
             prefix="$"
             disabled={!archiveEnabled}
+            helper="Per GB restored or retrieved from archive."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="Effective egress price per GB"
+            label="Egress transfer price"
             value={plan.egressPricePerGb}
             onChange={(value) => onChange("egressPricePerGb", value)}
             prefix="$"
+            helper="Per GB of outbound transfer."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="Replication transfer price per GB"
+            label="Replication transfer price"
             value={plan.replicationTransferPricePerGb}
             onChange={(value) =>
               onChange("replicationTransferPricePerGb", value)
             }
             prefix="$"
+            helper="Per GB copied between regions."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="Management price per million objects"
+            label="Object management price"
             value={plan.managementPricePerMillionObjects}
             onChange={(value) =>
               onChange("managementPricePerMillionObjects", value)
             }
             prefix="$"
+            helper="Per million managed objects."
             sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="Early-deletion charge per affected GB"
+            label="Early deletion charge"
             value={plan.earlyDeletionPricePerGb}
             onChange={(value) =>
               onChange("earlyDeletionPricePerGb", value)
             }
             prefix="$"
+            helper="Per GB charged for early deletion."
             sanitizeDecimal
           />
+        </div>
       </BeeijaAdvancedSection>
 
       <BeeijaAdvancedSection
         title="Fixed, migration, and amortized planning costs"
-        description="Open this only when storage inventory, analytics, monitoring, support allocation, migration labour, or one-time movement costs matter."
-        contentClassName="mt-3 grid items-start gap-x-3 gap-y-2 sm:grid-cols-2"
+        description="Open this only when inventory, monitoring, support allocation, migration labour, or one-time movement costs matter."
       >
+        <div className="grid gap-3 sm:grid-cols-2">
           <BeeijaNumberField
-            label="Other fixed monthly storage services"
+            label="Fixed monthly services"
             value={plan.fixedMonthlyCost}
             onChange={(value) => onChange("fixedMonthlyCost", value)}
             prefix="$"
+            suffix="/month"
+            helper="Inventory, analytics, monitoring, or support."
             sanitizeDecimal
           />
 
@@ -1508,6 +1516,7 @@ function PlanEditor({
               onChange("oneTimeMigrationCost", value)
             }
             prefix="$"
+            helper="Optional one-time cost spread across months."
             sanitizeDecimal
           />
 
@@ -1518,8 +1527,10 @@ function PlanEditor({
               onChange("migrationAmortizationMonths", value)
             }
             suffix="months"
+            helper="Months used to spread one-time migration cost."
             sanitizeDecimal
           />
+        </div>
       </BeeijaAdvancedSection>
     </div>
   );
