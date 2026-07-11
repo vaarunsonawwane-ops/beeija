@@ -218,11 +218,18 @@ function shortenOptionLabel(label: string) {
     "General-purpose instance family": "General purpose",
     "Memory-optimized instance family": "Memory optimized",
     "Other RDS instance family": "Other instance family",
-    "Combined database instance hourly rate": "Combined node hourly rate",
-    "Separate vCPU and memory hourly rates": "Separate vCPU and memory rates",
-    "Separate vCore and memory hourly rates": "Separate vCore and memory rates",
-    "Combined server hourly rate": "Combined node hourly rate",
-    "Combined instance hourly rate": "Combined node hourly rate",
+    "General Purpose SSD — gp3": "General Purpose SSD gp3",
+    "General Purpose SSD — gp2": "General Purpose SSD gp2",
+    "Provisioned IOPS SSD — io2": "Provisioned IOPS io2",
+    "Provisioned IOPS SSD — io1": "Provisioned IOPS io1",
+    "Other RDS storage type": "Other storage type",
+    "Other Azure storage option": "Other storage option",
+    "Other Cloud SQL storage option": "Other storage option",
+    "Combined database instance hourly rate": "Combined node rate",
+    "Separate vCPU and memory hourly rates": "Separate vCPU and memory",
+    "Separate vCore and memory hourly rates": "Separate vCore and memory",
+    "Combined server hourly rate": "Combined node rate",
+    "Combined instance hourly rate": "Combined node rate",
   };
 
   return replacements[label] ?? label;
@@ -679,7 +686,7 @@ export default function ToolClient() {
             </p>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {plans.map((plan) => {
               const provider = getCloudPostgresProvider(plan.providerId);
               const providerDisplay = getProviderDisplay(provider);
@@ -690,16 +697,16 @@ export default function ToolClient() {
                   key={plan.id}
                   type="button"
                   onClick={() => openPlanEditor(plan.id)}
-                  className={`flex min-h-[88px] min-w-0 flex-col justify-center rounded-lg border p-3 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${
+                  className={`min-w-0 rounded-lg border p-3 text-left transition ${
                     selected
-                      ? "border-[var(--green)] bg-[#f4fbf6] shadow-sm"
-                      : "border-slate-200 bg-white hover:border-[var(--green)]"
+                      ? "border-[#165A31] bg-[#f4fbf6] shadow-sm"
+                      : "border-slate-200 bg-white hover:border-[#165A31]"
                   }`}
                 >
                   <span className="block truncate text-base font-semibold text-slate-900">
                     {providerDisplay.providerName}
                   </span>
-                  <span className="mt-1 block min-h-10 break-words text-sm leading-5 text-slate-600 [overflow-wrap:anywhere]">
+                  <span className="mt-1 block text-sm leading-5 text-slate-600">
                     {providerDisplay.serviceName}
                   </span>
                 </button>
