@@ -98,26 +98,23 @@ export default function HomePage() {
           </p>
 
           <h1 className="mt-8 text-4xl font-semibold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
-            Simple cost calculators for better AI, cloud, and technology
-            decisions.
+            Understand the cost of what you build.
           </h1>
 
           <div className="mt-8 max-w-4xl space-y-5 text-lg leading-relaxed text-gray-600">
             <p>
-              Beeija is a growing collection of simple calculators and
-              comparison tools that help you estimate costs, compare options,
-              and plan technical work with more clarity.
+              Beeija gives you practical calculators for AI and cloud costs, using the usage, pricing,
+              and workload numbers that actually shape the bill.
             </p>
 
             <p>
-              You can use Beeija to plan AI usage, cloud services, hosting,
-              APIs, SaaS tools, storage, traffic, capacity, and technology
-              choices.
+              Use them to compare providers, test monthly usage, and see how changes in tokens,
+              storage, traffic, databases, or infrastructure affect the estimate.
             </p>
 
             <p>
-              Before you spend time or money, you should be able to test your
-              numbers, understand the likely cost, and compare your options.
+              If Yoryantra helps you work through the technical side of building, Beeija is where you
+              work through the cost side.
             </p>
           </div>
 
@@ -126,7 +123,7 @@ export default function HomePage() {
               href="/tools"
               className="rounded-xl bg-[var(--green)] px-6 py-3 text-sm font-medium !text-white transition hover:-translate-y-0.5 hover:opacity-95"
             >
-              Explore Tools
+              Explore Calculators
             </Link>
 
             <Link
