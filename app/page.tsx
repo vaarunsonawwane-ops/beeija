@@ -148,40 +148,40 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="max-w-4xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-gray-950">
-            Why Beeija
-          </h2>
+		<section className="mx-auto max-w-7xl px-6 py-20">
+		  <div className="max-w-4xl">
+			<h2 className="text-3xl font-semibold tracking-tight text-gray-950">
+			  Why Beeija
+			</h2>
 
-          <div className="mt-6 space-y-5 leading-relaxed text-gray-600">
-            <p>
-              Technical pricing is often spread across many pages, price
-              levels, and billing units. Beeija brings the main inputs together
-              so you can test a real case before making a decision.
-            </p>
+			<div className="mt-6 space-y-5 leading-relaxed text-gray-600">
+			  <p>
+				Building a technical product involves more than getting the code and
+				configuration right. At some point, you also need to understand what
+				running it may cost.
+			  </p>
 
-            <p>
-              You may only need to estimate a monthly cost, compare two
-              services, check a growth plan, or see whether an idea fits your
-              budget.
-            </p>
+			  <p>
+				<a
+				  href="https://yoryantra.com"
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
+				>
+				  Yoryantra
+				</a>{" "}
+				helps with the technical side of building. Beeija continues that journey
+				by helping you estimate AI and cloud costs, compare options, and test
+				different usage or workload assumptions.
+			  </p>
 
-            <p>
-              Beeija helps you before and while you plan a technical project.
-              When you need useful developer tools during the building stage,
-              you can also visit{" "}
-              <a
-                href="https://yoryantra.com"
-                className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
-              >
-                Yoryantra
-              </a>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
+			  <p>
+				The idea is simple: build with a clearer understanding of the technical
+				work, then understand the cost that may come with running and scaling it.
+			  </p>
+			</div>
+		  </div>
+		</section>
     </main>
   );
 }
