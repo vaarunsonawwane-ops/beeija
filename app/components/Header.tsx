@@ -16,6 +16,12 @@ const navigation = [
     href: "/categories",
     label: "Categories",
   },
+  
+  {
+    href: "/resources",
+    label: "Resources",
+  },
+  
   {
     href: "/about",
     label: "About",
