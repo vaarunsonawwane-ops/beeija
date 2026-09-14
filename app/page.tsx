@@ -3,49 +3,30 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Beeija | AI, Cloud & Technology Cost Calculators",
+    absolute: "Beeija | AI & Cloud Cost Calculators",
   },
 
   description:
-    "Use simple calculators to estimate AI, cloud, hosting, infrastructure, API, SaaS, capacity, and technology costs before you build.",
-
-  keywords: [
-    "AI cost calculator",
-    "cloud cost calculator",
-    "hosting cost calculator",
-    "infrastructure cost calculator",
-    "API cost calculator",
-    "SaaS cost calculator",
-    "capacity planning calculator",
-    "usage cost calculator",
-    "technology comparison tools",
-    "technical cost planning",
-  ],
+    "Practical calculators for estimating AI and cloud costs, comparing providers, and testing usage, workload, and scaling assumptions.",
 
   alternates: {
     canonical: "https://beeija.com",
   },
 
   openGraph: {
-    title: "Beeija | AI, Cloud & Technology Cost Calculators",
-
+    title: "Beeija | AI & Cloud Cost Calculators",
     description:
-      "Estimate AI, cloud, hosting, infrastructure, API, SaaS, capacity, and technology costs before you build.",
-
+      "Estimate AI and cloud costs, compare providers, and test how usage, workload, and scaling assumptions affect the result.",
     url: "https://beeija.com",
-
     siteName: "Beeija",
-
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-
-    title: "Beeija | AI, Cloud & Technology Cost Calculators",
-
+    title: "Beeija | AI & Cloud Cost Calculators",
     description:
-      "Simple cost calculators and comparison tools for AI, cloud, hosting, APIs, SaaS, capacity, and technology planning.",
+      "Estimate AI and cloud costs, compare providers, and test usage, workload, and scaling assumptions.",
   },
 };
 
