@@ -4,36 +4,28 @@ export default function Footer() {
   return (
     <footer className="border-t border-gray-100 bg-white mt-12">
       <div className="max-w-7xl mx-auto px-6 py-10">
-
-        {/* TOP SECTION */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-10">
-
-          {/* BRAND */}
           <div className="max-w-sm">
             <h2 className="text-lg font-bold text-gray-900">
               Beeija
             </h2>
 
             <p className="mt-3 text-sm leading-relaxed text-gray-600">
-              Practical tools for AI, cloud, infrastructure, and technical cost
-              planning.
+              Practical tools for AI, cloud, infrastructure, usage, and technology cost planning.
             </p>
           </div>
 
-          {/* LINKS */}
           <div className="flex flex-wrap gap-10 text-sm">
-
-            {/* TOOLS */}
             <div className="flex flex-col gap-2">
               <p className="font-semibold text-gray-900">
-                Tools
+                Explore
               </p>
 
               <Link
                 href="/tools"
                 className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
               >
-                All Tools
+                Tools
               </Link>
 
               <Link
@@ -42,12 +34,18 @@ export default function Footer() {
               >
                 Categories
               </Link>
+
+              <Link
+                href="/resources"
+                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+              >
+                Resources
+              </Link>
             </div>
 
-            {/* COMPANY */}
             <div className="flex flex-col gap-2">
               <p className="font-semibold text-gray-900">
-                Company
+                Beeija
               </p>
 
               <Link
@@ -58,14 +56,29 @@ export default function Footer() {
               </Link>
 
               <Link
+                href="/how-beeija-tools-are-built"
+                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+              >
+                How Tools Are Built
+              </Link>
+
+              <Link
                 href="/contact"
                 className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
               >
                 Contact
               </Link>
+
+              <a
+                href="https://yoryantra.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+              >
+                Yoryantra — Developer Tools
+              </a>
             </div>
 
-            {/* LEGAL */}
             <div className="flex flex-col gap-2">
               <p className="font-semibold text-gray-900">
                 Legal
@@ -99,13 +112,10 @@ export default function Footer() {
                 Sitemap
               </Link>
             </div>
-
           </div>
         </div>
 
-        {/* BOTTOM BAR */}
         <div className="border-t border-gray-100 mt-8 pt-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-sm text-gray-500">
-
           <p>
             © {new Date().getFullYear()} Beeija. All rights reserved.
           </p>
@@ -113,9 +123,7 @@ export default function Footer() {
           <p className="text-sm font-medium text-[var(--yellow-dark)]">
             Built with Gratitude 🙏
           </p>
-
         </div>
-
       </div>
     </footer>
   );
