@@ -3,20 +3,20 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Beeija | AI & Cloud Cost Calculators",
+    absolute: "Beeija | AI & Technology Cost Planning Tools",
   },
 
   description:
-    "Practical calculators for estimating AI and cloud costs, comparing providers, and testing usage, workload, and scaling assumptions.",
+    "Practical tools for estimating AI, cloud, infrastructure, API, SaaS, capacity, and technology costs, comparing options, and testing usage or workload assumptions.",
 
   alternates: {
     canonical: "https://beeija.com",
   },
 
   openGraph: {
-    title: "Beeija | AI & Cloud Cost Calculators",
+    title: "Beeija | AI & Technology Cost Planning Tools",
     description:
-      "Estimate AI and cloud costs, compare providers, and test how usage, workload, and scaling assumptions affect the result.",
+      "Estimate AI and technology costs, compare providers and options, and test how usage, workload, and scaling assumptions affect the result.",
     url: "https://beeija.com",
     siteName: "Beeija",
     type: "website",
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Beeija | AI & Cloud Cost Calculators",
+    title: "Beeija | AI & Technology Cost Planning Tools",
     description:
-      "Estimate AI and cloud costs, compare providers, and test usage, workload, and scaling assumptions.",
+      "Estimate AI and technology costs, compare options, and test usage, workload, and scaling assumptions.",
   },
 };
 
@@ -60,13 +60,14 @@ export default function HomePage() {
 
           <div className="mt-8 max-w-4xl space-y-5 text-lg leading-relaxed text-gray-600">
             <p>
-              Beeija gives you practical calculators for AI and cloud costs, using the usage, pricing,
-              and workload numbers that actually shape the bill.
+              Beeija gives you practical tools for estimating costs, comparing options,
+              and understanding the numbers behind AI, cloud, infrastructure, usage,
+			  and other technology decisions.
             </p>
 
             <p>
-              Use them to compare providers, test monthly usage, and see how changes in tokens,
-              storage, traffic, databases, or infrastructure affect the estimate.
+              Use them to test pricing, workloads, traffic, storage, capacity, provider,
+              choices, and other factors that can affect what running and scaling may cost.
             </p>
 
             <p>
@@ -80,7 +81,7 @@ export default function HomePage() {
               href="/tools"
               className="rounded-xl bg-[var(--green)] px-6 py-3 text-sm font-medium !text-white transition hover:-translate-y-0.5 hover:opacity-95"
             >
-              Explore Calculators
+              Explore Tools
             </Link>
 
             <Link
