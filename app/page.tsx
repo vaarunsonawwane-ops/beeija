@@ -53,38 +53,14 @@ const categories = [
   {
     title: "AI Cost Calculators",
     description:
-      "Estimate token use, model pricing, API cost, and other common AI expenses.",
+      "Estimate model, token, API, image, voice, transcription, and other AI-related costs.",
     href: "/categories/ai-cost-calculators",
   },
   {
     title: "Cloud Cost Calculators",
     description:
-      "Estimate compute, storage, bandwidth, database, and other cloud costs before you deploy.",
+      "Estimate compute, storage, databases, Kubernetes, load balancing, and other cloud costs.",
     href: "/categories/cloud-cost-calculators",
-  },
-  {
-    title: "Hosting & Infrastructure Calculators",
-    description:
-      "Plan hosting, servers, containers, traffic, storage, scaling, and other infrastructure needs.",
-    href: "/categories/hosting-infrastructure-calculators",
-  },
-  {
-    title: "API & SaaS Cost Calculators",
-    description:
-      "Estimate API and software costs using requests, users, usage limits, and price plans.",
-    href: "/categories/api-saas-cost-calculators",
-  },
-  {
-    title: "Capacity & Usage Calculators",
-    description:
-      "See how users, requests, storage, traffic, workload, and growth may affect future costs.",
-    href: "/categories/capacity-usage-calculators",
-  },
-  {
-    title: "Technology Comparison Tools",
-    description:
-      "Compare technical options using clear inputs, simple trade-offs, and cost differences.",
-    href: "/categories/technology-comparison-tools",
   },
 ];
 
@@ -140,17 +116,15 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-3xl">
             <h2 className="text-3xl font-semibold tracking-tight text-gray-950">
-              Explore cost and planning tools by category
+              Explore calculators by category
             </h2>
 
             <p className="mt-4 leading-relaxed text-gray-600">
-              Choose the area you want to plan for: AI, cloud, hosting,
-              infrastructure, APIs, SaaS, capacity, usage, or technology
-              comparison.
+              Start with the area you want to estimate: AI usage or cloud infrastructure.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
             {categories.map((category) => (
               <Link
                 key={category.href}
