@@ -46,17 +46,6 @@ export const metadata: Metadata = {
   description:
     "Browse AI, cloud, hosting, infrastructure, API, SaaS, capacity, usage, and technology comparison calculator categories on Beeija.",
 
-  keywords: [
-    "AI cost calculator categories",
-    "cloud cost calculator categories",
-    "hosting cost calculators",
-    "infrastructure cost calculators",
-    "API cost calculators",
-    "SaaS cost calculators",
-    "capacity planning calculators",
-    "usage calculators",
-    "technology comparison tools",
-  ],
 
   alternates: {
     canonical: "https://beeija.com/categories",
@@ -108,7 +97,7 @@ export default function CategoriesPage() {
             <Link
               key={category.href}
               href={category.href}
-              className="group rounded-xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md"
+              className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
             >
               <h2 className="text-base font-semibold text-gray-950">
                 {category.title}
