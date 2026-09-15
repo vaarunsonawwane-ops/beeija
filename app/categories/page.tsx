@@ -14,38 +14,14 @@ const categories = [
       "Estimate compute, storage, bandwidth, database, serverless, and other cloud costs.",
     href: "/categories/cloud-cost-calculators",
   },
-  {
-    title: "Hosting & Infrastructure Calculators",
-    description:
-      "Plan hosting, servers, containers, traffic, scaling, and infrastructure needs.",
-    href: "/categories/hosting-infrastructure-calculators",
-  },
-  {
-    title: "API & SaaS Cost Calculators",
-    description:
-      "Estimate API requests, subscriptions, users, price levels, overages, and monthly SaaS costs.",
-    href: "/categories/api-saas-cost-calculators",
-  },
-  {
-    title: "Capacity & Usage Calculators",
-    description:
-      "Estimate users, requests, traffic, bandwidth, storage growth, workload, and future capacity.",
-    href: "/categories/capacity-usage-calculators",
-  },
-  {
-    title: "Technology Comparison Tools",
-    description:
-      "Compare providers, platforms, services, and technical options using clear inputs.",
-    href: "/categories/technology-comparison-tools",
-  },
+
 ];
 
 export const metadata: Metadata = {
   title: "Cost Calculator Categories",
 
   description:
-    "Browse AI, cloud, hosting, infrastructure, API, SaaS, capacity, usage, and technology comparison calculator categories on Beeija.",
-
+    "Browse Beeija's current calculator categories for AI and cloud cost planning.",
 
   alternates: {
     canonical: "https://beeija.com/categories",
@@ -53,24 +29,18 @@ export const metadata: Metadata = {
 
   openGraph: {
     title: "Cost Calculator Categories | Beeija",
-
     description:
-      "Browse AI, cloud, hosting, infrastructure, API, SaaS, capacity, usage, and technology comparison tools.",
-
+      "Browse Beeija's current calculator categories for AI and cloud cost planning.",
     url: "https://beeija.com/categories",
-
     siteName: "Beeija",
-
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-
     title: "Cost Calculator Categories | Beeija",
-
     description:
-      "Explore simple cost calculators and comparison tools for AI, cloud, hosting, APIs, SaaS, capacity, and technology planning.",
+      "Browse Beeija's current calculator categories for AI and cloud cost planning.",
   },
 };
 
@@ -80,19 +50,18 @@ export default function CategoriesPage() {
       <section className="mx-auto max-w-7xl px-6 py-16">
         {/* HERO */}
         <div className="max-w-4xl">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
-            Explore Cost Calculators for AI, Cloud, Hosting, APIs, and
-            Technology
-          </h1>
+			<h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
+			  Explore AI and Cloud Cost Calculators
+			</h1>
 
           <p className="mt-5 max-w-3xl text-sm leading-relaxed text-gray-600 md:text-base">
-            Choose a category to estimate costs, compare options, and plan your
-            next technical decision with clear and simple tools.
+            Choose a category to estimate costs, compare options, and work with the
+            pricing and usage assumptions behind your next technical decision.
           </p>
         </div>
 
         {/* CATEGORY GRID */}
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 md:grid-cols-2">
           {categories.map((category) => (
             <Link
               key={category.href}
@@ -114,48 +83,6 @@ export default function CategoriesPage() {
           ))}
         </div>
 
-        {/* WHY CATEGORIES */}
-        <section className="mt-14 rounded-2xl border border-gray-200 bg-white p-7 md:p-8">
-          <h2 className="text-xl font-semibold text-gray-950">
-            Why Beeija Uses Clear Categories
-          </h2>
-
-          <div className="mt-5 space-y-4 text-sm leading-7 text-gray-600 md:text-base">
-            <p>
-              When you plan AI use, cloud services, hosting, APIs, SaaS, or
-              future capacity, you may need more than one calculator.
-            </p>
-
-            <p>
-              Clear categories make related tools easier to find. You can stay
-              in one area instead of moving through unrelated pages.
-            </p>
-
-            <p>
-              Beeija keeps every tool in the right place so you can find what
-              you need faster.
-            </p>
-          </div>
-        </section>
-
-        {/* POPULAR TOOL AREAS */}
-        <section className="mt-12 border-t border-gray-200 pt-8">
-          <h2 className="text-xl font-semibold text-gray-950">
-            Popular Tool Areas
-          </h2>
-
-          <div className="mt-5 flex flex-wrap gap-3">
-            {categories.map((category) => (
-              <Link
-                key={category.href}
-                href={category.href}
-                className="beeija-btn-outline"
-              >
-                {category.title}
-              </Link>
-            ))}
-          </div>
-        </section>
       </section>
     </main>
   );
