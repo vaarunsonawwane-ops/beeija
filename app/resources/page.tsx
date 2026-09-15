@@ -308,7 +308,7 @@ export default function ResourcesPage() {
           </div>
         </section>
 
-        <section className="mt-14 rounded-2xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-7 md:p-8">
+        <section className="mt-14 border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-7 md:p-8">
           <div className="max-w-5xl">
             <h2 className="text-2xl font-semibold text-gray-950">
               How Beeija approaches the calculation
