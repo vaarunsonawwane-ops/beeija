@@ -4,10 +4,26 @@ export const metadata = {
   title: "About",
 
   description:
-    "Learn about Beeija, a practical platform for AI, cloud, hosting, API, SaaS, capacity, and infrastructure cost planning.",
+    "Learn about Beeija, why it was created, and the thinking behind its practical cost-planning tools.",
 
   alternates: {
     canonical: "https://beeija.com/about",
+  },
+
+  openGraph: {
+    title: "About Beeija",
+    description:
+      "Learn about Beeija, why it was created, and the thinking behind its practical cost-planning tools.",
+    url: "https://beeija.com/about",
+    siteName: "Beeija",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "About Beeija",
+    description:
+      "Learn about Beeija, why it was created, and the thinking behind its practical cost-planning tools.",
   },
 };
 
@@ -21,27 +37,27 @@ export default function AboutPage() {
 
         <div className="text-[17px] leading-[1.9] text-gray-600 md:text-[18px] [&>p]:mb-[26px]">
           <p>
-            Beeija is a practical platform for business owners, founders, CEOs,
-            cloud architects, developers, and anyone who wants to understand
-            the cost or effort involved before building a cloud platform,
+            Beeija is a practical platform for business owners, founders, CEOs, cloud
+            architects, developers, and anyone who wants to understand the cost or
+            effort involved in building, running, or scaling a cloud platform,
             AI-powered product, website, application, or technical system.
           </p>
 
           <p>
             Have you ever struggled to find clear answers for your requirements?
-            Before building a system, platform, or website, you wanted to
-            understand the likely cost, the effort involved, and the practical
+            Before building a system, platform, or website, you may want to
+			understand the likely cost, the effort involved, and the practical
             arrangements you would need to make. Even when you find useful
-            websites, many would be heavily loaded with advertisements. The
-            pages will feel cluttered, pop-ups interrupting the flow, and
-            sometimes even finding the close button became an unnecessary task.
+            websites, many are heavily loaded with advertisements. The
+            pages feel cluttered, pop-ups interrupt the flow, and sometimes
+            even finding the close button becomes an unnecessary task.
           </p>
 
           <p>
-            In my case I have also faced a similar issue, I had to move
-            between several different platforms just to understand one complete
-            requirement. That takes time and breaks the connection between the
-            idea in your mind and the decision you are trying to make.
+            I have faced a similar issue myself. I had to move between several
+            different platforms just to understand one complete requirement.
+            That takes time and breaks the connection between the idea in your
+			mind and the decision you are trying to make.
           </p>
 
           <p>
@@ -51,65 +67,67 @@ export default function AboutPage() {
             the information you came for.
           </p>
 
-          <div className="my-[40px] rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-[26px]">
+          <div className="my-[40px] rounded-none border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-[26px]">
             <p className="text-gray-800">
               I genuinely felt there should be one modern platform where people
-              could explore practical AI, cloud, hosting, API, SaaS, capacity,
-              and infrastructure costs in one place.
+              could explore practical technology costs, compare their options,
+              and understand the decisions behind those costs in one place.
             </p>
           </div>
 
           <p>
-            At Beeija, we are not a collection of generic cost calculators. The
-            aim is to create practical cost simulators that reflect real pricing
-            structures, usage patterns, limits, and the decisions people face
-            before building.
+            Beeija is built around practical cost-planning tools that reflect real pricing
+            structures, usage patterns, limits, and the decisions people face while
+            planning, building, running, or scaling.
           </p>
 
           <p>
-            This includes tools such as an AI Token Cost Calculator, Cloud
-            Storage Cost Calculator, Server Cost Estimator, API Request Cost
-            Calculator, SaaS Seat Cost Calculator, Bandwidth Cost Calculator,
-            and technology comparison tools.
+            Over time, this can include tools for AI, cloud, hosting, APIs, SaaS,
+            bandwidth, capacity, and technology comparison.
           </p>
 
           <p>
-            Wherever reliable automation is available, Beeija will be designed
-            to keep source pricing current as providers update their rates.
-            Manual price overrides will remain available where needed.
+            Where provider pricing is built into a tool, Beeija is designed to show when
+            those rates were checked and to keep rates editable where pricing can vary
+            or change.
           </p>
 
+			<p>
+			  You can read more about this on the{" "}
+			  <Link
+				href="/how-beeija-tools-are-built"
+				className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
+			  >
+				How Beeija Tools Are Built
+			  </Link>{" "}
+			  page.
+			</p>
+
+
           <p>
-            You will directly get what you came for, without unnecessary
+            The aim is to help you get what you came for without unnecessary
             hurdles or clutter. We will not fill pages with distracting
             pop-ups. We might show a small number of ads, only to help keep the website running.
           </p>
 
-          <p>
-            Beeija is designed for the stage before building — estimating
-            costs, comparing providers, understanding usage, and planning the
-            technical path ahead.
-          </p>
+			<p>
+			  When you need practical tools for JSON, encoding, security, DevOps, SEO,
+			  APIs, or technical troubleshooting, you can also use our very own website{" "}
+			  <a
+				href="https://yoryantra.com"
+				target="_blank"
+				rel="noopener noreferrer"
+				className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
+			  >
+				Yoryantra
+			  </a>
+			  .
+			</p>
 
-          <p>
-            When you move into actual development and need practical tools for
-            JSON, encoding, security, DevOps, SEO, APIs, or technical
-            troubleshooting, you can continue with our very own website{" "}
-            <a
-              href="https://yoryantra.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
-            >
-              Yoryantra
-            </a>
-            .
-          </p>
-
-          <p>
-            Beeija helps you plan before you build. Yoryantra helps you while
-            you build.
-          </p>
+			<p>
+			  Beeija helps you understand the cost side of building, running, and scaling.
+			  Yoryantra helps you work through the technical side.
+			</p>
 
           <p>
             The name{" "}
@@ -138,7 +156,7 @@ export default function AboutPage() {
             is a spelling variation inspired by that word.
           </p>
 
-          <div className="my-[40px] rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-[26px]">
+          <div className="my-[40px] rounded-none border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-[26px]">
             <p className="text-gray-800">
               Beeija — Seed today. Better outcomes tomorrow.
             </p>
