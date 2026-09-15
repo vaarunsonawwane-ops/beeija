@@ -134,7 +134,7 @@ export default function Page() {
           </div>
         </section>
 
-        <section className="mt-14 border-l-4 border-l-[var(--yellow-dark)] bg-[#F5FAF7] p-6 md:p-7">
+        <section className="mt-14 rounded-none border-l-4 border-l-[#F2C94C] bg-[#F5FAF7] p-6 md:p-7">
           <h2 className="text-xl font-semibold text-gray-950">
             The formula should be understandable
           </h2>
