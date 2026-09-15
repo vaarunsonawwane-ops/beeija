@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function CategoriesPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="bg-white">
       <section className="mx-auto max-w-7xl px-6 py-16">
         {/* HERO */}
         <div className="max-w-4xl">
@@ -82,6 +82,31 @@ export default function CategoriesPage() {
             </Link>
           ))}
         </div>
+		
+		<section className="mt-14 max-w-5xl">
+		  <h2 className="text-2xl font-semibold text-gray-950">
+			Where AI and cloud costs can overlap
+		  </h2>
+
+		  <div className="mt-5 space-y-4 leading-relaxed text-gray-600">
+			<p>
+			  AI services are often priced around models, tokens, requests, images,
+			  audio, or inference. Cloud costs usually come from the infrastructure
+			  around the workload, such as compute, storage, databases, bandwidth,
+			  serverless usage, and networking.
+			</p>
+
+			<p>
+			  The two can overlap. An AI application may use a paid model API while
+			  also running its own servers, storing data, moving traffic, or using
+			  cloud databases. In that case, understanding the full cost may require
+			  tools from both categories.
+			</p>
+		  </div>
+		</section>		
+		
+		
+		
 
       </section>
     </main>
