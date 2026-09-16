@@ -8,31 +8,16 @@ export const metadata: Metadata = {
   title: "OpenAI API Cost Calculator",
 
   description:
-    "Estimate OpenAI API costs for GPT models using input tokens, cached input tokens, output tokens, requests, and monthly usage.",
-
-  keywords: [
-    "OpenAI API cost calculator",
-    "OpenAI pricing calculator",
-    "GPT API cost calculator",
-    "GPT token cost calculator",
-    "OpenAI token calculator",
-    "OpenAI API pricing",
-    "GPT-5.5 cost calculator",
-    "GPT-5.4 cost calculator",
-    "OpenAI monthly cost calculator",
-    "LLM API cost calculator",
-    "AI token pricing calculator",
-    "cached token cost calculator",
-  ],
+    "Estimate OpenAI API text-token costs using current model rates, uncached and cached input, cache writes, output tokens, Batch API pricing, and custom rates.",
 
   alternates: {
     canonical: "https://beeija.com/tools/openai-api-cost-calculator",
   },
 
   openGraph: {
-    title: "OpenAI API Cost Calculator",
+    title: "OpenAI API Cost Calculator | Beeija",
     description:
-      "Estimate monthly OpenAI API costs from requests, input tokens, cached input, output tokens, and model pricing.",
+      "Estimate OpenAI API text-token costs with current model rates, prompt caching, Batch API pricing, long-context rules, and custom rates.",
     url: "https://beeija.com/tools/openai-api-cost-calculator",
     siteName: "Beeija",
     type: "website",
@@ -40,51 +25,18 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "OpenAI API Cost Calculator",
+    title: "OpenAI API Cost Calculator | Beeija",
     description:
-      "Estimate OpenAI API token costs for GPT models using your own usage numbers.",
+      "Estimate OpenAI API text-token costs with current model rates, caching, Batch API pricing, and custom rates.",
   },
 };
-
-const faqs = [
-  {
-    question: "How is OpenAI API cost calculated?",
-    answer:
-      "The calculator multiplies your total input, cached input, and output tokens by the selected model rates. It then adds the three amounts to show the estimated cost per request, day, and month.",
-  },
-  {
-    question: "What is the difference between input and output tokens?",
-    answer:
-      "Input tokens are the prompt, system message, chat history, and other text sent to the model. Output tokens are the text returned by the model. The two token types may have different prices.",
-  },
-  {
-    question: "What are cached input tokens?",
-    answer:
-      "Cached input tokens are repeated input tokens that qualify for a lower cached-input rate. The real amount depends on your API setup and whether the provider accepts the input for caching.",
-  },
-  {
-    question: "Does ChatGPT Plus include OpenAI API usage?",
-    answer:
-      "No. ChatGPT plans and OpenAI API usage are billed separately. This calculator is for API usage, not a ChatGPT subscription.",
-  },
-  {
-    question: "Are the calculator results exact?",
-    answer:
-      "No. The results are planning estimates. Your final bill may change because of price updates, retries, tool calls, images, audio, web search, storage, taxes, discounts, or other paid services.",
-  },
-  {
-    question: "Can I enter my own OpenAI prices?",
-    answer:
-      "Yes. Turn on custom pricing and enter your own input, cached input, and output rates. This is useful when prices change or when you have a special rate.",
-  },
-];
 
 export default function OpenAIApiCostCalculatorPage() {
   return (
     <ToolShell
       category="AI Cost Calculators"
       title="OpenAI API Cost Calculator"
-      description="Estimate OpenAI API costs using requests, input tokens, cached input, output tokens, and current or custom model prices."
+      description="Estimate text-token costs for current OpenAI models using uncached input, cached input, cache writes, output tokens, Standard or Batch processing, and custom rates."
     >
       <ToolClient />
 
@@ -93,156 +45,217 @@ export default function OpenAIApiCostCalculatorPage() {
           intro={
             <>
               <p>
-                OpenAI API costs can change with the model, prompt size, answer
-                length, number of requests, and cached input use. This
-                calculator brings those values together so you can test a small
-                launch, a normal month, and a higher-usage case before you
-                build.
+                OpenAI API billing is not just one token rate. The model,
+                uncached input, cached reads, cache writes, output length,
+                processing mode, and long-context rules can all change the
+                result. This calculator keeps those pieces separate so the
+                estimate is easier to inspect.
+              </p>
+
+              <p>
+                It calculates locally in your browser and does not need an API
+                key. ChatGPT subscriptions are separate from OpenAI API billing.
               </p>
             </>
           }
           sections={[
             {
-              title: "How the OpenAI API Cost Calculator Works",
+              title: "What This Calculator Includes",
               content: (
                 <>
                   <p>
-                    Choose a model, enter the number of API requests, and add
-                    the average input and output tokens used by each request.
-                    You can also enter the share of input tokens that may use
-                    cached pricing.
+                    The built-in model list focuses on OpenAI&apos;s current
+                    flagship API models: GPT-6 Astra and the GPT-5.6 Sol, Terra,
+                    and Luna family. For each request, enter uncached input,
+                    cached input, cache-write tokens, and output tokens
+                    separately.
                   </p>
 
                   <p>
-                    The calculator estimates uncached input cost, cached input
-                    cost, and output cost separately. It then shows the total
-                    cost per request, per day, and per month.
-                  </p>
-
-                  <p>
-                    The built-in rates are planning defaults. You can turn on
-                    custom pricing and replace them with the latest official
-                    rates or your own agreed price.
+                    The calculator multiplies those token totals by the selected
+                    per-million-token rates, then shows estimated cost per
+                    request, a 30-day daily average, monthly cost, and yearly
+                    cost. Custom pricing lets you replace the built-in base rates
+                    without changing the workload.
                   </p>
                 </>
               ),
             },
             {
-              title: "What to Enter for a Useful Estimate",
+              title: "Prompt Caching: Reads and Writes Are Different",
               content: (
                 <>
                   <p>
-                    Start with the average request, not the smallest possible
-                    request. Include the system message, prompt, chat history,
-                    retrieved text, and tool instructions in the input-token
-                    estimate.
+                    A cached input token is a token read from a reusable prompt
+                    prefix and billed at the lower cached-input rate. A cache
+                    write is different: it is a token being written into the
+                    prompt cache for possible reuse later.
                   </p>
 
                   <p>
-                    For output, use the average answer length you expect in real
-                    use. A support chatbot, coding assistant, report generator,
-                    and short classification task can have very different
-                    output sizes.
+                    OpenAI currently charges cache writes on GPT-5.6 models and
+                    later model families at 1.25× the uncached input rate. The
+                    API reports cache reads in <code>cached_tokens</code> and
+                    writes in <code>cache_write_tokens</code>. Enter the average
+                    values you actually observe when possible instead of assuming
+                    every repeated prompt will become a cache hit.
                   </p>
 
                   <p>
-                    It is useful to calculate at least three cases: a small
-                    launch, a normal month, and a busy month. This shows how
-                    quickly the cost may change as users and requests grow.
+                    Prompt caching is automatically available for eligible
+                    prompts, but a shared prefix must match for a cache read to
+                    occur. Changing content inside the reusable prefix can turn
+                    an expected hit into another write or an uncached request.
                   </p>
                 </>
               ),
             },
             {
-              title: "Common Ways to Use This Calculator",
-              content: (
-                <ul className="list-disc space-y-2 pl-6">
-                  <li>
-                    Estimate the monthly cost of an AI chatbot or assistant.
-                  </li>
-                  <li>
-                    Compare GPT models using the same token workload.
-                  </li>
-                  <li>
-                    Test how longer prompts or answers may change the bill.
-                  </li>
-                  <li>
-                    Estimate cost per user, request, day, and month.
-                  </li>
-                  <li>
-                    Check the possible saving from cached input or Batch API
-                    use.
-                  </li>
-                  <li>
-                    Prepare an early AI budget before development begins.
-                  </li>
-                </ul>
-              ),
-            },
-            {
-              title: "Simple OpenAI API Cost Example",
+              title: "Batch and Long-Context Pricing",
               content: (
                 <>
                   <p>
-                    Imagine an AI feature that receives 50,000 requests per
-                    month. Each request uses about 1,000 input tokens and 300
-                    output tokens. If 20% of the input can use cached pricing,
-                    enter those values and choose the model you want to test.
+                    Batch API is intended for asynchronous work that does not
+                    need an immediate response. OpenAI documents Batch as 50%
+                    lower cost than synchronous APIs, with batches completing
+                    within a 24-hour window. Select Batch only when the workload
+                    can actually use that processing path.
                   </p>
 
                   <p>
-                    The result will show the separate input, cached input, and
-                    output costs. You can then choose another model without
-                    changing the workload to compare the price more fairly.
+                    The current GPT-6 Astra and GPT-5.6 family also have a
+                    long-context pricing rule. When a request exceeds 272,000
+                    input tokens, this calculator automatically applies 2× to
+                    input and cache rates and 1.5× to output rates for the full
+                    request.
+                  </p>
+
+                  <p>
+                    The long-context check uses uncached input, cached input,
+                    and cache-write tokens together because all are part of the
+                    request&apos;s input-token volume.
                   </p>
                 </>
               ),
             },
             {
-              title: "Pricing and Estimate Notes",
+              title: "A Better Way to Build the Workload Estimate",
               content: (
                 <>
                   <p>
-                    Built-in model prices were checked against the official
-                    OpenAI API pricing page on June 19, 2026. OpenAI may change
-                    models, prices, billing rules, or service tiers at any time.
+                    Start from measured or realistic average usage rather than a
+                    smallest-case prompt. Include system instructions, user
+                    messages, conversation history, retrieved context, tool
+                    descriptions, and other text that becomes model input.
                   </p>
 
                   <p>
-                    Batch API pricing is shown as an estimated 50% reduction on
-                    token charges. Other services such as web search, images,
-                    audio, containers, storage, and third-party infrastructure
-                    are not included in the token estimate.
+                    Keep cache reads and cache writes separate. A mature workload
+                    with a stable reusable prefix may have a very different cost
+                    profile from a new or frequently changing prompt that keeps
+                    writing fresh cache entries.
                   </p>
 
                   <p>
-                    Always check the{" "}
+                    For output, use the answer length you expect in production.
+                    A classification task, coding agent, support assistant, and
+                    long-form report generator can have very different output
+                    token usage even at the same request count.
+                  </p>
+                </>
+              ),
+            },
+            {
+              title: "Worked Example",
+              content: (
+                <>
+                  <p>
+                    Suppose an application makes 50,000 requests in a month. An
+                    average request has 800 uncached input tokens, 200 cached
+                    input tokens, no cache write, and 300 output tokens. Enter
+                    those values, choose a model, and the calculator separates
+                    each token category before adding the monthly total.
+                  </p>
+
+                  <p>
+                    To compare models fairly, leave the workload unchanged and
+                    change only the model. If you are comparing Standard with
+                    Batch, keep the token assumptions the same so the processing
+                    mode is the only changing variable.
+                  </p>
+                </>
+              ),
+            },
+            {
+              title: "What the Estimate Does Not Include",
+              content: (
+                <>
+                  <p>
+                    This is a text-token estimate. It does not add separate
+                    charges for web search, file search, image generation,
+                    audio, video, containers, storage, code execution, or other
+                    paid tools and services that may be used alongside a model.
+                  </p>
+
+                  <p>
+                    It also does not add regional-processing or data-residency
+                    uplifts, taxes, account-specific discounts, Scale Tier or
+                    other contracted capacity, credits, retries that are not
+                    included in your request count, or provider changes made
+                    after the checked date.
+                  </p>
+
+                  <p>
+                    GPT-5.6 Sol&apos;s current listed API rate is promotional
+                    according to OpenAI and is stated as available at least
+                    through November 21, 2026. Re-check that rate before using
+                    the result for a budget that extends beyond the promotion.
+                  </p>
+                </>
+              ),
+            },
+            {
+              title: "Pricing Sources and Checked Date",
+              content: (
+                <>
+                  <p>
+                    Built-in rates and billing rules were checked against
+                    official OpenAI documentation on September 16, 2026. OpenAI
+                    can change models, rates, caching rules, service tiers, and
+                    other billing behavior after that date.
+                  </p>
+
+                  <p>
+                    Review the{" "}
                     <a
-                      href="https://openai.com/api/pricing/"
+                      href="https://developers.openai.com/api/docs/models"
                       target="_blank"
-                      rel="noreferrer"
-                      className="font-medium text-[var(--yellow-dark)]"
+                      rel="noopener noreferrer"
+                      className="font-medium text-[var(--green)] underline-offset-4 hover:underline"
                     >
-                      official OpenAI API pricing page
+                      OpenAI model catalog ↗
+                    </a>
+                    ,{" "}
+                    <a
+                      href="https://developers.openai.com/api/docs/guides/prompt-caching"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-[var(--green)] underline-offset-4 hover:underline"
+                    >
+                      prompt caching guide ↗
+                    </a>
+                    , and{" "}
+                    <a
+                      href="https://developers.openai.com/api/docs/guides/batch"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-[var(--green)] underline-offset-4 hover:underline"
+                    >
+                      Batch API guide ↗
                     </a>{" "}
                     before making a final budget or purchase decision.
                   </p>
                 </>
-              ),
-            },
-            {
-              title: "Frequently Asked Questions",
-              content: (
-                <div className="space-y-6">
-                  {faqs.map((faq) => (
-                    <div key={faq.question}>
-                      <h3 className="font-semibold text-gray-900">
-                        {faq.question}
-                      </h3>
-                      <p className="mt-2">{faq.answer}</p>
-                    </div>
-                  ))}
-                </div>
               ),
             },
             {
