@@ -15,10 +15,6 @@ export const metadata = {
 const categoryOrder = [
   "AI Cost Calculators",
   "Cloud Cost Calculators",
-  "Hosting & Infrastructure Calculators",
-  "API & SaaS Cost Calculators",
-  "Capacity & Usage Calculators",
-  "Technology Comparison Tools",
 ];
 
 const categoryLinks = [
@@ -30,28 +26,17 @@ const categoryLinks = [
     title: "Cloud Cost Calculators",
     href: "/categories/cloud-cost-calculators",
   },
-  {
-    title: "Hosting & Infrastructure Calculators",
-    href: "/categories/hosting-infrastructure-calculators",
-  },
-  {
-    title: "API & SaaS Cost Calculators",
-    href: "/categories/api-saas-cost-calculators",
-  },
-  {
-    title: "Capacity & Usage Calculators",
-    href: "/categories/capacity-usage-calculators",
-  },
-  {
-    title: "Technology Comparison Tools",
-    href: "/categories/technology-comparison-tools",
-  },
 ];
 
 const mainPages = [
   { title: "Home", href: "/" },
   { title: "Tools", href: "/tools" },
   { title: "Categories", href: "/categories" },
+   { title: "Resources", href: "/resources" },
+  {
+    title: "How Beeija Tools Are Built",
+    href: "/how-beeija-tools-are-built",
+  },
   { title: "About", href: "/about" },
   { title: "Contact", href: "/contact" },
   { title: "Privacy Policy", href: "/privacy-policy" },
