@@ -33,21 +33,19 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <section className="mt-10">
+        <section className="mt-10 border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-6 md:p-8">
           <h2 className="text-2xl font-semibold text-gray-950">
             Contact details
           </h2>
 
-          <div className="mt-4 rounded-2xl border border-gray-200 bg-[var(--light-bg)] p-6">
-            <p className="text-gray-700">Varoun Sonawane</p>
+          <p className="mt-5 text-gray-700">Varoun Sonawane</p>
 
-            <a
-              href="mailto:contactbeeija@gmail.com"
-              className="mt-2 inline-block break-all font-medium text-gray-700 transition-colors duration-200 hover:text-[var(--yellow-dark)]"
-            >
-              contactbeeija@gmail.com
-            </a>
-          </div>
+          <a
+            href="mailto:contactbeeija@gmail.com"
+            className="mt-2 inline-block break-all font-medium text-[var(--green)] underline-offset-4 hover:underline"
+          >
+            contactbeeija@gmail.com
+          </a>
         </section>
 
         <section className="mt-10">
@@ -64,8 +62,9 @@ export default function ContactPage() {
             </p>
 
             <p>
-              If you are reporting outdated pricing, a link to the provider&apos;s
-              current pricing or documentation page is especially helpful.
+              If you are reporting outdated pricing, a link to the
+              provider&apos;s current pricing or documentation page is especially
+              helpful.
             </p>
 
             <p>
@@ -86,14 +85,14 @@ export default function ContactPage() {
             For the story behind Beeija, visit the{" "}
             <Link
               href="/about"
-              className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
+              className="font-medium text-[var(--green)] underline-offset-4 hover:underline"
             >
               About page
             </Link>
             . You can also read{" "}
             <Link
               href="/how-beeija-tools-are-built"
-              className="font-medium text-[var(--yellow-dark)] transition-colors duration-200"
+              className="font-medium text-[var(--green)] underline-offset-4 hover:underline"
             >
               how Beeija tools are built and reviewed
             </Link>
