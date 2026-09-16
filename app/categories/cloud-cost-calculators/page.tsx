@@ -1,416 +1,326 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+
+import ToolCard from "@/app/components/ToolCard";
 import { tools } from "@/app/data/tools";
 
 const categoryTools = tools.filter(
   (tool) => tool.category === "Cloud Cost Calculators",
 );
 
-const featuredTools = categoryTools.slice(0, 6);
-
 export const metadata: Metadata = {
-  title: "Cloud Cost Calculators for Compute, Storage & Bandwidth",
+  title: "Cloud Cost Calculators",
 
   description:
-    "Estimate cloud compute, storage, bandwidth, database, serverless, and monthly infrastructure costs with simple planning calculators.",
-
-  keywords: [
-    "cloud cost calculator",
-    "cloud pricing calculator",
-    "AWS cost calculator",
-    "Azure cost calculator",
-    "Google Cloud cost calculator",
-    "cloud compute cost calculator",
-    "cloud storage cost calculator",
-    "cloud bandwidth cost calculator",
-    "cloud database cost calculator",
-    "serverless cost calculator",
-    "cloud infrastructure cost calculator",
-    "monthly cloud cost calculator",
-    "cloud cost estimator",
-    "cloud spending calculator",
-    "cloud migration cost calculator",
-  ],
+    "Browse Beeija tools for virtual machines, storage, managed databases, Kubernetes, serverless functions, NAT gateways, load balancers, and cloud cost comparisons.",
 
   alternates: {
     canonical: "https://beeija.com/categories/cloud-cost-calculators",
   },
 
   openGraph: {
-    title: "Cloud Cost Calculators for Compute, Storage & Bandwidth",
-
+    title: "Cloud Cost Calculators | Beeija",
     description:
-      "Estimate cloud compute, storage, bandwidth, database, serverless, and monthly infrastructure costs before deployment.",
-
+      "Explore Beeija tools for comparing compute, storage, database, networking, Kubernetes, serverless, and other cloud infrastructure costs.",
     url: "https://beeija.com/categories/cloud-cost-calculators",
-
     siteName: "Beeija",
-
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-
-    title: "Cloud Cost Calculators for Compute, Storage & Bandwidth",
-
+    title: "Cloud Cost Calculators | Beeija",
     description:
-      "Use simple calculators to estimate compute, storage, bandwidth, database, serverless, and other cloud costs.",
+      "Explore Beeija tools for comparing compute, storage, database, networking, Kubernetes, serverless, and other cloud infrastructure costs.",
   },
 };
 
 export default function CategoryPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <section className="mx-auto max-w-7xl px-6 py-16">
-        {/* BREADCRUMB */}
-        <div className="mb-8 flex items-center text-sm text-gray-500">
+    <main className="bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-16">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-8 flex flex-wrap items-center text-sm text-gray-500"
+        >
           <Link
             href="/"
-            className="transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+            className="transition-colors duration-200 hover:text-[var(--green)]"
           >
             Home
           </Link>
 
-          <span className="mx-2">/</span>
+          <span className="mx-2" aria-hidden="true">
+            /
+          </span>
 
           <Link
             href="/categories"
-            className="transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+            className="transition-colors duration-200 hover:text-[var(--green)]"
           >
             Categories
           </Link>
 
-          <span className="mx-2">/</span>
+          <span className="mx-2" aria-hidden="true">
+            /
+          </span>
 
           <span className="text-gray-900">Cloud Cost Calculators</span>
-        </div>
+        </nav>
 
-        {/* HERO */}
-        <div className="max-w-3xl">
+        <header className="max-w-4xl">
           <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
-            Cloud Cost Calculators for Compute, Storage, and Bandwidth
+            Cloud Cost Calculators
           </h1>
 
           <p className="mt-5 text-lg leading-relaxed text-gray-600">
-            Estimate compute, storage, bandwidth, databases, serverless usage,
-            and other cloud costs before you deploy or scale a workload.
+            Compare costs across virtual machines, storage, managed databases,
+            Kubernetes, serverless functions, NAT, load balancing, and other
+            infrastructure that contributes to a cloud bill.
           </p>
-        </div>
+        </header>
 
-        {/* INTRO CARDS */}
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Estimate Cloud Spending Before Deployment
-            </h2>
-
-            <p className="mt-3 text-base leading-relaxed text-gray-600">
-              Test compute hours, storage size, bandwidth, databases, and other
-              billing units before creating production resources.
-            </p>
-          </article>
-
-          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Useful for Small and Large Workloads
-            </h2>
-
-            <p className="mt-3 text-base leading-relaxed text-gray-600">
-              Plan costs for websites, apps, APIs, databases, data systems, and
-              growing platforms using your own workload numbers.
-            </p>
-          </article>
-
-          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Compare Providers and Configurations
-            </h2>
-
-            <p className="mt-3 text-base leading-relaxed text-gray-600">
-              Compare similar workloads across providers, regions, instance
-              sizes, storage plans, and pricing options.
-            </p>
-          </article>
-        </div>
-
-        {/* FEATURED TOOLS */}
-        <section className="mt-16">
-          <div className="max-w-3xl">
+        <section className="mt-14">
+          <div className="max-w-4xl">
             <h2 className="text-2xl font-semibold text-gray-950">
-              Popular Cloud Cost Calculators
+              Cloud bills are shaped by architecture
             </h2>
 
-            <p className="mt-3 text-gray-600 leading-relaxed">
-              Start with tools for compute, storage, bandwidth, databases,
-              serverless requests, and monthly cloud planning.
+            <p className="mt-4 leading-8 text-gray-600">
+              The visible hourly or monthly rate is only one part of a useful
+              estimate. Resource choices, availability requirements, data
+              movement, performance settings, and purchase models can all change
+              the amount you actually pay.
             </p>
           </div>
 
-          {featuredTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {featuredTools.map((tool) => (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-                >
-                  <h3 className="text-lg font-semibold text-gray-900 transition-colors duration-200 group-hover:text-[var(--green)]">
-                    {tool.title}
-                  </h3>
+          <div className="mt-8 space-y-8">
+            <article className="max-w-5xl border-l-4 border-[#F2C94C] pl-5">
+              <h3 className="text-lg font-semibold text-gray-950">
+                Compute depends on both runtime and purchase model
+              </h3>
 
-                  <p className="mt-3 text-base leading-relaxed text-gray-600">
-                    {tool.description}
-                  </p>
+              <p className="mt-3 leading-7 text-gray-600">
+                VM cost can change with instance size, operating system,
+                runtime, region, commitments, Spot or other interruptible
+                capacity, attached storage, public IPs, and related network
+                services. A discounted commitment should not be compared with
+                another provider&apos;s on-demand rate as though the terms were
+                equivalent.
+              </p>
+            </article>
 
-                  <p className="mt-5 text-sm font-medium text-[var(--yellow-dark)]">
-                    Open tool →
-                  </p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
-              Tools in this category will appear automatically as they are
-              created.
-            </p>
-          )}
+            <article className="max-w-5xl border-l-4 border-[#F2C94C] pl-5">
+              <h3 className="text-lg font-semibold text-gray-950">
+                Databases carry availability and performance choices
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-600">
+                Managed PostgreSQL, MySQL, Redis, and SQL Server costs can extend
+                beyond compute. High availability, replicas, storage, IOPS,
+                backups, licensing, support, and transfer can materially change
+                the result.
+              </p>
+            </article>
+
+            <article className="max-w-5xl border-l-4 border-[#F2C94C] pl-5">
+              <h3 className="text-lg font-semibold text-gray-950">
+                Storage is more than capacity
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-600">
+                Object and block storage can be affected by storage tier,
+                requests, retrievals, snapshots, IOPS, throughput, lifecycle
+                transitions, replication, and data leaving the service. The
+                cheapest price per GB is not always the cheapest workload.
+              </p>
+            </article>
+
+            <article className="max-w-5xl border-l-4 border-[#F2C94C] pl-5">
+              <h3 className="text-lg font-semibold text-gray-950">
+                Network services can become their own cost center
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-600">
+                NAT gateways, load balancers, public IPs, processed traffic,
+                cross-service transfer, internet egress, logging, and security
+                features can sit outside the headline compute price. They are
+                easy to miss when an estimate focuses only on servers.
+              </p>
+            </article>
+
+            <article className="max-w-5xl border-l-4 border-[#F2C94C] pl-5">
+              <h3 className="text-lg font-semibold text-gray-950">
+                Managed platforms trade operational work for different billing
+                units
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-600">
+                Kubernetes and serverless platforms may combine control-plane
+                fees, worker or pod compute, requests, execution time, memory,
+                vCPU, storage, networking, logging, and always-on capacity. The
+                architecture decides which of those costs matter.
+              </p>
+            </article>
+          </div>
         </section>
 
-        {/* ALL TOOLS */}
         <section className="mt-16">
-          <div className="max-w-3xl">
+          <div className="max-w-4xl">
             <h2 className="text-2xl font-semibold text-gray-950">
-              All Cloud Cost Calculators
+              Browse cloud tools
             </h2>
 
-            <p className="mt-3 text-gray-600 leading-relaxed">
-              Browse every cloud cost tool for compute, storage, bandwidth,
-              databases, serverless usage, and other recurring services.
+            <p className="mt-3 leading-relaxed text-gray-600">
+              Choose the tool that matches the resource or architecture you want
+              to compare. Each page focuses on the billing inputs and
+              assumptions that matter for that service.
             </p>
           </div>
 
-          {categoryTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {categoryTools.map((tool) => (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
-                >
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {tool.title}
-                  </h3>
-
-                  <p className="mt-3 text-base leading-relaxed text-gray-600">
-                    {tool.description}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
-              No tools have been published in this category yet.
-            </p>
-          )}
-        </section>
-
-        {/* USE CASES */}
-        <section className="mt-16 rounded-2xl border border-gray-200 bg-white p-7 md:p-8">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Small Cloud Cost Questions These Tools Help Simplify
-          </h2>
-
-          <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">
-            Cloud pricing can change with instance hours, storage size, request
-            count, bandwidth, regions, and database usage. These tools help you
-            test those numbers before you spend money.
-          </p>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            {[
-              "Estimate virtual machine costs for a planned workload.",
-              "Calculate object storage and retrieval costs.",
-              "Estimate bandwidth and data transfer charges.",
-              "Compare serverless usage at different request volumes.",
-              "Forecast managed database spending.",
-              "Compare on-demand and committed pricing options.",
-              "Estimate costs for development, staging, and production.",
-              "Test future cloud spending as traffic grows.",
-            ].map((item) => (
-              <div
-                key={item}
-                className="border-l-4 border-[#F2C94C] bg-white px-4 py-3"
-              >
-                <p className="text-base leading-relaxed text-gray-700">
-                  {item}
-                </p>
-              </div>
+          <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {categoryTools.map((tool) => (
+              <ToolCard
+                key={tool.href}
+                name={tool.title}
+                description={tool.description}
+                href={tool.href}
+              />
             ))}
           </div>
         </section>
 
-        {/* WHY MATTERS */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Why Cloud Cost Planning Matters
-          </h2>
+          <div className="max-w-4xl">
+            <h2 className="text-2xl font-semibold text-gray-950">
+              Compare like-for-like configurations
+            </h2>
 
-          <div className="mt-5 max-w-4xl space-y-4 text-gray-600 leading-relaxed">
-            <p>
-              Cloud services are flexible, but the same flexibility can make
-              the final bill difficult to predict. Compute, storage, bandwidth,
-              databases, requests, regions, and extra services may all be billed
-              in different ways.
-            </p>
-
-            <p>
-              A useful estimate starts with a real workload. You may need to
-              know how many hours a server will run, how much data will be
-              stored, how much traffic will leave the cloud, and how many
-              requests the system may handle.
-            </p>
-
-            <p>
-              Small changes in instance size, storage class, region, or traffic
-              can change the monthly bill. Beeija calculators help you test a
-              small setup, a normal month, and a busy month before choosing a
-              provider or architecture.
-            </p>
-
-            <p>
-              Cost is only one part of the decision. Speed, reliability,
-              security, support, data location, and service limits may also
-              matter. Always check the latest official provider pricing before
-              making a final budget or purchase decision.
-            </p>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Frequently Asked Questions
-          </h2>
-
-          <div className="mt-6 space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                What is a cloud cost calculator?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                A cloud cost calculator estimates spending for compute,
-                storage, bandwidth, databases, serverless functions, and other
-                cloud services.
+            <div className="mt-5 space-y-4 leading-8 text-gray-600">
+              <p>
+                A provider comparison is only useful when the workloads are
+                genuinely comparable. Keep the region, runtime, availability
+                target, performance requirement, storage amount, backup policy,
+                transfer pattern, and support assumptions as close as possible.
               </p>
-            </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                How do I estimate monthly cloud costs?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Start with the resources you need, expected usage, region, and
-                billing period. Then add compute, storage, data transfer,
-                database, and request costs for a normal month.
+              <p>
+                Purchase models also need to be compared on equal terms.
+                On-demand, reserved or committed capacity, and Spot or
+                interruptible capacity trade flexibility, commitment, and
+                interruption risk differently. A lower rate can come with a
+                condition that changes whether the option fits the workload.
               </p>
-            </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Can I compare cloud providers?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Yes. Use the same workload and usage numbers across providers
-                to compare possible costs more fairly.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Why can data transfer make cloud costs higher?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Many providers charge for data leaving the cloud or moving
-                between regions and services. High traffic can make these
-                charges a large part of the final bill.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Are cloud cost estimates exact?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                No. They are planning estimates. The final bill may change
-                because of updated prices, discounts, taxes, extra services, or
-                actual usage.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Do these tools upload my data?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Most Beeija tools run in your browser. Your inputs are not
-                uploaded unless a tool clearly says that it needs an external
-                price or URL check.
+              <p>
+                First-year cost can also include migration, setup, data transfer,
+                support, or parallel-running expenses that do not appear in a
+                simple steady-state monthly rate. Those costs matter when the
+                decision is about moving an existing workload rather than
+                starting from zero.
               </p>
             </div>
           </div>
         </section>
 
-        {/* RELATED */}
+        <section className="mt-16">
+          <div className="max-w-4xl">
+            <h2 className="text-2xl font-semibold text-gray-950">
+              Costs that are easy to leave out
+            </h2>
+
+            <div className="mt-6 grid gap-x-10 gap-y-7 md:grid-cols-2">
+              <div>
+                <h3 className="font-semibold text-gray-950">
+                  Data transfer and egress
+                </h3>
+                <p className="mt-2 leading-7 text-gray-600">
+                  Traffic leaving a service, region, or cloud can add charges
+                  that are not visible in the resource&apos;s base price.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-950">
+                  Backups, snapshots, and replicas
+                </h3>
+                <p className="mt-2 leading-7 text-gray-600">
+                  Resilience and recovery features can add storage, compute, or
+                  transfer costs even when the primary workload stays the same.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-950">
+                  Idle or always-on infrastructure
+                </h3>
+                <p className="mt-2 leading-7 text-gray-600">
+                  Gateways, load balancers, reserved capacity, warm instances,
+                  and other resources may continue costing money when application
+                  traffic is low.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-950">
+                  Licensing, support, and logging
+                </h3>
+                <p className="mt-2 leading-7 text-gray-600">
+                  Database licenses, extended support, monitoring, logging, and
+                  security services can materially change a production estimate.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-16 border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-6 md:p-8">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            How Beeija approaches cloud estimates
+          </h2>
+
+          <div className="mt-4 max-w-5xl space-y-4 leading-8 text-gray-600">
+            <p>
+              Beeija calculations are planning estimates, not provider invoices.
+              Cloud pricing can vary by provider, region, resource type, purchase
+              model, currency, discounts, taxes, support plan, and actual usage.
+            </p>
+
+            <p>
+              When provider pricing is built into a tool, the aim is to make the
+              source, checked date, assumptions, and editable inputs clear enough
+              that you can see what is driving the comparison and update rates
+              when needed.
+            </p>
+          </div>
+
+          <Link
+            href="/how-beeija-tools-are-built"
+            className="mt-6 inline-flex font-medium text-[var(--green)] transition-colors duration-200 hover:underline"
+          >
+            How Beeija Tools Are Built →
+          </Link>
+        </section>
+
         <section className="mt-16 border-t border-gray-200 pt-10">
           <h2 className="text-2xl font-semibold text-gray-950">
-            Related Tool Categories
+            Related category
           </h2>
 
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href="/categories/ai-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              AI Cost Calculators
-            </Link>
+          <p className="mt-3 max-w-3xl leading-relaxed text-gray-600">
+            An AI product can have two separate cost layers: model or API usage,
+            and the cloud infrastructure running the rest of the application.
+            Use the AI category when you need to estimate that model-side cost.
+          </p>
 
-            <Link
-              href="/categories/hosting-infrastructure-calculators"
-              className="beeija-btn-outline"
-            >
-              Hosting & Infrastructure Calculators
-            </Link>
-
-            <Link
-              href="/categories/api-saas-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              API & SaaS Cost Calculators
-            </Link>
-
-            <Link
-              href="/categories/capacity-usage-calculators"
-              className="beeija-btn-outline"
-            >
-              Capacity & Usage Calculators
-            </Link>
-
-            <Link
-              href="/categories/technology-comparison-tools"
-              className="beeija-btn-outline"
-            >
-              Technology Comparison Tools
-            </Link>
-          </div>
+          <Link
+            href="/categories/ai-cost-calculators"
+            className="beeija-btn-outline mt-6 inline-flex"
+          >
+            AI Cost Calculators
+          </Link>
         </section>
-      </section>
+      </div>
     </main>
   );
 }
