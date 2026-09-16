@@ -9,6 +9,7 @@ type ToolItem = {
   description: string;
   href: string;
   category?: string;
+  keywords?: string[];
 };
 
 type ToolsClientProps = {
@@ -16,6 +17,13 @@ type ToolsClientProps = {
 };
 
 const preferredCategoryOrder = [...BEEIJA_CATEGORIES];
+
+function normalizeSearchText(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
 
 export default function ToolsClient({ tools }: ToolsClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,15 +63,20 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
   }, [tools]);
 
   const filteredTools = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = normalizeSearchText(searchQuery);
 
     return tools.filter((tool) => {
-      const matchesSearch =
-        !query ||
-        tool.title.toLowerCase().includes(query) ||
-        tool.description.toLowerCase().includes(query) ||
-        tool.href.toLowerCase().includes(query) ||
-        (tool.category || "").toLowerCase().includes(query);
+      const searchableText = normalizeSearchText(
+        [
+          tool.title,
+          tool.description,
+          tool.href,
+          tool.category ?? "",
+          ...(tool.keywords ?? []),
+        ].join(" "),
+      );
+
+      const matchesSearch = !query || searchableText.includes(query);
 
       const matchesCategory =
         selectedCategories.length === 0 ||
@@ -90,17 +103,23 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
     searchQuery.trim().length > 0 || selectedCategories.length > 0;
 
   return (
-    <section className="mt-10">
+    <section className="mt-10" aria-label="Beeija calculator directory">
       <div className="rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            Search tools
+          <label
+            htmlFor="tool-search"
+            className="mb-2 block text-sm font-medium text-gray-700"
+          >
+            Search calculators
           </label>
 
           <input
+            id="tool-search"
+            type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search by tool name, category, or keyword..."
+            placeholder="Search by calculator name, category, or keyword..."
+            autoComplete="off"
             className="w-full rounded-xl border border-gray-300 p-4 text-sm outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--green)]"
           />
         </div>
@@ -151,14 +170,14 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
       </div>
 
       <div className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600" aria-live="polite">
           Showing{" "}
           <span className="font-semibold text-gray-900">
             {filteredTools.length}
           </span>{" "}
           of{" "}
           <span className="font-semibold text-gray-900">{tools.length}</span>{" "}
-          tools
+          calculators
         </p>
 
         {selectedCategories.length > 0 && (
@@ -177,19 +196,19 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
               description={tool.description}
               href={tool.href}
               category={tool.category}
+              headingLevel="h2"
             />
           ))}
         </div>
       ) : (
         <div className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center">
           <h2 className="text-xl font-semibold text-gray-900">
-            No matching tools found
+            No matching calculators found
           </h2>
 
           <p className="mt-3 leading-relaxed text-gray-600">
-            Beeija tools will appear here automatically as their pages are
-            created. Try a different keyword or remove one of the selected
-            categories.
+            No calculator matches your current search and category filters. Try
+            another keyword or clear the active filters.
           </p>
 
           {hasActiveFilters && (
