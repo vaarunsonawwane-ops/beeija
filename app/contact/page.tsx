@@ -15,12 +15,12 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="bg-white text-gray-700">
-      <div className="mx-auto max-w-3xl px-6 py-16 md:py-20">
+      <div className="mx-auto max-w-4xl px-6 py-16 md:py-20">
         <h1 className="text-4xl font-bold tracking-tight text-gray-950">
           Contact Beeija
         </h1>
 
-        <div className="mt-8 space-y-5 text-lg leading-relaxed text-gray-600">
+        <div className="mt-8 max-w-3xl space-y-5 text-lg leading-relaxed text-gray-600">
           <p>
             If a calculator behaves unexpectedly, a price looks outdated, an
             assumption is unclear, or you have a practical suggestion for
@@ -53,7 +53,7 @@ export default function ContactPage() {
             Reporting a calculator or pricing issue
           </h2>
 
-          <div className="mt-4 space-y-4 leading-8">
+          <div className="mt-4 max-w-3xl space-y-4 leading-8">
             <p>
               Please include the calculator name, what you entered, what you
               expected to see, what actually happened, and the provider, region,
@@ -81,7 +81,7 @@ export default function ContactPage() {
             About the project
           </h2>
 
-          <p className="mt-4 leading-8">
+          <p className="mt-4 max-w-3xl leading-8">
             For the story behind Beeija, visit the{" "}
             <Link
               href="/about"
