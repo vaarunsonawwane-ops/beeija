@@ -41,6 +41,15 @@ export default function Footer() {
               >
                 Resources
               </Link>
+			  
+			 <Link
+			  href="/sitemap"
+			  className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
+			 >
+			  Sitemap
+			 </Link>			  
+			  
+			  
             </div>
 
             <div className="flex flex-col gap-2">
@@ -105,12 +114,6 @@ export default function Footer() {
                 Disclaimer
               </Link>
 
-              <Link
-                href="/sitemap"
-                className="text-gray-700 hover:!text-[var(--yellow-dark)] transition-colors duration-200"
-              >
-                Sitemap
-              </Link>
             </div>
           </div>
         </div>
