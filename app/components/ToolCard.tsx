@@ -20,7 +20,7 @@ export default function ToolCard({
   return (
     <Link
       href={href}
-      className="group flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--green)] focus-visible:ring-offset-2"
+      className="group block h-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--green)] focus-visible:ring-offset-2"
     >
       {category ? (
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--yellow-dark)]">
@@ -34,10 +34,6 @@ export default function ToolCard({
 
       <p className="mt-3 text-sm leading-relaxed text-gray-600">
         {description}
-      </p>
-
-      <p className="mt-auto pt-5 text-sm font-medium text-[var(--green)]">
-        Open tool →
       </p>
     </Link>
   );
