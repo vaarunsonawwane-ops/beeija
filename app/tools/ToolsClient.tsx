@@ -103,14 +103,14 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
     searchQuery.trim().length > 0 || selectedCategories.length > 0;
 
   return (
-    <section className="mt-10" aria-label="Beeija calculator directory">
+    <section className="mt-10" aria-label="Beeija tool directory">
       <div className="rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
         <div>
           <label
             htmlFor="tool-search"
             className="mb-2 block text-sm font-medium text-gray-700"
           >
-            Search calculators
+            Search tools
           </label>
 
           <input
@@ -118,7 +118,7 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search by calculator name, category, or keyword..."
+            placeholder="Search by name, category, or keyword..."
             autoComplete="off"
             className="w-full rounded-xl border border-gray-300 p-4 text-sm outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--green)]"
           />
@@ -177,7 +177,7 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
           </span>{" "}
           of{" "}
           <span className="font-semibold text-gray-900">{tools.length}</span>{" "}
-          calculators
+          tools
         </p>
 
         {selectedCategories.length > 0 && (
@@ -203,11 +203,11 @@ export default function ToolsClient({ tools }: ToolsClientProps) {
       ) : (
         <div className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center">
           <h2 className="text-xl font-semibold text-gray-900">
-            No matching calculators found
+            No matching tools found
           </h2>
 
           <p className="mt-3 leading-relaxed text-gray-600">
-            No calculator matches your current search and category filters. Try
+            No tool matches your current search and category filters. Try
             another keyword or clear the active filters.
           </p>
 
