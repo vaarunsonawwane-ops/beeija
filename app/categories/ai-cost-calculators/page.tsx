@@ -1,416 +1,253 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+
+import ToolCard from "@/app/components/ToolCard";
 import { tools } from "@/app/data/tools";
 
 const categoryTools = tools.filter(
   (tool) => tool.category === "AI Cost Calculators",
 );
 
-const featuredTools = categoryTools.slice(0, 6);
-
 export const metadata: Metadata = {
-  title: "AI Cost Calculators for Tokens, Models & APIs",
+  title: "AI Cost Calculators",
 
   description:
-    "Estimate AI token costs, model pricing, API usage, embeddings, image generation, audio, and monthly AI spending with simple planning calculators.",
-
-  keywords: [
-    "AI cost calculator",
-    "AI token cost calculator",
-    "AI API cost calculator",
-    "LLM cost calculator",
-    "OpenAI API cost calculator",
-    "AI model pricing calculator",
-    "AI inference cost calculator",
-    "embedding cost calculator",
-    "AI image generation cost calculator",
-    "speech to text cost calculator",
-    "text to speech cost calculator",
-    "monthly AI cost calculator",
-    "AI pricing calculator",
-    "AI usage cost estimator",
-    "generative AI cost calculator",
-  ],
+    "Browse Beeija tools for AI API pricing, tokens, caching, embeddings, RAG, agents, media generation, evaluation, fine-tuning, and GPU inference.",
 
   alternates: {
     canonical: "https://beeija.com/categories/ai-cost-calculators",
   },
 
   openGraph: {
-    title: "AI Cost Calculators for Tokens, Models & APIs | Beeija",
-
+    title: "AI Cost Calculators | Beeija",
     description:
-      "Estimate token use, model prices, API requests, embeddings, images, audio, and monthly AI costs before you build.",
-
+      "Explore Beeija tools for estimating and comparing AI model, API, retrieval, agent, media, evaluation, training, and inference costs.",
     url: "https://beeija.com/categories/ai-cost-calculators",
-
     siteName: "Beeija",
-
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-
-    title: "AI Cost Calculators for Tokens, Models & APIs | Beeija",
-
+    title: "AI Cost Calculators | Beeija",
     description:
-      "Use simple calculators to estimate AI token, model, API, image, audio, and embedding costs.",
+      "Explore Beeija tools for estimating and comparing AI model, API, retrieval, agent, media, evaluation, training, and inference costs.",
   },
 };
 
 export default function CategoryPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <section className="mx-auto max-w-7xl px-6 py-16">
-        {/* BREADCRUMB */}
-        <div className="mb-8 flex items-center text-sm text-gray-500">
+    <main className="bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-16">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-8 flex flex-wrap items-center text-sm text-gray-500"
+        >
           <Link
             href="/"
-            className="transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+            className="transition-colors duration-200 hover:text-[var(--green)]"
           >
             Home
           </Link>
 
-          <span className="mx-2">/</span>
+          <span className="mx-2" aria-hidden="true">
+            /
+          </span>
 
           <Link
             href="/categories"
-            className="transition-colors duration-200 hover:!text-[var(--yellow-dark)]"
+            className="transition-colors duration-200 hover:text-[var(--green)]"
           >
             Categories
           </Link>
 
-          <span className="mx-2">/</span>
+          <span className="mx-2" aria-hidden="true">
+            /
+          </span>
 
           <span className="text-gray-900">AI Cost Calculators</span>
-        </div>
+        </nav>
 
-        {/* HERO */}
-        <div className="max-w-3xl">
+        <header className="max-w-4xl">
           <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl md:leading-tight">
-            AI Cost Calculators for Tokens, Models, APIs, Images, and Audio
+            AI Cost Calculators
           </h1>
 
           <p className="mt-5 text-lg leading-relaxed text-gray-600">
-            Estimate the cost of AI models, token use, API requests, embeddings,
-            image generation, speech, and other AI services before you build or
-            scale a product.
+            Estimate and compare costs across model APIs, token usage, caching,
+            RAG, agents, media generation, evaluation, fine-tuning, and
+            self-hosted inference.
           </p>
-        </div>
+        </header>
 
-        {/* INTRO CARDS */}
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Plan AI Costs Before Usage Grows
-            </h2>
-
-            <p className="mt-3 text-base leading-relaxed text-gray-600">
-              Test token volume, request count, model choice, and other billing
-              units before a small AI feature becomes a large monthly cost.
-            </p>
-          </article>
-
-          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Useful for Real AI Products
-            </h2>
-
-            <p className="mt-3 text-base leading-relaxed text-gray-600">
-              Plan costs for chatbots, assistants, search tools, support tools,
-              image features, voice tools, and other AI-based products.
-            </p>
-          </article>
-
-          <article className="rounded-r-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-6 py-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Compare Models and Providers
-            </h2>
-
-            <p className="mt-3 text-base leading-relaxed text-gray-600">
-              Use the same workload to compare model prices, provider rates, and
-              possible monthly costs without reading long pricing tables.
-            </p>
-          </article>
-        </div>
-
-        {/* FEATURED TOOLS */}
-        <section className="mt-16">
-          <div className="max-w-3xl">
+        <section className="mt-14">
+          <div className="max-w-4xl">
             <h2 className="text-2xl font-semibold text-gray-950">
-              Popular AI Cost Calculators
+              AI pricing is not one number
             </h2>
 
-            <p className="mt-3 text-gray-600 leading-relaxed">
-              Start with tools for token cost, AI APIs, model use, inference,
-              embeddings, images, audio, and monthly workload planning.
+            <p className="mt-4 leading-8 text-gray-600">
+              Different AI workloads are billed in different ways. A useful
+              estimate starts by matching the calculator to the part of the
+              system that actually creates the cost.
             </p>
           </div>
 
-          {featuredTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {featuredTools.map((tool) => (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-                >
-                  <h3 className="text-base font-semibold text-gray-950 transition-colors duration-200 group-hover:text-[var(--green)]">
-                    {tool.title}
-                  </h3>
+          <div className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-2">
+            <article>
+              <h3 className="text-lg font-semibold text-gray-950">
+                Model APIs and token usage
+              </h3>
 
-                  <p className="mt-3 text-base leading-relaxed text-gray-600">
-                    {tool.description}
-                  </p>
+              <p className="mt-3 leading-7 text-gray-600">
+                Text-model costs can depend on input tokens, cached input,
+                output tokens, request volume, model choice, and whether a
+                provider offers a separate batch rate.
+              </p>
+            </article>
 
-                  <p className="mt-5 text-sm font-medium text-[var(--yellow-dark)]">
-                    Open tool →
-                  </p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
-              Tools in this category will appear automatically as they are
-              created.
-            </p>
-          )}
+            <article>
+              <h3 className="text-lg font-semibold text-gray-950">
+                Retrieval and agent workflows
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-600">
+                RAG and agent systems can add embeddings, vector storage,
+                retrieval, reranking, web search, repeated model calls, retries,
+                tools, memory, and human review to the base model cost.
+              </p>
+            </article>
+
+            <article>
+              <h3 className="text-lg font-semibold text-gray-950">
+                Images, video, and speech
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-600">
+                Media workloads may be priced by image, clip duration, audio
+                time, characters, requests, processing mode, or another
+                provider-specific unit. Retries and unusable output can matter
+                as much as the headline rate.
+              </p>
+            </article>
+
+            <article>
+              <h3 className="text-lg font-semibold text-gray-950">
+                Training and self-hosted inference
+              </h3>
+
+              <p className="mt-3 leading-7 text-gray-600">
+                Fine-tuning and self-hosted inference introduce a different set
+                of costs: training runs, evaluation, retraining, GPU capacity,
+                utilization, idle time, storage, setup, and ongoing inference.
+              </p>
+            </article>
+          </div>
         </section>
 
-        {/* ALL TOOLS */}
         <section className="mt-16">
-          <div className="max-w-3xl">
+          <div className="max-w-4xl">
             <h2 className="text-2xl font-semibold text-gray-950">
-              All AI Cost Calculators
+              Browse AI tools
             </h2>
 
-            <p className="mt-3 text-gray-600 leading-relaxed">
-              Browse every AI cost tool for tokens, models, requests, inference,
-              embeddings, images, audio, and other running costs.
+            <p className="mt-3 leading-relaxed text-gray-600">
+              Choose the tool that matches the workload or cost question you
+              are trying to understand. Each page explains the assumptions and
+              limits that matter for that calculation.
             </p>
           </div>
 
-          {categoryTools.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {categoryTools.map((tool) => (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
-                >
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {tool.title}
-                  </h3>
-
-                  <p className="mt-3 text-base leading-relaxed text-gray-600">
-                    {tool.description}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
-              No tools have been published in this category yet.
-            </p>
-          )}
-        </section>
-
-        {/* USE CASES */}
-        <section className="mt-16 rounded-2xl border border-gray-200 bg-white p-7 md:p-8">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Small AI Cost Questions These Tools Help Simplify
-          </h2>
-
-          <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">
-            AI pricing can change with token length, model choice, request
-            volume, images, audio, embeddings, and other billing units. These
-            tools help you test those numbers before you spend money.
-          </p>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            {[
-              "Estimate input and output token costs before launching an AI feature.",
-              "Compare the same workload across different AI models.",
-              "Estimate monthly AI API spending from users and requests.",
-              "Calculate embedding costs for search and RAG systems.",
-              "Estimate image generation costs for content and design work.",
-              "Estimate speech-to-text and text-to-speech API costs.",
-              "See how longer answers may increase model costs.",
-              "Test future AI spending at higher usage levels.",
-            ].map((item) => (
-              <div
-                key={item}
-                className="border-l-4 border-[#F2C94C] bg-white px-4 py-3"
-              >
-                <p className="text-base leading-relaxed text-gray-700">
-                  {item}
-                </p>
-              </div>
+          <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {categoryTools.map((tool) => (
+              <ToolCard
+                key={tool.href}
+                name={tool.title}
+                description={tool.description}
+                href={tool.href}
+              />
             ))}
           </div>
         </section>
 
-        {/* WHY MATTERS */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Why AI Cost Planning Matters
-          </h2>
+          <div className="max-w-4xl">
+            <h2 className="text-2xl font-semibold text-gray-950">
+              Compare the same workload, not just the headline rate
+            </h2>
 
-          <div className="mt-5 max-w-4xl space-y-4 text-gray-600 leading-relaxed">
-            <p>
-              AI pricing may look simple at first, but the final cost can depend
-              on input tokens, output tokens, request count, model choice,
-              images, audio, embeddings, and other billing units.
-            </p>
-
-            <p>
-              A useful estimate starts with a real workload. You may need to
-              know how many users will use the feature, how many requests each
-              user may send, how long the prompts may be, and how much output
-              the model may return.
-            </p>
-
-            <p>
-              Small changes in answer length, request count, or user growth can
-              change the monthly bill. Beeija calculators help you test a small
-              launch, a normal month, and a busy month before choosing a model
-              or provider.
-            </p>
-
-            <p>
-              Cost is only one part of the decision. Quality, speed, context
-              size, reliability, privacy, and provider limits may also matter.
-              Always check the latest official provider pricing before making a
-              final budget or purchase decision.
-            </p>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Frequently Asked Questions
-          </h2>
-
-          <div className="mt-6 space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                What is an AI cost calculator?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                An AI cost calculator estimates spending for tokens, models,
-                API requests, images, audio, embeddings, and other paid AI
-                services.
+            <div className="mt-5 space-y-4 leading-8 text-gray-600">
+              <p>
+                A lower published rate does not automatically mean a lower
+                monthly cost. Compare providers or models using the same request
+                volume, token mix, media volume, retry assumptions, and other
+                workload inputs.
               </p>
-            </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                How do I estimate AI API costs?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Start with the model price, number of requests, and average
-                input and output tokens. A calculator can then show the cost per
-                request, day, month, or user.
+              <p>
+                Caching, batch processing, free allowances, repeated attempts,
+                search calls, human review, and infrastructure can materially
+                change the result. If one estimate includes those costs and
+                another does not, the totals are not directly comparable.
               </p>
-            </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Can I compare AI model prices?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Yes. Use the same request and token numbers across different
-                models to compare possible costs for one workload.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Do embeddings, images, and audio add extra costs?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Yes. Embeddings may be priced by text volume. Images may be
-                priced by size, quality, or model. Audio may be priced by
-                minutes, characters, tokens, or requests.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Are AI cost estimates exact?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                No. They are planning estimates. The final bill may change
-                because of updated prices, discounts, taxes, retries, extra
-                services, or actual usage.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Do these tools upload my data?
-              </h3>
-
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Most Beeija tools run in your browser. Your inputs are not
-                uploaded unless a tool clearly says that it needs an external
-                price or URL check.
+              <p>
+                Cost is also only one part of an AI decision. Quality, latency,
+                context limits, reliability, privacy requirements, provider
+                limits, and operational effort can matter just as much as the
+                calculated amount.
               </p>
             </div>
           </div>
         </section>
 
-        {/* RELATED */}
+        <section className="mt-16 border-l-4 border-[#F2C94C] bg-[#F5FAF7] p-6 md:p-8">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            How Beeija approaches AI cost estimates
+          </h2>
+
+          <div className="mt-4 max-w-5xl space-y-4 leading-8 text-gray-600">
+            <p>
+              A Beeija result is a planning estimate, not a provider invoice.
+              Provider pricing, regions, service tiers, discounts, free
+              allowances, taxes, custom agreements, and actual usage can change
+              the final amount.
+            </p>
+
+            <p>
+              When provider rates are built into a tool, the goal is to make the
+              pricing source, checked date, assumptions, and editable inputs
+              clear enough that you can understand what is driving the result.
+            </p>
+          </div>
+
+          <Link
+            href="/how-beeija-tools-are-built"
+            className="mt-6 inline-flex font-medium text-[var(--green)] transition-colors duration-200 hover:underline"
+          >
+            How Beeija Tools Are Built →
+          </Link>
+        </section>
+
         <section className="mt-16 border-t border-gray-200 pt-10">
           <h2 className="text-2xl font-semibold text-gray-950">
-            Related Tool Categories
+            Related category
           </h2>
 
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href="/categories/cloud-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              Cloud Cost Calculators
-            </Link>
+          <p className="mt-3 max-w-3xl leading-relaxed text-gray-600">
+            AI workloads often depend on compute, storage, databases,
+            networking, or serverless infrastructure. Use the cloud category
+            when those costs need to be planned separately.
+          </p>
 
-            <Link
-              href="/categories/hosting-infrastructure-calculators"
-              className="beeija-btn-outline"
-            >
-              Hosting & Infrastructure Calculators
-            </Link>
-
-            <Link
-              href="/categories/api-saas-cost-calculators"
-              className="beeija-btn-outline"
-            >
-              API & SaaS Cost Calculators
-            </Link>
-
-            <Link
-              href="/categories/capacity-usage-calculators"
-              className="beeija-btn-outline"
-            >
-              Capacity & Usage Calculators
-            </Link>
-
-            <Link
-              href="/categories/technology-comparison-tools"
-              className="beeija-btn-outline"
-            >
-              Technology Comparison Tools
-            </Link>
-          </div>
+          <Link
+            href="/categories/cloud-cost-calculators"
+            className="beeija-btn-outline mt-6 inline-flex"
+          >
+            Cloud Cost Calculators
+          </Link>
         </section>
-      </section>
+      </div>
     </main>
   );
 }
