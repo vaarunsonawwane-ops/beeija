@@ -58,13 +58,15 @@ export default function BeeijaRelatedTools({
           <Link
             key={tool.href}
             href={tool.href}
-            className="beeija-btn-outline"
+            className="beeija-btn-outline !px-4 !py-2.5 !leading-6"
           >
             {tool.title}
           </Link>
         ))}
 
-        <Link href={categoryHref} className="beeija-btn-outline">
+        <Link href={categoryHref} 
+		className="beeija-btn-outline !px-4 !py-2.5 !leading-6"
+		>
           {currentTool.category}
         </Link>
       </nav>
