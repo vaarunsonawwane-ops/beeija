@@ -72,10 +72,32 @@ function toNumber(value: string) {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
-function isValidNonNegativeNumber(value: string) {
-  if (value.trim() === "") return false;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed >= 0;
+function isValidNonNegativeInteger(value: string) {
+  const trimmed = value.trim();
+
+  if (!/^\d+$/.test(trimmed)) {
+    return false;
+  }
+
+  const parsed = Number(trimmed);
+
+  return Number.isSafeInteger(parsed) && parsed >= 0;
+}
+
+function isValidNonNegativeDecimal(value: string) {
+  const trimmed = value.trim();
+
+  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(trimmed)) {
+    return false;
+  }
+
+  const parsed = Number(trimmed);
+
+  return (
+    Number.isFinite(parsed) &&
+    parsed >= 0 &&
+    parsed <= Number.MAX_SAFE_INTEGER
+  );
 }
 
 function formatMoney(value: number) {
@@ -129,37 +151,47 @@ export default function ToolClient() {
 
   const hasInvalidInput = useMemo(() => {
     const usageValues = [
-      requestsPerMonth,
-      uncachedInputPerRequest,
-      cachedInputPerRequest,
-      cacheWritePerRequest,
-      outputTokensPerRequest,
-    ];
-
-    const customValues = customPricing
-      ? [
-          customInputPrice,
-          customCachedPrice,
-          customCacheWritePrice,
-          customOutputPrice,
-        ]
-      : [];
-
-    return [...usageValues, ...customValues].some(
-      (value) => !isValidNonNegativeNumber(value),
-    );
-  }, [
-    cacheWritePerRequest,
-    cachedInputPerRequest,
-    customCacheWritePrice,
-    customCachedPrice,
-    customInputPrice,
-    customOutputPrice,
-    customPricing,
-    outputTokensPerRequest,
     requestsPerMonth,
     uncachedInputPerRequest,
-  ]);
+    cachedInputPerRequest,
+    cacheWritePerRequest,
+    outputTokensPerRequest,
+  ];
+
+    if (
+      usageValues.some(
+        (value) => !isValidNonNegativeInteger(value),
+      )
+    ) {
+      return true;
+    }
+
+    if (!customPricing) {
+      return false;
+    }
+
+    const customValues = [
+    customInputPrice,
+    customCachedPrice,
+    customCacheWritePrice,
+    customOutputPrice,
+  ];
+
+    return customValues.some(
+      (value) => !isValidNonNegativeDecimal(value),
+    );
+  }, [
+  cacheWritePerRequest,
+  cachedInputPerRequest,
+  customCacheWritePrice,
+  customCachedPrice,
+  customInputPrice,
+  customOutputPrice,
+  customPricing,
+  outputTokensPerRequest,
+  requestsPerMonth,
+  uncachedInputPerRequest,
+]);
 
   const basePrices = useMemo(() => {
     if (!customPricing) return selectedModel;
@@ -258,6 +290,33 @@ export default function ToolClient() {
     uncachedInputPerRequest,
   ]);
 
+  const hasUnsafeResult = useMemo(() => {
+    const values = [
+      result.totalInputPerRequest,
+      result.totalUncachedInputTokens,
+      result.totalCachedInputTokens,
+      result.totalCacheWriteTokens,
+      result.totalInputTokens,
+      result.totalOutputTokens,
+      result.uncachedInputCost,
+      result.cachedInputCost,
+      result.cacheWriteCost,
+      result.outputCost,
+      result.monthlyCost,
+      result.costPerRequest,
+      result.dailyAverage,
+      result.yearlyCost,
+    ];
+
+    return values.some(
+      (value) =>
+        !Number.isFinite(value) ||
+        Math.abs(value) > Number.MAX_SAFE_INTEGER,
+    );
+  }, [result]);
+
+  const hasDisplayError = hasInvalidInput || hasUnsafeResult;
+
   const updateModel = (value: string) => {
     const nextModel = value as ModelKey;
     const prices = MODEL_PRICES[nextModel];
@@ -290,7 +349,7 @@ export default function ToolClient() {
   };
 
   const visibleMoney = (value: number) =>
-    hasInvalidInput ? "—" : formatMoney(value);
+    hasDisplayError ? "—" : formatMoney(value);
 
   return (
     <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -327,6 +386,7 @@ export default function ToolClient() {
             onChange={setRequestsPerMonth}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -335,6 +395,7 @@ export default function ToolClient() {
             onChange={setUncachedInputPerRequest}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -343,6 +404,7 @@ export default function ToolClient() {
             onChange={setCachedInputPerRequest}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -351,6 +413,7 @@ export default function ToolClient() {
             onChange={setCacheWritePerRequest}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -359,6 +422,7 @@ export default function ToolClient() {
             onChange={setOutputTokensPerRequest}
             min="0"
             step="1"
+            sanitizeDecimal
           />
         </div>
 
@@ -394,6 +458,7 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
             />
 
             <BeeijaNumberField
@@ -403,6 +468,7 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
             />
 
             <BeeijaNumberField
@@ -412,6 +478,7 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
             />
 
             <BeeijaNumberField
@@ -421,18 +488,28 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
             />
           </div>
         ) : null}
 
         {hasInvalidInput ? (
           <div className="mt-6 border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm leading-relaxed text-red-800">
-            Use non-negative numbers in every visible field before relying on
-            the estimate.
+            Use non-negative whole numbers for requests and token counts, and
+            ordinary decimal numbers for custom prices. Scientific notation is
+            not accepted.
           </div>
         ) : null}
 
-        {result.longContextApplies ? (
+        {!hasInvalidInput && hasUnsafeResult ? (
+          <div className="mt-6 border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm leading-relaxed text-red-800">
+            The entered workload is too large to calculate reliably in the
+            browser. Use smaller whole-number values before relying on the
+            estimate.
+          </div>
+        ) : null}
+
+        {!hasDisplayError && result.longContextApplies ? (
           <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
             This request is above 272,000 input tokens. The calculator applies
             OpenAI&apos;s current long-context multiplier: 2× input and cache
@@ -447,7 +524,7 @@ export default function ToolClient() {
             </p>
             <p className="text-sm text-gray-500">
               {pricingMode === "batch" ? "Batch" : "Standard"}
-              {result.longContextApplies ? " · long-context rate" : ""}
+              {!hasDisplayError && result.longContextApplies ? " · long-context rate" : ""}
             </p>
           </div>
 
@@ -455,7 +532,7 @@ export default function ToolClient() {
             <RateStat
               label="Uncached input"
               value={
-                hasInvalidInput
+                hasDisplayError
                   ? "—"
                   : formatVisibleMoney(result.effectivePrices.input)
               }
@@ -463,7 +540,7 @@ export default function ToolClient() {
             <RateStat
               label="Cached input"
               value={
-                hasInvalidInput
+                hasDisplayError
                   ? "—"
                   : formatVisibleMoney(result.effectivePrices.cachedInput)
               }
@@ -471,7 +548,7 @@ export default function ToolClient() {
             <RateStat
               label="Cache write"
               value={
-                hasInvalidInput
+                hasDisplayError
                   ? "—"
                   : formatVisibleMoney(result.effectivePrices.cacheWrite)
               }
@@ -479,7 +556,7 @@ export default function ToolClient() {
             <RateStat
               label="Output"
               value={
-                hasInvalidInput
+                hasDisplayError
                   ? "—"
                   : formatVisibleMoney(result.effectivePrices.output)
               }
@@ -522,7 +599,7 @@ export default function ToolClient() {
             <CostRow
               label="Uncached input"
               detail={
-                hasInvalidInput
+                hasDisplayError
                   ? "Check inputs"
                   : `${formatNumber(result.totalUncachedInputTokens)} tokens`
               }
@@ -532,7 +609,7 @@ export default function ToolClient() {
             <CostRow
               label="Cached input"
               detail={
-                hasInvalidInput
+                hasDisplayError
                   ? "Check inputs"
                   : `${formatNumber(result.totalCachedInputTokens)} tokens`
               }
@@ -542,7 +619,7 @@ export default function ToolClient() {
             <CostRow
               label="Cache writes"
               detail={
-                hasInvalidInput
+                hasDisplayError
                   ? "Check inputs"
                   : `${formatNumber(result.totalCacheWriteTokens)} tokens`
               }
@@ -552,7 +629,7 @@ export default function ToolClient() {
             <CostRow
               label="Output"
               detail={
-                hasInvalidInput
+                hasDisplayError
                   ? "Check inputs"
                   : `${formatNumber(result.totalOutputTokens)} tokens`
               }
@@ -565,14 +642,14 @@ export default function ToolClient() {
             <p>
               Requests: {" "}
               <span className="font-medium text-gray-900">
-                {hasInvalidInput ? "—" : formatNumber(result.requests)}
+                {hasDisplayError ? "—" : formatNumber(result.requests)}
               </span>
             </p>
 
             <p className="mt-2">
               Input tokens per request: {" "}
               <span className="font-medium text-gray-900">
-                {hasInvalidInput
+                {hasDisplayError
                   ? "—"
                   : formatNumber(result.totalInputPerRequest)}
               </span>
@@ -581,14 +658,14 @@ export default function ToolClient() {
             <p className="mt-2">
               Total input tokens: {" "}
               <span className="font-medium text-gray-900">
-                {hasInvalidInput ? "—" : formatNumber(result.totalInputTokens)}
+                {hasDisplayError ? "—" : formatNumber(result.totalInputTokens)}
               </span>
             </p>
 
             <p className="mt-2">
               Total output tokens: {" "}
               <span className="font-medium text-gray-900">
-                {hasInvalidInput ? "—" : formatNumber(result.totalOutputTokens)}
+                {hasDisplayError ? "—" : formatNumber(result.totalOutputTokens)}
               </span>
             </p>
           </div>
