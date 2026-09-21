@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import BeeijaNotice from "@/app/components/BeeijaNotice";
 
 type BeeijaCalculatorResultPanelProps = {
   title: string;
@@ -98,7 +97,12 @@ export default function BeeijaCalculatorResultPanel({
       ) : null}
 
       {noticeText || defaultNotice ? (
-        <BeeijaNotice>{noticeText ?? defaultNotice}</BeeijaNotice>
+        <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-7 text-gray-700">
+          <p className="min-w-0 break-words">
+            <span className="font-semibold text-gray-950">* Important:</span>{" "}
+            {noticeText ?? defaultNotice}
+          </p>
+        </div>
       ) : null}
 
       <style>{`
