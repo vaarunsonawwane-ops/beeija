@@ -384,8 +384,12 @@ export default function ToolClient() {
   }, [result]);
 
   const hasDisplayError = hasInvalidInput || hasUnsafeResult;
-  const exceedsContextWindow =
+  const exceedsInputContextWindow =
     !hasDisplayError &&
+    result.totalInputPerRequest > selectedModel.contextWindow;
+  const couldHitContextDuringGeneration =
+    !hasDisplayError &&
+    !exceedsInputContextWindow &&
     result.contextLoadPerRequest > selectedModel.contextWindow;
   const exceedsOutputLimit =
     !hasDisplayError && result.outputPerRequest > selectedModel.maxOutput;
@@ -637,37 +641,50 @@ export default function ToolClient() {
           </div>
         ) : null}
 
-        {!hasDisplayError && exceedsContextWindow ? (
-          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
-            The entered input plus output tokens are above {formatNumber(
+        {!hasDisplayError && exceedsInputContextWindow ? (
+          <div className="mt-6 border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm leading-relaxed text-red-800">
+            Input-related tokens alone are above {formatNumber(
               selectedModel.contextWindow,
-            )} tokens for {selectedModel.label}. The arithmetic estimate is
-            still shown, but this request shape may not be accepted by the API.
+            )} tokens for {selectedModel.label}. Anthropic documents this as a
+            rejected 400 <code>invalid_request_error</code> with “prompt is too
+            long.” The arithmetic cost is still visible only as a planning
+            comparison.
+          </div>
+        ) : null}
+
+        {!hasDisplayError && couldHitContextDuringGeneration ? (
+          <div className="mt-6 border-l-4 border-[#F2C94C] bg-white px-5 py-4 text-sm leading-relaxed text-gray-700">
+            The input fits the {formatNumber(selectedModel.contextWindow)}-token
+            context window, but the entered output would push the combined total
+            past it. On Claude 4.5 and newer, Anthropic can accept a request whose
+            max_tokens extends beyond the remaining context and stop generation
+            with <code>model_context_window_exceeded</code> if the boundary is
+            reached.
           </div>
         ) : null}
 
         {!hasDisplayError && exceedsOutputLimit ? (
-          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
+          <div className="mt-6 border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm leading-relaxed text-red-800">
             The entered output is above {formatNumber(selectedModel.maxOutput)}
-            tokens, the listed maximum output for {selectedModel.label}. Use a
-            feasible output value before treating the estimate as a deployable
-            request.
+            tokens, the listed maximum output for {selectedModel.label}. That
+            output amount cannot be produced by one request on this model, so use
+            a value within the documented limit.
           </div>
         ) : null}
 
         {!hasDisplayError && model === "claude-fable-5-1" ? (
-          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
+          <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm leading-relaxed text-gray-700">
             Claude Fable 5.1 has a special cache-read price of $0.25 per million
-            tokens, or 0.025× its base input rate. That is lower than the usual
-            0.1× cache-read multiplier used by the other models in this list.
+            tokens, or 0.025× its base input rate. The other current models in
+            this list use the standard 0.1× cache-read multiplier.
           </div>
         ) : null}
 
         {!hasDisplayError && processingMode === "fast" ? (
-          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
-            Fast mode is a Claude API research preview for supported Opus
-            models. It uses premium token rates and cannot be combined with the
-            Batch API.
+          <div className="mt-6 border-l-4 border-[#F2C94C] bg-white px-5 py-4 text-sm leading-relaxed text-gray-700">
+            Fast mode is a gated Claude API research preview for supported Opus
+            models. It uses premium token rates, requires preview access, and
+            cannot be combined with the Batch API.
           </div>
         ) : null}
 
@@ -678,7 +695,7 @@ export default function ToolClient() {
           </p>
         ) : null}
 
-        <div className="mt-7 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+        <div className="mt-7 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
             <p className="font-medium text-gray-900">
               Rates used per 1 million tokens
@@ -830,7 +847,7 @@ export default function ToolClient() {
             </p>
           </div>
         }
-        noticeText="Built-in first-party Claude API rates checked September 17, 2026. Final charges may include paid server tools, platform-specific pricing, negotiated discounts, taxes, retries, or usage not entered here."
+        noticeText="Built-in first-party Claude API rates checked September 21, 2026. Final charges may include paid server tools, platform-specific pricing, negotiated discounts, taxes, retries, or usage not entered here."
       />
     </div>
   );

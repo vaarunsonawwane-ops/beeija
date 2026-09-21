@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import ToolShell from "@/app/components/ToolShell";
 import ToolContent from "@/app/components/ToolContent";
 import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
@@ -51,17 +52,17 @@ const faqs = [
   {
     question: "Why is Claude Fable 5.1 cache-read pricing different?",
     answer:
-      "Anthropic lists Fable 5.1 cache hits and refreshes at 0.025 times its base input rate. The other current models in this calculator use the usual 0.1 times cache-read multiplier.",
+      "Anthropic lists Fable 5.1 cache hits and refreshes at 0.025 times its base input rate. The other current models listed here use the usual 0.1 times cache-read multiplier.",
   },
   {
     question: "Does Batch API also affect prompt-caching charges?",
     answer:
-      "Anthropic states that prompt-caching multipliers stack with Batch API pricing. The calculator therefore applies the Batch reduction to base input, cache writes, cache reads, and output when Batch mode is selected.",
+      "Anthropic states that prompt-caching multipliers stack with Batch API pricing. Batch mode therefore reduces the base input, cache-write, cache-read, and output rates together.",
   },
   {
     question: "Can Claude Haiku 4.5 use US-only inference?",
     answer:
-      "No. Anthropic documents the first-party inference_geo setting for Claude 4.6 and later models. Haiku 4.5 stays on global routing in this calculator instead of applying a 1.1 times US-only multiplier that the API does not support.",
+      "No. Anthropic documents the first-party inference_geo setting for Claude 4.6 and later models. Haiku 4.5 only supports global routing, so no 1.1 times US-only multiplier applies.",
   },
   {
     question: "Is fast mode the same as Batch API?",
@@ -95,21 +96,21 @@ export default function ClaudeApiCostCalculatorPage() {
             <p>
               Claude pricing looks simple until one request mixes ordinary
               input, cached context, internal thinking, a different processing
-              mode, and a residency requirement. This calculator keeps those
-              pieces separate so the estimate follows the workload you expect
-              to send, rather than a single headline token price.
+              mode, and a residency requirement. Keeping those pieces separate
+              makes the monthly estimate follow the workload you expect to send
+              instead of one headline token price.
             </p>
           }
           sections={[
             {
-              title: "What This Calculator Is Actually Pricing",
+              title: "Start With the Four Token Buckets Claude Bills Separately",
               content: (
                 <>
                   <p>
-                    The calculator models first-party Claude API token charges.
-                    For each request, base input tokens, cache-write tokens,
-                    cache-read tokens, and output tokens are priced separately,
-                    then multiplied by the monthly request volume you enter.
+                    A first-party Claude API request can put usage into four
+                    separate billable buckets: base input, cache creation, cache
+                    reads, and output. Each bucket has its own rate before the
+                    per-request usage is multiplied by monthly request volume.
                   </p>
 
                   <p>
@@ -121,8 +122,8 @@ export default function ClaudeApiCostCalculatorPage() {
                   </p>
 
                   <p>
-                    It is a planning estimate, not an invoice emulator. Paid
-                    server tools, marketplace billing, taxes, private offers,
+                    The result is a planning estimate, not a provider invoice.
+                    Paid server tools, marketplace billing, taxes, private offers,
                     retries, and services you do not enter here remain outside
                     the total.
                   </p>
@@ -137,14 +138,14 @@ export default function ClaudeApiCostCalculatorPage() {
                     The built-in list follows Anthropic&apos;s current model
                     overview: Claude Fable 5.1, Claude Opus 5, Claude Sonnet 5,
                     and Claude Haiku 4.5. Their standard input and output rates
-                    are not just scaled versions of one another, so switching
-                    the model while keeping the workload unchanged is useful
-                    for an early cost comparison.
+                    are not just scaled versions of one another. Keeping the
+                    workload unchanged while switching models shows how much
+                    model choice alone changes the monthly total.
                   </p>
 
                   <p>
-                    There is another practical reason to re-measure instead of
-                    copying an old token count. Anthropic says Claude 4.7 and
+                    There is another reason to re-measure instead of copying an
+                    old token count. Anthropic says Claude 4.7 and
                     later models use a newer tokenizer that can produce roughly
                     30% more tokens for the same text, with the exact change
                     depending on the workload. A prompt measured on an older
@@ -156,7 +157,7 @@ export default function ClaudeApiCostCalculatorPage() {
                     Fable 5.1 also has a pricing exception worth keeping
                     visible: its cache reads are $0.25 per million tokens,
                     equivalent to 0.025× its base input rate. The other current
-                    models in this calculator use the standard 0.1× cache-read
+                    models listed here use the standard 0.1× cache-read
                     multiplier.
                   </p>
                 </>
@@ -206,9 +207,12 @@ export default function ClaudeApiCostCalculatorPage() {
                     Fast mode is different. It is a research preview for
                     supported Opus models on the first-party Claude API. It uses
                     premium rates and is designed for higher output-token speed;
-                    it is not available together with Batch API. The calculator
-                    exposes fast mode only where the selected built-in model
-                    supports it.
+                    it is not available together with Batch API. Fast mode only
+                    appears here when the selected built-in model supports it.
+                    Anthropic currently requires <code>speed: &quot;fast&quot;</code>, the
+                    fast-mode beta header, and preview access through an account
+                    manager or waitlist rather than treating it as a universally
+                    available API setting.
                   </p>
 
                   <p>
@@ -216,8 +220,10 @@ export default function ClaudeApiCostCalculatorPage() {
                     Claude 4.6 and later models, Anthropic applies 1.1× to input,
                     output, cache writes, and cache reads when
                     <code> inference_geo: &quot;us&quot;</code> is used. Haiku 4.5 is
-                    older than that support boundary, so this calculator keeps
-                    it on global routing instead of applying an invalid premium.
+                    older than that support boundary, so global routing remains
+                    the only valid choice here. Inference geography is also
+                    separate from workspace data-storage geography; this estimate
+                    prices the inference setting, not every residency control.
                   </p>
                 </>
               ),
@@ -245,7 +251,7 @@ export default function ClaudeApiCostCalculatorPage() {
               ),
             },
             {
-              title: "A Practical Way to Build a Monthly Claude Estimate",
+              title: "Build the Estimate From Real API Usage",
               content: (
                 <ol className="list-decimal space-y-3 pl-6">
                   <li>
@@ -275,7 +281,7 @@ export default function ClaudeApiCostCalculatorPage() {
               ),
             },
             {
-              title: "What the Estimate Leaves Out",
+              title: "Costs and Boundaries Outside the Token Total",
               content: (
                 <>
                   <p>
@@ -287,19 +293,27 @@ export default function ClaudeApiCostCalculatorPage() {
                   </p>
 
                   <p>
-                    The calculator also does not reproduce rate limits,
-                    marketplace billing, enterprise discounts, credits, taxes,
-                    minimum commitments, or every product-specific charge. It
-                    warns when your entered request shape exceeds the listed
-                    context or output limits, but it is not a full API request
-                    validator.
+                    Rate limits, marketplace billing, negotiated discounts,
+                    credits, taxes, minimum commitments, and every product-specific
+                    charge sit outside this token total. Request-shape checks on
+                    the page cover the listed context and output limits, not every
+                    validation rule enforced by the Messages API.
                   </p>
 
                   <p>
-                    <strong>Pricing checked: September 17, 2026.</strong> Check
-                    Anthropic&apos;s current documentation again before a purchase,
-                    launch, or budget approval because models and billing rules
-                    can change.
+                    Custom prices replace the standard token rates, while the
+                    public Batch, fast-mode, and inference-geography multipliers
+                    still apply. If a private agreement changes those multiplier
+                    rules too, use the effective contracted rates rather than
+                    assuming this public-pricing model will match the invoice.
+                  </p>
+
+                  <p>
+                    All arithmetic runs in the browser from the numeric usage and
+                    price values entered here. There is no prompt or API-key field,
+                    and changing a value does not send that value to Anthropic.
+                    Opening an official documentation link is a separate browser
+                    request to that site.
                   </p>
                 </>
               ),
@@ -307,42 +321,68 @@ export default function ClaudeApiCostCalculatorPage() {
             {
               title: "Official Anthropic References",
               content: (
-                <div className="grid gap-4 md:grid-cols-2">
-                  <ReferenceLink
-                    href="https://platform.claude.com/docs/en/about-claude/pricing"
-                    title="Claude API pricing"
-                    description="Current model, caching, Batch, residency, fast-mode, and tool pricing."
-                  />
-                  <ReferenceLink
-                    href="https://platform.claude.com/docs/en/models/overview"
-                    title="Claude models overview"
-                    description="Current model lineup, context windows, output limits, and model IDs."
-                  />
-                  <ReferenceLink
-                    href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
-                    title="Prompt caching"
-                    description="Cache write durations, cache-read behavior, and pricing multipliers."
-                  />
-                  <ReferenceLink
-                    href="https://platform.claude.com/docs/en/build-with-claude/batch-processing"
-                    title="Batch processing"
-                    description="Batch API behavior and the current discounted token pricing."
-                  />
-                  <ReferenceLink
-                    href="https://platform.claude.com/docs/en/manage-claude/data-residency"
-                    title="Data residency"
-                    description="Global versus US-only inference support and pricing."
-                  />
-                  <ReferenceLink
-                    href="https://platform.claude.com/docs/en/build-with-claude/fast-mode"
-                    title="Fast mode"
-                    description="Supported Opus models, availability limits, and premium pricing."
-                  />
-                </div>
+                <>
+                  <p>
+                    <strong>Pricing checked: September 21, 2026.</strong> These
+                    links cover the rates and API behaviors that materially change
+                    the estimate. Recheck them before a launch or budget approval
+                    because model availability and billing rules can change.
+                  </p>
+                  <ul className="mt-5 space-y-4">
+                    <ReferenceItem
+                      href="https://platform.claude.com/docs/en/about-claude/pricing"
+                      title="Claude API pricing"
+                    >
+                      Model rates, cache pricing, Batch discounts, residency
+                      multipliers, fast mode, and separately billed tools.
+                    </ReferenceItem>
+                    <ReferenceItem
+                      href="https://platform.claude.com/docs/en/models/overview"
+                      title="Claude models overview"
+                    >
+                      Current model lineup, model IDs, context windows, and
+                      maximum output sizes.
+                    </ReferenceItem>
+                    <ReferenceItem
+                      href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+                      title="Prompt caching"
+                    >
+                      Cache-write durations, cache reads, breakpoints, and the
+                      behavior behind the caching fields above.
+                    </ReferenceItem>
+                    <ReferenceItem
+                      href="https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+                      title="Batch processing"
+                    >
+                      Asynchronous request behavior and the 50% token discount.
+                    </ReferenceItem>
+                    <ReferenceItem
+                      href="https://platform.claude.com/docs/en/manage-claude/data-residency"
+                      title="Data residency"
+                    >
+                      The <code>inference_geo</code> support boundary, US-only
+                      multiplier, and distinction from workspace geography.
+                    </ReferenceItem>
+                    <ReferenceItem
+                      href="https://platform.claude.com/docs/en/build-with-claude/fast-mode"
+                      title="Fast mode"
+                    >
+                      Supported Opus models, gated preview access, the required
+                      request setting, and Batch incompatibility.
+                    </ReferenceItem>
+                    <ReferenceItem
+                      href="https://platform.claude.com/docs/en/build-with-claude/context-windows"
+                      title="Context windows"
+                    >
+                      Input overflow, output interaction, and
+                      <code> model_context_window_exceeded</code> behavior.
+                    </ReferenceItem>
+                  </ul>
+                </>
               ),
             },
             {
-              title: "Questions That Usually Change the Estimate",
+              title: "Claude Pricing Questions That Change the Math",
               content: (
                 <div className="space-y-6">
                   {faqs.map((faq) => (
@@ -359,9 +399,11 @@ export default function ClaudeApiCostCalculatorPage() {
             {
               title: "Explore Related AI Cost Tools",
               content: (
-                <BeeijaRelatedTools
-                  currentHref="/tools/claude-api-cost-calculator"
-                />
+                <div className="mt-4">
+                  <BeeijaRelatedTools
+                    currentHref="/tools/claude-api-cost-calculator"
+                  />
+                </div>
               ),
             },
           ]}
@@ -371,29 +413,26 @@ export default function ClaudeApiCostCalculatorPage() {
   );
 }
 
-function ReferenceLink({
+function ReferenceItem({
   href,
   title,
-  description,
+  children,
 }: {
   href: string;
   title: string;
-  description: string;
+  children: ReactNode;
 }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="block rounded-xl border border-gray-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-[var(--green)] hover:shadow-sm"
-    >
-      <span className="font-semibold text-gray-900">{title}</span>
-      <span className="mt-2 block text-sm leading-relaxed text-gray-600">
-        {description}
-      </span>
-      <span className="mt-3 block text-sm font-medium text-[var(--green)]">
-        Open official documentation →
-      </span>
-    </a>
+    <li className="border-l-4 border-gray-200 pl-4">
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className="font-semibold text-[var(--green)] underline decoration-1 underline-offset-4 hover:no-underline"
+      >
+        {title}
+      </a>
+      <p className="mt-1 leading-relaxed text-gray-600">{children}</p>
+    </li>
   );
 }
