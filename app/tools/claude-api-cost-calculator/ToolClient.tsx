@@ -5,8 +5,15 @@ import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
-type ModelKey = "claude-opus-4.8" | "claude-sonnet-4.6" | "claude-haiku-4.5";
+type ModelKey =
+  | "claude-fable-5-1"
+  | "claude-opus-5"
+  | "claude-sonnet-5"
+  | "claude-haiku-4-5";
+
 type CacheMode = "none" | "5m" | "1h";
+type ProcessingMode = "standard" | "batch" | "fast";
+type Geography = "global" | "us";
 
 type ModelPrice = {
   label: string;
@@ -15,32 +22,60 @@ type ModelPrice = {
   cacheWrite1h: number;
   cacheRead: number;
   output: number;
+  supportsUsInference: boolean;
+  supportsFastMode: boolean;
+  contextWindow: number;
+  maxOutput: number;
 };
 
 const MODEL_PRICES: Record<ModelKey, ModelPrice> = {
-  "claude-opus-4.8": {
-    label: "Claude Opus 4.8",
+  "claude-fable-5-1": {
+    label: "Claude Fable 5.1",
+    input: 10,
+    cacheWrite5m: 12.5,
+    cacheWrite1h: 20,
+    cacheRead: 0.25,
+    output: 50,
+    supportsUsInference: true,
+    supportsFastMode: false,
+    contextWindow: 1_000_000,
+    maxOutput: 128_000,
+  },
+  "claude-opus-5": {
+    label: "Claude Opus 5",
     input: 5,
     cacheWrite5m: 6.25,
     cacheWrite1h: 10,
     cacheRead: 0.5,
     output: 25,
+    supportsUsInference: true,
+    supportsFastMode: true,
+    contextWindow: 1_000_000,
+    maxOutput: 128_000,
   },
-  "claude-sonnet-4.6": {
-    label: "Claude Sonnet 4.6",
-    input: 3,
-    cacheWrite5m: 3.75,
-    cacheWrite1h: 6,
-    cacheRead: 0.3,
-    output: 15,
+  "claude-sonnet-5": {
+    label: "Claude Sonnet 5",
+    input: 2,
+    cacheWrite5m: 2.5,
+    cacheWrite1h: 4,
+    cacheRead: 0.2,
+    output: 10,
+    supportsUsInference: true,
+    supportsFastMode: false,
+    contextWindow: 1_000_000,
+    maxOutput: 128_000,
   },
-  "claude-haiku-4.5": {
+  "claude-haiku-4-5": {
     label: "Claude Haiku 4.5",
     input: 1,
     cacheWrite5m: 1.25,
     cacheWrite1h: 2,
     cacheRead: 0.1,
     output: 5,
+    supportsUsInference: false,
+    supportsFastMode: false,
+    contextWindow: 200_000,
+    maxOutput: 64_000,
   },
 };
 
@@ -55,19 +90,36 @@ const cacheOptions = [
   { value: "1h", label: "1-hour cache write" },
 ];
 
-const pricingModeOptions = [
-  { value: "standard", label: "Standard API" },
-  { value: "batch", label: "Batch API estimate (50% lower)" },
-];
-
-const geographyOptions = [
-  { value: "global", label: "Global routing" },
-  { value: "us", label: "US-only inference (1.1x)" },
-];
-
 function toNumber(value: string) {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+}
+
+function isValidNonNegativeInteger(value: string) {
+  const trimmed = value.trim();
+
+  if (!/^\d+$/.test(trimmed)) {
+    return false;
+  }
+
+  const parsed = Number(trimmed);
+  return Number.isSafeInteger(parsed) && parsed >= 0;
+}
+
+function isValidNonNegativeDecimal(value: string) {
+  const trimmed = value.trim();
+
+  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(trimmed)) {
+    return false;
+  }
+
+  const parsed = Number(trimmed);
+
+  return (
+    Number.isFinite(parsed) &&
+    parsed >= 0 &&
+    parsed <= Number.MAX_SAFE_INTEGER
+  );
 }
 
 function formatMoney(value: number) {
@@ -96,10 +148,11 @@ function formatNumber(value: number) {
 }
 
 export default function ToolClient() {
-  const [model, setModel] = useState<ModelKey>("claude-sonnet-4.6");
+  const [model, setModel] = useState<ModelKey>("claude-sonnet-5");
   const [cacheMode, setCacheMode] = useState<CacheMode>("5m");
-  const [pricingMode, setPricingMode] = useState("standard");
-  const [geography, setGeography] = useState("global");
+  const [processingMode, setProcessingMode] =
+    useState<ProcessingMode>("standard");
+  const [geography, setGeography] = useState<Geography>("global");
 
   const [requestsPerMonth, setRequestsPerMonth] = useState("40000");
   const [baseInputTokens, setBaseInputTokens] = useState("900");
@@ -108,41 +161,105 @@ export default function ToolClient() {
   const [outputTokens, setOutputTokens] = useState("350");
 
   const [customPricing, setCustomPricing] = useState(false);
-  const [customInputPrice, setCustomInputPrice] = useState("3");
-  const [customCacheWritePrice, setCustomCacheWritePrice] = useState("3.75");
-  const [customCacheReadPrice, setCustomCacheReadPrice] = useState("0.3");
-  const [customOutputPrice, setCustomOutputPrice] = useState("15");
+  const [customInputPrice, setCustomInputPrice] = useState("2");
+  const [customCacheWritePrice, setCustomCacheWritePrice] = useState("2.5");
+  const [customCacheReadPrice, setCustomCacheReadPrice] = useState("0.2");
+  const [customOutputPrice, setCustomOutputPrice] = useState("10");
 
   const selectedModel = MODEL_PRICES[model];
+
+  const processingModeOptions = useMemo(() => {
+    const options = [
+      { value: "standard", label: "Standard API" },
+      { value: "batch", label: "Batch API (50% lower)" },
+    ];
+
+    if (selectedModel.supportsFastMode) {
+      options.push({ value: "fast", label: "Fast mode (research preview)" });
+    }
+
+    return options;
+  }, [selectedModel.supportsFastMode]);
+
+  const geographyOptions = useMemo(() => {
+    if (!selectedModel.supportsUsInference) {
+      return [{ value: "global", label: "Global routing" }];
+    }
+
+    return [
+      { value: "global", label: "Global routing" },
+      { value: "us", label: "US-only inference (1.1×)" },
+    ];
+  }, [selectedModel.supportsUsInference]);
 
   const selectedCacheWritePrice =
     cacheMode === "1h"
       ? selectedModel.cacheWrite1h
       : selectedModel.cacheWrite5m;
 
-  const effectivePrices = useMemo(() => {
-    const base = customPricing
-      ? {
-          input: toNumber(customInputPrice),
-          cacheWrite: toNumber(customCacheWritePrice),
-          cacheRead: toNumber(customCacheReadPrice),
-          output: toNumber(customOutputPrice),
-        }
-      : {
-          input: selectedModel.input,
-          cacheWrite: cacheMode === "none" ? 0 : selectedCacheWritePrice,
-          cacheRead: selectedModel.cacheRead,
-          output: selectedModel.output,
-        };
+  const hasInvalidInput = useMemo(() => {
+    const usageValues = [
+      requestsPerMonth,
+      baseInputTokens,
+      cacheReadTokens,
+      outputTokens,
+    ];
 
-    const batchMultiplier = pricingMode === "batch" ? 0.5 : 1;
-    const geographyMultiplier = geography === "us" ? 1.1 : 1;
+    if (cacheMode !== "none") {
+      usageValues.push(cacheWriteTokens);
+    }
+
+    if (usageValues.some((value) => !isValidNonNegativeInteger(value))) {
+      return true;
+    }
+
+    if (!customPricing) {
+      return false;
+    }
+
+    const customValues = [
+      customInputPrice,
+      customCacheReadPrice,
+      customOutputPrice,
+    ];
+
+    if (cacheMode !== "none") {
+      customValues.push(customCacheWritePrice);
+    }
+
+    return customValues.some(
+      (value) => !isValidNonNegativeDecimal(value),
+    );
+  }, [
+    baseInputTokens,
+    cacheMode,
+    cacheReadTokens,
+    cacheWriteTokens,
+    customCacheReadPrice,
+    customCacheWritePrice,
+    customInputPrice,
+    customOutputPrice,
+    customPricing,
+    outputTokens,
+    requestsPerMonth,
+  ]);
+
+  const basePrices = useMemo(() => {
+    if (customPricing) {
+      return {
+        input: toNumber(customInputPrice),
+        cacheWrite:
+          cacheMode === "none" ? 0 : toNumber(customCacheWritePrice),
+        cacheRead: toNumber(customCacheReadPrice),
+        output: toNumber(customOutputPrice),
+      };
+    }
 
     return {
-      input: base.input * batchMultiplier * geographyMultiplier,
-      cacheWrite: base.cacheWrite * batchMultiplier * geographyMultiplier,
-      cacheRead: base.cacheRead * batchMultiplier * geographyMultiplier,
-      output: base.output * batchMultiplier * geographyMultiplier,
+      input: selectedModel.input,
+      cacheWrite: cacheMode === "none" ? 0 : selectedCacheWritePrice,
+      cacheRead: selectedModel.cacheRead,
+      output: selectedModel.output,
     };
   }, [
     cacheMode,
@@ -151,10 +268,29 @@ export default function ToolClient() {
     customInputPrice,
     customOutputPrice,
     customPricing,
-    geography,
-    pricingMode,
     selectedCacheWritePrice,
     selectedModel,
+  ]);
+
+  const effectivePrices = useMemo(() => {
+    const processingMultiplier =
+      processingMode === "batch" ? 0.5 : processingMode === "fast" ? 2 : 1;
+    const geographyMultiplier =
+      geography === "us" && selectedModel.supportsUsInference ? 1.1 : 1;
+
+    return {
+      input: basePrices.input * processingMultiplier * geographyMultiplier,
+      cacheWrite:
+        basePrices.cacheWrite * processingMultiplier * geographyMultiplier,
+      cacheRead:
+        basePrices.cacheRead * processingMultiplier * geographyMultiplier,
+      output: basePrices.output * processingMultiplier * geographyMultiplier,
+    };
+  }, [
+    basePrices,
+    geography,
+    processingMode,
+    selectedModel.supportsUsInference,
   ]);
 
   const result = useMemo(() => {
@@ -164,6 +300,10 @@ export default function ToolClient() {
       cacheMode === "none" ? 0 : toNumber(cacheWriteTokens);
     const readPerRequest = toNumber(cacheReadTokens);
     const outputPerRequest = toNumber(outputTokens);
+
+    const totalInputPerRequest =
+      inputPerRequest + writePerRequest + readPerRequest;
+    const contextLoadPerRequest = totalInputPerRequest + outputPerRequest;
 
     const totalInput = requests * inputPerRequest;
     const totalCacheWrite = requests * writePerRequest;
@@ -180,11 +320,17 @@ export default function ToolClient() {
     const monthlyCost =
       inputCost + cacheWriteCost + cacheReadCost + outputCost;
     const costPerRequest = requests > 0 ? monthlyCost / requests : 0;
-    const dailyCost = monthlyCost / 30;
+    const dailyAverage = monthlyCost / 30;
     const yearlyCost = monthlyCost * 12;
 
     return {
       requests,
+      inputPerRequest,
+      writePerRequest,
+      readPerRequest,
+      outputPerRequest,
+      totalInputPerRequest,
+      contextLoadPerRequest,
       totalInput,
       totalCacheWrite,
       totalCacheRead,
@@ -195,7 +341,7 @@ export default function ToolClient() {
       outputCost,
       monthlyCost,
       costPerRequest,
-      dailyCost,
+      dailyAverage,
       yearlyCost,
     };
   }, [
@@ -208,11 +354,55 @@ export default function ToolClient() {
     requestsPerMonth,
   ]);
 
+  const hasUnsafeResult = useMemo(() => {
+    const values = [
+      result.requests,
+      result.inputPerRequest,
+      result.writePerRequest,
+      result.readPerRequest,
+      result.outputPerRequest,
+      result.totalInputPerRequest,
+      result.contextLoadPerRequest,
+      result.totalInput,
+      result.totalCacheWrite,
+      result.totalCacheRead,
+      result.totalOutput,
+      result.inputCost,
+      result.cacheWriteCost,
+      result.cacheReadCost,
+      result.outputCost,
+      result.monthlyCost,
+      result.costPerRequest,
+      result.dailyAverage,
+      result.yearlyCost,
+    ];
+
+    return values.some(
+      (value) =>
+        !Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER,
+    );
+  }, [result]);
+
+  const hasDisplayError = hasInvalidInput || hasUnsafeResult;
+  const exceedsContextWindow =
+    !hasDisplayError &&
+    result.contextLoadPerRequest > selectedModel.contextWindow;
+  const exceedsOutputLimit =
+    !hasDisplayError && result.outputPerRequest > selectedModel.maxOutput;
+
   const updateModel = (value: string) => {
     const nextModel = value as ModelKey;
     const prices = MODEL_PRICES[nextModel];
 
     setModel(nextModel);
+
+    if (!prices.supportsFastMode && processingMode === "fast") {
+      setProcessingMode("standard");
+    }
+
+    if (!prices.supportsUsInference && geography === "us") {
+      setGeography("global");
+    }
 
     if (!customPricing) {
       setCustomInputPrice(String(prices.input));
@@ -228,22 +418,22 @@ export default function ToolClient() {
     const nextMode = value as CacheMode;
     setCacheMode(nextMode);
 
-    if (!customPricing) {
+    if (!customPricing && nextMode !== "none") {
       const price =
-        nextMode === "none"
-          ? 0
-          : nextMode === "1h"
-            ? selectedModel.cacheWrite1h
-            : selectedModel.cacheWrite5m;
+        nextMode === "1h"
+          ? selectedModel.cacheWrite1h
+          : selectedModel.cacheWrite5m;
 
       setCustomCacheWritePrice(String(price));
     }
   };
 
   const reset = () => {
-    setModel("claude-sonnet-4.6");
+    const defaultModel = MODEL_PRICES["claude-sonnet-5"];
+
+    setModel("claude-sonnet-5");
     setCacheMode("5m");
-    setPricingMode("standard");
+    setProcessingMode("standard");
     setGeography("global");
     setRequestsPerMonth("40000");
     setBaseInputTokens("900");
@@ -251,11 +441,21 @@ export default function ToolClient() {
     setCacheReadTokens("2000");
     setOutputTokens("350");
     setCustomPricing(false);
-    setCustomInputPrice("3");
-    setCustomCacheWritePrice("3.75");
-    setCustomCacheReadPrice("0.3");
-    setCustomOutputPrice("15");
+    setCustomInputPrice(String(defaultModel.input));
+    setCustomCacheWritePrice(String(defaultModel.cacheWrite5m));
+    setCustomCacheReadPrice(String(defaultModel.cacheRead));
+    setCustomOutputPrice(String(defaultModel.output));
   };
+
+  const visibleMoney = (value: number) =>
+    hasDisplayError ? "—" : formatVisibleMoney(value);
+
+  const processingLabel =
+    processingMode === "batch"
+      ? "Batch"
+      : processingMode === "fast"
+        ? "Fast mode"
+        : "Standard";
 
   return (
     <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -266,8 +466,8 @@ export default function ToolClient() {
           </h2>
 
           <p className="mt-3 leading-relaxed text-gray-600">
-            Use average token values for one request, then enter the expected
-            number of requests in one month.
+            Use billed token averages from a real request when you have them,
+            then enter the number of requests you expect in one month.
           </p>
         </div>
 
@@ -287,16 +487,20 @@ export default function ToolClient() {
           />
 
           <BeeijaSelect
-            label="Pricing mode"
-            value={pricingMode}
-            onChange={(event) => setPricingMode(event.target.value)}
-            options={pricingModeOptions}
+            label="Processing mode"
+            value={processingMode}
+            onChange={(event) =>
+              setProcessingMode(event.target.value as ProcessingMode)
+            }
+            options={processingModeOptions}
           />
 
           <BeeijaSelect
-            label="Inference region"
+            label="Inference geography"
             value={geography}
-            onChange={(event) => setGeography(event.target.value)}
+            onChange={(event) =>
+              setGeography(event.target.value as Geography)
+            }
             options={geographyOptions}
           />
 
@@ -306,6 +510,7 @@ export default function ToolClient() {
             onChange={setRequestsPerMonth}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -314,6 +519,7 @@ export default function ToolClient() {
             onChange={setBaseInputTokens}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -323,6 +529,7 @@ export default function ToolClient() {
             min="0"
             step="1"
             disabled={cacheMode === "none"}
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -331,6 +538,7 @@ export default function ToolClient() {
             onChange={setCacheReadTokens}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -339,8 +547,15 @@ export default function ToolClient() {
             onChange={setOutputTokens}
             min="0"
             step="1"
+            sanitizeDecimal
           />
         </div>
+
+        <p className="mt-4 text-sm leading-relaxed text-gray-500">
+          Keep base input, cache writes, and cache reads separate. Output should
+          use the billed output-token count, including thinking tokens when the
+          API reports them.
+        </p>
 
         <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
           <input
@@ -352,10 +567,11 @@ export default function ToolClient() {
 
           <span>
             <span className="block font-medium text-gray-900">
-              Use custom prices
+              Use custom standard prices
             </span>
             <span className="mt-1 block text-sm leading-relaxed text-gray-600">
-              Enter your own price per 1 million tokens.
+              Replace the selected model&apos;s standard per-million-token rates.
+              Batch, fast-mode, and geography modifiers still apply.
             </span>
           </span>
         </label>
@@ -369,6 +585,7 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
             />
 
             <BeeijaNumberField
@@ -378,6 +595,8 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
+              disabled={cacheMode === "none"}
             />
 
             <BeeijaNumberField
@@ -387,6 +606,7 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
             />
 
             <BeeijaNumberField
@@ -396,43 +616,114 @@ export default function ToolClient() {
               min="0"
               step="0.001"
               prefix="$"
+              sanitizeDecimal
             />
           </div>
         ) : null}
 
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Price used per 1 million tokens
+        {hasInvalidInput ? (
+          <div className="mt-6 border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm leading-relaxed text-red-800">
+            Use non-negative whole numbers for requests and token counts, and
+            ordinary decimal numbers for custom prices. Scientific notation is
+            not accepted.
+          </div>
+        ) : null}
+
+        {!hasInvalidInput && hasUnsafeResult ? (
+          <div className="mt-6 border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm leading-relaxed text-red-800">
+            The entered workload is too large to calculate reliably in the
+            browser. Use smaller whole-number values before relying on the
+            estimate.
+          </div>
+        ) : null}
+
+        {!hasDisplayError && exceedsContextWindow ? (
+          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
+            The entered input plus output tokens are above {formatNumber(
+              selectedModel.contextWindow,
+            )} tokens for {selectedModel.label}. The arithmetic estimate is
+            still shown, but this request shape may not be accepted by the API.
+          </div>
+        ) : null}
+
+        {!hasDisplayError && exceedsOutputLimit ? (
+          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
+            The entered output is above {formatNumber(selectedModel.maxOutput)}
+            tokens, the listed maximum output for {selectedModel.label}. Use a
+            feasible output value before treating the estimate as a deployable
+            request.
+          </div>
+        ) : null}
+
+        {!hasDisplayError && model === "claude-fable-5-1" ? (
+          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
+            Claude Fable 5.1 has a special cache-read price of $0.25 per million
+            tokens, or 0.025× its base input rate. That is lower than the usual
+            0.1× cache-read multiplier used by the other models in this list.
+          </div>
+        ) : null}
+
+        {!hasDisplayError && processingMode === "fast" ? (
+          <div className="mt-6 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4 text-sm leading-relaxed text-gray-700">
+            Fast mode is a Claude API research preview for supported Opus
+            models. It uses premium token rates and cannot be combined with the
+            Batch API.
+          </div>
+        ) : null}
+
+        {!selectedModel.supportsUsInference ? (
+          <p className="mt-5 text-sm leading-relaxed text-gray-500">
+            {selectedModel.label} does not support the first-party Claude API
+            US-only inference setting, so global routing is used here.
           </p>
+        ) : null}
 
-          <div className="mt-3 grid min-w-0 gap-3 text-sm text-gray-700 sm:grid-cols-2">
-            <p className="min-w-0">
-              <span className="block">Base input:</span>
-              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                {formatVisibleMoney(effectivePrices.input)}
-              </span>
+        <div className="mt-7 border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+            <p className="font-medium text-gray-900">
+              Rates used per 1 million tokens
             </p>
+            <p className="text-sm text-gray-500">
+              {processingLabel}
+              {geography === "us" ? " · US-only" : " · global"}
+            </p>
+          </div>
 
-            <p className="min-w-0">
-              <span className="block">Cache write:</span>
-              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                {formatVisibleMoney(effectivePrices.cacheWrite)}
-              </span>
-            </p>
-
-            <p className="min-w-0">
-              <span className="block">Cache read:</span>
-              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                {formatVisibleMoney(effectivePrices.cacheRead)}
-              </span>
-            </p>
-
-            <p className="min-w-0">
-              <span className="block">Output:</span>
-              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                {formatVisibleMoney(effectivePrices.output)}
-              </span>
-            </p>
+          <div className="mt-3 grid min-w-0 gap-3 text-sm text-gray-700 sm:grid-cols-2 xl:grid-cols-4">
+            <RateStat
+              label="Base input"
+              value={
+                hasDisplayError
+                  ? "—"
+                  : formatVisibleMoney(effectivePrices.input)
+              }
+            />
+            <RateStat
+              label="Cache write"
+              value={
+                cacheMode === "none"
+                  ? "Not used"
+                  : hasDisplayError
+                    ? "—"
+                    : formatVisibleMoney(effectivePrices.cacheWrite)
+              }
+            />
+            <RateStat
+              label="Cache read"
+              value={
+                hasDisplayError
+                  ? "—"
+                  : formatVisibleMoney(effectivePrices.cacheRead)
+              }
+            />
+            <RateStat
+              label="Output"
+              value={
+                hasDisplayError
+                  ? "—"
+                  : formatVisibleMoney(effectivePrices.output)
+              }
+            />
           </div>
         </div>
 
@@ -447,22 +738,22 @@ export default function ToolClient() {
 
       <BeeijaCalculatorResultPanel
         title="Estimated Claude API Cost"
-        description="This estimate covers the token charges entered above."
+        description="First-party Claude API token estimate only; paid server tools, marketplace differences, and other services are separate."
         primaryLabel="Estimated monthly cost"
-        primaryValue={formatVisibleMoney(result.monthlyCost)}
+        primaryValue={visibleMoney(result.monthlyCost)}
         stats={
           <div className="grid min-w-0 gap-4 sm:grid-cols-3">
             <ResultStat
               label="Per request"
-              value={formatVisibleMoney(result.costPerRequest)}
+              value={visibleMoney(result.costPerRequest)}
             />
             <ResultStat
-              label="Per day"
-              value={formatVisibleMoney(result.dailyCost)}
+              label="Daily avg. (30d)"
+              value={visibleMoney(result.dailyAverage)}
             />
             <ResultStat
               label="Per year"
-              value={formatVisibleMoney(result.yearlyCost)}
+              value={visibleMoney(result.yearlyCost)}
             />
           </div>
         }
@@ -470,59 +761,88 @@ export default function ToolClient() {
           <div className="space-y-4">
             <CostRow
               label="Base input cost"
-              detail={`${formatNumber(result.totalInput)} tokens`}
-              value={formatVisibleMoney(result.inputCost)}
+              detail={
+                hasDisplayError
+                  ? "Check inputs"
+                  : `${formatNumber(result.totalInput)} tokens`
+              }
+              value={visibleMoney(result.inputCost)}
             />
 
             <CostRow
               label="Cache write cost"
-              detail={`${formatNumber(result.totalCacheWrite)} tokens`}
-              value={formatVisibleMoney(result.cacheWriteCost)}
+              detail={
+                hasDisplayError
+                  ? "Check inputs"
+                  : `${formatNumber(result.totalCacheWrite)} tokens`
+              }
+              value={visibleMoney(result.cacheWriteCost)}
             />
 
             <CostRow
               label="Cache read cost"
-              detail={`${formatNumber(result.totalCacheRead)} tokens`}
-              value={formatVisibleMoney(result.cacheReadCost)}
+              detail={
+                hasDisplayError
+                  ? "Check inputs"
+                  : `${formatNumber(result.totalCacheRead)} tokens`
+              }
+              value={visibleMoney(result.cacheReadCost)}
             />
 
             <CostRow
               label="Output cost"
-              detail={`${formatNumber(result.totalOutput)} tokens`}
-              value={formatVisibleMoney(result.outputCost)}
+              detail={
+                hasDisplayError
+                  ? "Check inputs"
+                  : `${formatNumber(result.totalOutput)} tokens`
+              }
+              value={visibleMoney(result.outputCost)}
             />
           </div>
         }
         totals={
           <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
             <p>
-              Requests:{" "}
+              Requests: {" "}
               <span className="font-medium text-gray-900">
-                {formatNumber(result.requests)}
+                {hasDisplayError ? "—" : formatNumber(result.requests)}
               </span>
             </p>
 
             <p className="mt-2">
-              Total input-related tokens:{" "}
+              Input-related tokens: {" "}
               <span className="font-medium text-gray-900">
-                {formatNumber(
-                  result.totalInput +
-                    result.totalCacheWrite +
-                    result.totalCacheRead,
-                )}
+                {hasDisplayError
+                  ? "—"
+                  : formatNumber(
+                      result.totalInput +
+                        result.totalCacheWrite +
+                        result.totalCacheRead,
+                    )}
               </span>
             </p>
 
             <p className="mt-2">
-              Total output tokens:{" "}
+              Output tokens: {" "}
               <span className="font-medium text-gray-900">
-                {formatNumber(result.totalOutput)}
+                {hasDisplayError ? "—" : formatNumber(result.totalOutput)}
               </span>
             </p>
           </div>
         }
-        noticeText="Built-in rates checked June 19, 2026. Final charges may include other Anthropic services, taxes, discounts, retries, or usage not entered here."
+        noticeText="Built-in first-party Claude API rates checked September 17, 2026. Final charges may include paid server tools, platform-specific pricing, negotiated discounts, taxes, retries, or usage not entered here."
       />
+    </div>
+  );
+}
+
+function RateStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <span className="block">{label}:</span>
+      <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
+        {value}
+      </span>
     </div>
   );
 }
