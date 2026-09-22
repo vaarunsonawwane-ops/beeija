@@ -1,31 +1,64 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
+import BeeijaResultLine from "@/app/components/BeeijaResultLine";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
 
-type ModelKey = "deepseek-v4-flash" | "deepseek-v4-pro";
+type ModelKey = "deepseek-flash" | "deepseek-v4-pro";
 
-type ModelPrice = {
-  label: string;
+type RateSet = {
   cacheHitInput: number;
   cacheMissInput: number;
   output: number;
 };
 
-const MODEL_PRICES: Record<ModelKey, ModelPrice> = {
-  "deepseek-v4-flash": {
-    label: "DeepSeek V4 Flash",
-    cacheHitInput: 0.0028,
-    cacheMissInput: 0.14,
-    output: 0.28,
+type ModelDefinition = {
+  label: string;
+  apiName: string;
+  peak: RateSet;
+  offPeak: RateSet;
+  contextWindow: number;
+  maxOutput: number;
+  concurrencyLimit: number;
+};
+
+const MODEL_PRICES: Record<ModelKey, ModelDefinition> = {
+  "deepseek-flash": {
+    label: "DeepSeek V4.1 Flash",
+    apiName: "deepseek-flash",
+    peak: {
+      cacheHitInput: 0.006,
+      cacheMissInput: 0.3,
+      output: 1.2,
+    },
+    offPeak: {
+      cacheHitInput: 0.003,
+      cacheMissInput: 0.15,
+      output: 0.6,
+    },
+    contextWindow: 1_000_000,
+    maxOutput: 384_000,
+    concurrencyLimit: 2_500,
   },
   "deepseek-v4-pro": {
     label: "DeepSeek V4 Pro",
-    cacheHitInput: 0.003625,
-    cacheMissInput: 0.435,
-    output: 0.87,
+    apiName: "deepseek-v4-pro",
+    peak: {
+      cacheHitInput: 0.044,
+      cacheMissInput: 1.32,
+      output: 3.96,
+    },
+    offPeak: {
+      cacheHitInput: 0.022,
+      cacheMissInput: 0.66,
+      output: 1.98,
+    },
+    contextWindow: 1_000_000,
+    maxOutput: 384_000,
+    concurrencyLimit: 500,
   },
 };
 
@@ -39,9 +72,49 @@ function toNumber(value: string) {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
+function isValidNonNegativeInteger(value: string) {
+  const trimmed = value.trim();
+
+  if (!/^\d+$/.test(trimmed)) {
+    return false;
+  }
+
+  const parsed = Number(trimmed);
+  return Number.isSafeInteger(parsed) && parsed >= 0;
+}
+
+function isValidPercentage(value: string) {
+  const trimmed = value.trim();
+
+  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(trimmed)) {
+    return false;
+  }
+
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) && parsed >= 0 && parsed <= 100;
+}
+
+function isValidNonNegativeDecimal(value: string) {
+  const trimmed = value.trim();
+
+  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(trimmed)) {
+    return false;
+  }
+
+  const parsed = Number(trimmed);
+  return (
+    Number.isFinite(parsed) &&
+    parsed >= 0 &&
+    parsed <= Number.MAX_SAFE_INTEGER
+  );
+}
+
 function formatMoney(value: number) {
   if (!Number.isFinite(value)) return "$0.00";
-  if (value > 0 && value < 0.01) return `$${value.toFixed(6)}`;
+
+  if (value > 0 && value < 0.01) {
+    return `$${value.toFixed(6)}`;
+  }
 
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -55,128 +128,258 @@ function formatVisibleMoney(value: number) {
   return formatMoney(value).replace(/,/g, ",\u200B");
 }
 
-function formatNumber(value: number) {
+function formatNumber(value: number, maximumFractionDigits = 2) {
   return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 2,
+    maximumFractionDigits,
   }).format(value);
 }
 
+function blendRate(peak: number, offPeak: number, offPeakShare: number) {
+  const share = offPeakShare / 100;
+  return peak * (1 - share) + offPeak * share;
+}
+
 export default function ToolClient() {
-  const [model, setModel] = useState<ModelKey>("deepseek-v4-flash");
+  const [model, setModel] = useState<ModelKey>("deepseek-flash");
   const [requestsPerMonth, setRequestsPerMonth] = useState("80000");
   const [inputTokensPerRequest, setInputTokensPerRequest] = useState("1500");
   const [outputTokensPerRequest, setOutputTokensPerRequest] = useState("450");
   const [cacheHitPercent, setCacheHitPercent] = useState("30");
+  const [offPeakPercent, setOffPeakPercent] = useState("0");
 
   const [customPricing, setCustomPricing] = useState(false);
-  const [customCacheHitPrice, setCustomCacheHitPrice] = useState("0.0028");
-  const [customCacheMissPrice, setCustomCacheMissPrice] = useState("0.14");
-  const [customOutputPrice, setCustomOutputPrice] = useState("0.28");
+  const [peakHitPrice, setPeakHitPrice] = useState("0.006");
+  const [peakMissPrice, setPeakMissPrice] = useState("0.3");
+  const [peakOutputPrice, setPeakOutputPrice] = useState("1.2");
+  const [offPeakHitPrice, setOffPeakHitPrice] = useState("0.003");
+  const [offPeakMissPrice, setOffPeakMissPrice] = useState("0.15");
+  const [offPeakOutputPrice, setOffPeakOutputPrice] = useState("0.6");
 
   const selectedModel = MODEL_PRICES[model];
 
-  const effectivePrices = useMemo(
-    () =>
-      customPricing
-        ? {
-            cacheHitInput: toNumber(customCacheHitPrice),
-            cacheMissInput: toNumber(customCacheMissPrice),
-            output: toNumber(customOutputPrice),
-          }
-        : selectedModel,
-    [
-      customCacheHitPrice,
-      customCacheMissPrice,
-      customOutputPrice,
-      customPricing,
-      selectedModel,
-    ],
-  );
+  const hasInvalidInput = useMemo(() => {
+    const wholeNumberValues = [
+      requestsPerMonth,
+      inputTokensPerRequest,
+      outputTokensPerRequest,
+    ];
+
+    if (
+      wholeNumberValues.some((value) => !isValidNonNegativeInteger(value)) ||
+      !isValidPercentage(cacheHitPercent) ||
+      !isValidPercentage(offPeakPercent)
+    ) {
+      return true;
+    }
+
+    if (!customPricing) {
+      return false;
+    }
+
+    return [
+      peakHitPrice,
+      peakMissPrice,
+      peakOutputPrice,
+      offPeakHitPrice,
+      offPeakMissPrice,
+      offPeakOutputPrice,
+    ].some((value) => !isValidNonNegativeDecimal(value));
+  }, [
+    cacheHitPercent,
+    customPricing,
+    inputTokensPerRequest,
+    offPeakHitPrice,
+    offPeakMissPrice,
+    offPeakOutputPrice,
+    offPeakPercent,
+    outputTokensPerRequest,
+    peakHitPrice,
+    peakMissPrice,
+    peakOutputPrice,
+    requestsPerMonth,
+  ]);
+
+  const priceSets = useMemo(() => {
+    if (!customPricing) {
+      return {
+        peak: selectedModel.peak,
+        offPeak: selectedModel.offPeak,
+      };
+    }
+
+    return {
+      peak: {
+        cacheHitInput: toNumber(peakHitPrice),
+        cacheMissInput: toNumber(peakMissPrice),
+        output: toNumber(peakOutputPrice),
+      },
+      offPeak: {
+        cacheHitInput: toNumber(offPeakHitPrice),
+        cacheMissInput: toNumber(offPeakMissPrice),
+        output: toNumber(offPeakOutputPrice),
+      },
+    };
+  }, [
+    customPricing,
+    offPeakHitPrice,
+    offPeakMissPrice,
+    offPeakOutputPrice,
+    peakHitPrice,
+    peakMissPrice,
+    peakOutputPrice,
+    selectedModel.offPeak,
+    selectedModel.peak,
+  ]);
 
   const result = useMemo(() => {
     const requests = toNumber(requestsPerMonth);
     const inputPerRequest = toNumber(inputTokensPerRequest);
     const outputPerRequest = toNumber(outputTokensPerRequest);
-    const cachePercent = Math.min(100, Math.max(0, toNumber(cacheHitPercent)));
+    const cacheShare = toNumber(cacheHitPercent);
+    const offPeakShare = toNumber(offPeakPercent);
 
     const totalInputTokens = requests * inputPerRequest;
-    const cacheHitTokens = totalInputTokens * (cachePercent / 100);
+    const cacheHitTokens = totalInputTokens * (cacheShare / 100);
     const cacheMissTokens = totalInputTokens - cacheHitTokens;
     const totalOutputTokens = requests * outputPerRequest;
 
-    const cacheHitCost =
-      (cacheHitTokens / 1_000_000) * effectivePrices.cacheHitInput;
-    const cacheMissCost =
-      (cacheMissTokens / 1_000_000) * effectivePrices.cacheMissInput;
-    const outputCost =
-      (totalOutputTokens / 1_000_000) * effectivePrices.output;
+    const effectiveHitRate = blendRate(
+      priceSets.peak.cacheHitInput,
+      priceSets.offPeak.cacheHitInput,
+      offPeakShare,
+    );
+    const effectiveMissRate = blendRate(
+      priceSets.peak.cacheMissInput,
+      priceSets.offPeak.cacheMissInput,
+      offPeakShare,
+    );
+    const effectiveOutputRate = blendRate(
+      priceSets.peak.output,
+      priceSets.offPeak.output,
+      offPeakShare,
+    );
 
+    const cacheHitCost = (cacheHitTokens / 1_000_000) * effectiveHitRate;
+    const cacheMissCost = (cacheMissTokens / 1_000_000) * effectiveMissRate;
+    const outputCost = (totalOutputTokens / 1_000_000) * effectiveOutputRate;
     const monthlyCost = cacheHitCost + cacheMissCost + outputCost;
 
     return {
       requests,
+      inputPerRequest,
+      outputPerRequest,
+      cacheShare,
+      offPeakShare,
       totalInputTokens,
       cacheHitTokens,
       cacheMissTokens,
       totalOutputTokens,
+      effectiveHitRate,
+      effectiveMissRate,
+      effectiveOutputRate,
       cacheHitCost,
       cacheMissCost,
       outputCost,
       monthlyCost,
       costPerRequest: requests > 0 ? monthlyCost / requests : 0,
       dailyCost: monthlyCost / 30,
-      yearlyCost: monthlyCost * 12,
+      annualizedCost: monthlyCost * 12,
     };
   }, [
     cacheHitPercent,
-    effectivePrices,
     inputTokensPerRequest,
+    offPeakPercent,
     outputTokensPerRequest,
+    priceSets,
     requestsPerMonth,
   ]);
 
+  const hasUnsafeResult = useMemo(() => {
+    const values = [
+      result.totalInputTokens,
+      result.cacheHitTokens,
+      result.cacheMissTokens,
+      result.totalOutputTokens,
+      result.cacheHitCost,
+      result.cacheMissCost,
+      result.outputCost,
+      result.monthlyCost,
+      result.annualizedCost,
+    ];
+
+    return values.some(
+      (value) =>
+        !Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER,
+    );
+  }, [result]);
+
+  const contextError =
+    !hasInvalidInput && result.inputPerRequest > selectedModel.contextWindow;
+  const outputError =
+    !hasInvalidInput && result.outputPerRequest > selectedModel.maxOutput;
+  const cannotCalculate =
+    hasInvalidInput || hasUnsafeResult || contextError || outputError;
+
   const updateModel = (value: string) => {
     const nextModel = value as ModelKey;
-    const prices = MODEL_PRICES[nextModel];
+    const next = MODEL_PRICES[nextModel];
     setModel(nextModel);
 
     if (!customPricing) {
-      setCustomCacheHitPrice(String(prices.cacheHitInput));
-      setCustomCacheMissPrice(String(prices.cacheMissInput));
-      setCustomOutputPrice(String(prices.output));
+      setPeakHitPrice(String(next.peak.cacheHitInput));
+      setPeakMissPrice(String(next.peak.cacheMissInput));
+      setPeakOutputPrice(String(next.peak.output));
+      setOffPeakHitPrice(String(next.offPeak.cacheHitInput));
+      setOffPeakMissPrice(String(next.offPeak.cacheMissInput));
+      setOffPeakOutputPrice(String(next.offPeak.output));
     }
   };
 
   const reset = () => {
-    setModel("deepseek-v4-flash");
+    const next = MODEL_PRICES["deepseek-flash"];
+    setModel("deepseek-flash");
     setRequestsPerMonth("80000");
     setInputTokensPerRequest("1500");
     setOutputTokensPerRequest("450");
     setCacheHitPercent("30");
+    setOffPeakPercent("0");
     setCustomPricing(false);
-    setCustomCacheHitPrice("0.0028");
-    setCustomCacheMissPrice("0.14");
-    setCustomOutputPrice("0.28");
+    setPeakHitPrice(String(next.peak.cacheHitInput));
+    setPeakMissPrice(String(next.peak.cacheMissInput));
+    setPeakOutputPrice(String(next.peak.output));
+    setOffPeakHitPrice(String(next.offPeak.cacheHitInput));
+    setOffPeakMissPrice(String(next.offPeak.cacheMissInput));
+    setOffPeakOutputPrice(String(next.offPeak.output));
   };
 
-  return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Enter Your DeepSeek API Usage
-          </h2>
-          <p className="mt-3 leading-relaxed text-gray-600">
-            Use average token values for one request, then enter the expected
-            number of requests in one month.
-          </p>
-        </div>
+  const errorMessage = hasInvalidInput
+    ? "Enter whole numbers for requests and token counts, percentages from 0 to 100, and non-negative decimal prices."
+    : hasUnsafeResult
+      ? "The entered workload is too large to calculate safely in the browser. Use smaller planning values or split the workload into parts."
+      : contextError
+        ? `${selectedModel.label} has a published 1,000,000-token context window. The average input entered here is above that limit.`
+        : outputError
+          ? `${selectedModel.label} has a published maximum output of 384,000 tokens. The average output entered here is above that limit.`
+          : "";
 
-        <div className="mt-7 grid gap-5 md:grid-cols-2">
+  return (
+    <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <h2 className="text-2xl font-semibold text-gray-950">
+          Model a DeepSeek month
+        </h2>
+        <p className="mt-3 leading-relaxed text-gray-600">
+          Use one representative request, then describe how much of the monthly
+          workload lands in DeepSeek&apos;s off-peak window.
+        </p>
+
+        <div className="mt-7 grid items-start gap-5 md:grid-cols-2">
           <BeeijaSelect
             label="DeepSeek model"
             value={model}
-            onChange={(event) => updateModel(event.target.value)}
+            onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+              updateModel(event.target.value)
+            }
             options={modelOptions}
           />
 
@@ -186,6 +389,7 @@ export default function ToolClient() {
             onChange={setRequestsPerMonth}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -194,6 +398,8 @@ export default function ToolClient() {
             onChange={setInputTokensPerRequest}
             min="0"
             step="1"
+            helper="Use API usage data when available."
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -202,91 +408,177 @@ export default function ToolClient() {
             onChange={setOutputTokensPerRequest}
             min="0"
             step="1"
+            helper="Include billed reasoning tokens."
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
-            label="Cache-hit input percentage"
+            label="Cache-hit input share"
             value={cacheHitPercent}
             onChange={setCacheHitPercent}
             min="0"
             max="100"
-            step="1"
+            step="0.1"
             suffix="%"
+            helper="Use prompt cache hit/miss usage when measured."
+            sanitizeDecimal
+          />
+
+          <BeeijaNumberField
+            label="Off-peak workload share"
+            value={offPeakPercent}
+            onChange={setOffPeakPercent}
+            min="0"
+            max="100"
+            step="0.1"
+            suffix="%"
+            helper="0 = all peak; 100 = all off-peak."
+            sanitizeDecimal
           />
         </div>
 
-        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
+          <p className="font-semibold text-gray-950">
+            {customPricing ? "Custom rates used" : "Current built-in rates"} for {selectedModel.label}
+          </p>
+          <p className="mt-1 text-sm leading-6 text-gray-600">
+            USD per 1 million tokens. Peak is 01:00–04:00 and 06:00–10:00 UTC,
+            Monday through Friday; all other times are off-peak.
+          </p>
+          <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-4 gap-y-2 text-sm">
+            <span className="font-medium text-gray-700">Rate</span>
+            <span className="font-medium text-gray-700">Peak</span>
+            <span className="font-medium text-gray-700">Off-peak</span>
+            <span className="text-gray-600">Cache-hit input</span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.peak.cacheHitInput)}
+            </span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.offPeak.cacheHitInput)}
+            </span>
+            <span className="text-gray-600">Cache-miss input</span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.peak.cacheMissInput)}
+            </span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.offPeak.cacheMissInput)}
+            </span>
+            <span className="text-gray-600">Output</span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.peak.output)}
+            </span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.offPeak.output)}
+            </span>
+          </div>
+        </div>
+
+        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-white p-4">
           <input
             type="checkbox"
             checked={customPricing}
-            onChange={(event) => setCustomPricing(event.target.checked)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              setCustomPricing(event.target.checked)
+            }
             className="mt-1 h-4 w-4 accent-[var(--green)]"
           />
           <span>
             <span className="block font-medium text-gray-900">
-              Use custom prices
+              Use custom peak and off-peak prices
             </span>
-            <span className="mt-1 block text-sm leading-relaxed text-gray-600">
-              Enter your own price per 1 million tokens.
+            <span className="mt-1 block text-sm leading-6 text-gray-600">
+              Useful for a future price update or an account-specific effective
+              rate. The workload math stays unchanged.
             </span>
           </span>
         </label>
 
         {customPricing ? (
-          <div className="mt-5 grid gap-5 md:grid-cols-3">
-            <BeeijaNumberField
-              label="Cache-hit input price"
-              value={customCacheHitPrice}
-              onChange={setCustomCacheHitPrice}
-              min="0"
-              step="0.000001"
-              prefix="$"
-            />
-            <BeeijaNumberField
-              label="Cache-miss input price"
-              value={customCacheMissPrice}
-              onChange={setCustomCacheMissPrice}
-              min="0"
-              step="0.001"
-              prefix="$"
-            />
-            <BeeijaNumberField
-              label="Output price"
-              value={customOutputPrice}
-              onChange={setCustomOutputPrice}
-              min="0"
-              step="0.001"
-              prefix="$"
-            />
+          <div className="mt-5 grid items-start gap-x-5 gap-y-4 md:grid-cols-2">
+            <div className="min-w-0">
+              <h3 className="mb-3 font-semibold text-gray-950">Peak rates</h3>
+              <div className="space-y-4">
+                <BeeijaNumberField
+                  label="Peak cache-hit input rate"
+                  value={peakHitPrice}
+                  onChange={setPeakHitPrice}
+                  min="0"
+                  step="0.000001"
+                  prefix="$"
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Peak cache-miss input rate"
+                  value={peakMissPrice}
+                  onChange={setPeakMissPrice}
+                  min="0"
+                  step="0.000001"
+                  prefix="$"
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Peak output rate"
+                  value={peakOutputPrice}
+                  onChange={setPeakOutputPrice}
+                  min="0"
+                  step="0.000001"
+                  prefix="$"
+                  sanitizeDecimal
+                />
+              </div>
+            </div>
+
+            <div className="min-w-0">
+              <h3 className="mb-3 font-semibold text-gray-950">
+                Off-peak rates
+              </h3>
+              <div className="space-y-4">
+                <BeeijaNumberField
+                  label="Off-peak cache-hit input rate"
+                  value={offPeakHitPrice}
+                  onChange={setOffPeakHitPrice}
+                  min="0"
+                  step="0.000001"
+                  prefix="$"
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Off-peak cache-miss input rate"
+                  value={offPeakMissPrice}
+                  onChange={setOffPeakMissPrice}
+                  min="0"
+                  step="0.000001"
+                  prefix="$"
+                  sanitizeDecimal
+                />
+                <BeeijaNumberField
+                  label="Off-peak output rate"
+                  value={offPeakOutputPrice}
+                  onChange={setOffPeakOutputPrice}
+                  min="0"
+                  step="0.000001"
+                  prefix="$"
+                  sanitizeDecimal
+                />
+              </div>
+            </div>
           </div>
         ) : null}
 
-        <div className="mt-7 rounded-xl border-l-4 border-[#F2C94C] bg-[#F5FAF7] px-5 py-4">
-          <p className="font-medium text-gray-900">
-            Price used per 1 million tokens
-          </p>
-          <div className="mt-3 grid min-w-0 gap-3 text-sm text-gray-700 sm:grid-cols-3">
-            <p className="min-w-0">
-              <span className="block">Cache hit:</span>
-              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                {formatVisibleMoney(effectivePrices.cacheHitInput)}
-              </span>
-            </p>
-
-            <p className="min-w-0">
-              <span className="block">Cache miss:</span>
-              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                {formatVisibleMoney(effectivePrices.cacheMissInput)}
-              </span>
-            </p>
-
-            <p className="min-w-0">
-              <span className="block">Output:</span>
-              <span className="mt-1 block min-w-0 break-words font-medium text-gray-900 [overflow-wrap:anywhere]">
-                {formatVisibleMoney(effectivePrices.output)}
-              </span>
-            </p>
+        {errorMessage ? (
+          <div className="mt-5 self-start border-l-4 border-red-500 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800">
+            <span className="font-semibold">Check the estimate:</span>{" "}
+            {errorMessage}
           </div>
+        ) : null}
+
+        <div className="mt-5 self-start border-l-4 border-[var(--yellow)] bg-white px-4 py-2 text-sm leading-6 text-gray-700">
+          <p className="font-semibold text-gray-950">Off-peak share is a planning assumption</p>
+          <p className="mt-1">
+            The blend assumes the same average token shape in peak and off-peak
+            traffic. If prompt sizes differ by schedule, calculate the two
+            workloads separately and add them.
+          </p>
         </div>
 
         <button type="button" onClick={reset} className="beeija-btn-outline mt-6">
@@ -295,96 +587,91 @@ export default function ToolClient() {
       </section>
 
       <BeeijaCalculatorResultPanel
-        title="Estimated DeepSeek API Cost"
-        description="This estimate covers the token charges entered above."
+        title="DeepSeek cost breakdown"
+        description="Cache-hit input, cache-miss input, and output are priced separately using the selected peak/off-peak mix."
         primaryLabel="Estimated monthly cost"
-        primaryValue={formatVisibleMoney(result.monthlyCost)}
+        primaryValue={
+          cannotCalculate
+            ? "Check entered values"
+            : formatVisibleMoney(result.monthlyCost)
+        }
         stats={
-          <div className="grid min-w-0 gap-4 sm:grid-cols-3">
-            <ResultStat label="Per request" value={formatVisibleMoney(result.costPerRequest)} />
-            <ResultStat label="Per day" value={formatVisibleMoney(result.dailyCost)} />
-            <ResultStat label="Per year" value={formatVisibleMoney(result.yearlyCost)} />
-          </div>
+          cannotCalculate ? undefined : (
+            <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+              <Stat
+                label="Per request"
+                value={formatVisibleMoney(result.costPerRequest)}
+              />
+              <Stat
+                label="Daily average"
+                value={formatVisibleMoney(result.dailyCost)}
+              />
+              <Stat
+                label="12 months at this mix"
+                value={formatVisibleMoney(result.annualizedCost)}
+              />
+            </div>
+          )
         }
         breakdown={
-          <div className="space-y-4">
-            <CostRow
-              label="Cache-hit input cost"
-              detail={`${formatNumber(result.cacheHitTokens)} tokens`}
-              value={formatVisibleMoney(result.cacheHitCost)}
-            />
-            <CostRow
-              label="Cache-miss input cost"
-              detail={`${formatNumber(result.cacheMissTokens)} tokens`}
-              value={formatVisibleMoney(result.cacheMissCost)}
-            />
-            <CostRow
-              label="Output cost"
-              detail={`${formatNumber(result.totalOutputTokens)} tokens`}
-              value={formatVisibleMoney(result.outputCost)}
-            />
-          </div>
+          cannotCalculate ? undefined : (
+            <div className="space-y-2">
+              <BeeijaResultLine
+                label="Cache-hit input"
+                value={formatVisibleMoney(result.cacheHitCost)}
+              />
+              <BeeijaResultLine
+                label="Cache-miss input"
+                value={formatVisibleMoney(result.cacheMissCost)}
+              />
+              <BeeijaResultLine
+                label="Output"
+                value={formatVisibleMoney(result.outputCost)}
+              />
+            </div>
+          )
         }
         totals={
-          <div className="min-w-0 break-words text-sm leading-relaxed text-gray-600 [overflow-wrap:anywhere]">
-            <p>
-              Requests:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(result.requests)}
-              </span>
-            </p>
-            <p className="mt-2">
-              Total input tokens:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(result.totalInputTokens)}
-              </span>
-            </p>
-            <p className="mt-2">
-              Total output tokens:{" "}
-              <span className="font-medium text-gray-900">
-                {formatNumber(result.totalOutputTokens)}
-              </span>
-            </p>
-          </div>
+          cannotCalculate ? undefined : (
+            <div className="min-w-0 text-sm leading-7 text-gray-600">
+              <p>
+                Input tokens: {formatNumber(result.totalInputTokens)} · cache
+                hit {formatNumber(result.cacheHitTokens)} · cache miss{" "}
+                {formatNumber(result.cacheMissTokens)}
+              </p>
+              <p>
+                Output tokens: {formatNumber(result.totalOutputTokens)} ·
+                off-peak share {formatNumber(result.offPeakShare, 1)}%
+              </p>
+              <p>
+                Effective rates / 1M tokens: hit{" "}
+                {formatVisibleMoney(result.effectiveHitRate)}, miss{" "}
+                {formatVisibleMoney(result.effectiveMissRate)}, output{" "}
+                {formatVisibleMoney(result.effectiveOutputRate)}
+              </p>
+              <p>
+                API model: <span className="font-medium text-gray-900">{selectedModel.apiName}</span>{" "}
+                · published account concurrency limit{" "}
+                {formatNumber(selectedModel.concurrencyLimit)}
+              </p>
+            </div>
+          )
         }
         provider="DeepSeek"
-        pricingCheckedDate="June 18, 2026"
-        excludedCosts="taxes, discounts, retries, price changes, and other services not entered here"
+        pricingCheckedDate="September 22, 2026"
+        excludedCosts="taxes, credits, retries, tool-side services, account-specific terms, and usage outside the token rates entered here"
       />
     </div>
   );
 }
 
-function ResultStat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </p>
       <p className="mt-1 break-words font-semibold text-gray-950 [overflow-wrap:anywhere]">
-        {value}
-      </p>
-    </div>
-  );
-}
-
-function CostRow({
-  label,
-  detail,
-  value,
-}: {
-  label: string;
-  detail: string;
-  value: string;
-}) {
-  return (
-    <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div className="min-w-0 flex-1">
-        <p className="font-medium text-gray-900">{label}</p>
-        <p className="mt-1 text-sm text-gray-500">{detail}</p>
-      </div>
-
-      <p className="max-w-[46%] shrink-0 break-words text-right font-semibold text-gray-950 [overflow-wrap:anywhere]">
         {value}
       </p>
     </div>
