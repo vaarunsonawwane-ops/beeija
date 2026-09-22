@@ -318,8 +318,8 @@ const pricingModeOptions = [
 ];
 
 const pricingPeriodOptions = [
-  { value: "current", label: "Through December 31, 2026" },
-  { value: "from-2027", label: "January 1, 2027 onward" },
+  { value: "current", label: "Through Dec 31, 2026" },
+  { value: "from-2027", label: "From Jan 1, 2027" },
 ];
 
 const modalityOptions = [
@@ -747,7 +747,7 @@ export default function ToolClient() {
   const mapsSupported = builtInRate.mapsGrounding !== null;
   const isGemini3 = model.startsWith("gemini-3");
   const searchUnitName = isGemini3 ? "search queries" : "grounded prompts";
-  const mapsUnitName = isGemini3 ? "Maps billing units" : "grounded prompts";
+  const mapsUnitName = isGemini3 ? "billing units" : "grounded prompts";
 
   const copyBuiltInRatesToCustom = () => {
     setCustomInputPrice(String(builtInInputPrice));
@@ -818,84 +818,88 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-7 grid items-start gap-5 md:grid-cols-2">
-          <BeeijaSelect
-            label="Gemini model"
-            value={model}
-            onChange={(event: { target: { value: string } }) => updateModel(event.target.value)}
-            options={modelOptions}
-          />
-
-          <BeeijaSelect
-            label="Consumption mode"
-            value={pricingMode}
-            onChange={(event: { target: { value: string } }) =>
-              setPricingMode(event.target.value as PricingMode)
-            }
-            options={pricingModeOptions}
-          />
-
-          {selectedModel.scheduled2027Pricing && !customPricing ? (
+        <div className="mt-7 space-y-5">
+          <div className="grid items-start gap-5 md:grid-cols-2">
             <BeeijaSelect
-              label="Google pricing period"
-              value={pricingPeriod}
-              onChange={(event: { target: { value: string } }) =>
-                setPricingPeriod(event.target.value as PricingPeriod)
-              }
-              options={pricingPeriodOptions}
+              label="Gemini model"
+              value={model}
+              onChange={(event: { target: { value: string } }) => updateModel(event.target.value)}
+              options={modelOptions}
             />
-          ) : null}
 
-          {selectedModel.audioRateDiffers && !customPricing ? (
             <BeeijaSelect
-              label="Input price basis"
-              value={inputModality}
+              label="Consumption mode"
+              value={pricingMode}
               onChange={(event: { target: { value: string } }) =>
-                setInputModality(event.target.value as InputModality)
+                setPricingMode(event.target.value as PricingMode)
               }
-              options={modalityOptions}
+              options={pricingModeOptions}
             />
-          ) : null}
 
-          <BeeijaNumberField
-            label="Requests per month"
-            value={requestsPerMonth}
-            onChange={setRequestsPerMonth}
-            min="0"
-            step="1"
-            sanitizeDecimal
-          />
+            {selectedModel.scheduled2027Pricing && !customPricing ? (
+              <BeeijaSelect
+                label="Google pricing period"
+                value={pricingPeriod}
+                onChange={(event: { target: { value: string } }) =>
+                  setPricingPeriod(event.target.value as PricingPeriod)
+                }
+                options={pricingPeriodOptions}
+              />
+            ) : null}
 
-          <BeeijaNumberField
-            label="Average input tokens per request"
-            value={inputTokensPerRequest}
-            onChange={setInputTokensPerRequest}
-            min="0"
-            step="1"
-            sanitizeDecimal
-          />
+            {selectedModel.audioRateDiffers && !customPricing ? (
+              <BeeijaSelect
+                label="Input price basis"
+                value={inputModality}
+                onChange={(event: { target: { value: string } }) =>
+                  setInputModality(event.target.value as InputModality)
+                }
+                options={modalityOptions}
+              />
+            ) : null}
+          </div>
 
-          <BeeijaNumberField
-            label="Average billed output tokens per request"
-            value={outputTokensPerRequest}
-            onChange={setOutputTokensPerRequest}
-            min="0"
-            step="1"
-            helper="Include billed thinking tokens, not only visible answer text."
-            sanitizeDecimal
-          />
+          <div className="grid items-start gap-5 md:grid-cols-2">
+            <BeeijaNumberField
+              label="Requests per month"
+              value={requestsPerMonth}
+              onChange={setRequestsPerMonth}
+              min="0"
+              step="1"
+              sanitizeDecimal
+            />
 
-          <BeeijaNumberField
-            label="Observed or expected cached input share"
-            value={cachedInputPercent}
-            onChange={setCachedInputPercent}
-            min="0"
-            max="100"
-            step="0.1"
-            suffix="%"
-            helper="Use observed cache hits when available; implicit savings are not guaranteed."
-            sanitizeDecimal
-          />
+            <BeeijaNumberField
+              label="Average input tokens per request"
+              value={inputTokensPerRequest}
+              onChange={setInputTokensPerRequest}
+              min="0"
+              step="1"
+              sanitizeDecimal
+            />
+
+            <BeeijaNumberField
+              label="Average output tokens per request"
+              value={outputTokensPerRequest}
+              onChange={setOutputTokensPerRequest}
+              min="0"
+              step="1"
+              helper="Include billed thinking tokens, not only visible answer text."
+              sanitizeDecimal
+            />
+
+            <BeeijaNumberField
+              label="Cached input share"
+              value={cachedInputPercent}
+              onChange={setCachedInputPercent}
+              min="0"
+              max="100"
+              step="0.1"
+              suffix="%"
+              helper="Use observed cache hits when available; implicit savings are not guaranteed."
+              sanitizeDecimal
+            />
+          </div>
         </div>
 
         {selectedModel.longPromptPricing && !customPricing ? (
