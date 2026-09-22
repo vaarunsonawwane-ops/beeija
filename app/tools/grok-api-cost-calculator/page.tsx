@@ -1,235 +1,129 @@
 import type { Metadata } from "next";
 import ToolShell from "@/app/components/ToolShell";
-import ToolContent from "@/app/components/ToolContent";
 import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
+const title = "Grok API Cost Calculator";
+const description =
+  "Estimate xAI Grok API costs across current models, long-context pricing, prompt caching, Priority or Batch processing, regional inference, and optional server-side tool usage.";
+
 export const metadata: Metadata = {
-  title: "Grok API Cost Calculator",
-
-  description:
-    "Estimate xAI Grok API costs using requests, input tokens, cached input tokens, output tokens, and monthly usage.",
-
+  title,
+  description,
   keywords: [
     "Grok API cost calculator",
-    "xAI API cost calculator",
-    "Grok pricing calculator",
-    "Grok token cost calculator",
-    "Grok 4.3 cost calculator",
-    "Grok API pricing",
-    "xAI pricing calculator",
-    "Grok cached token cost",
-    "Grok monthly cost calculator",
-    "LLM API cost calculator",
+    "xAI API pricing calculator",
+    "Grok 4.7 pricing",
+    "Grok long context pricing",
+    "Grok prompt caching cost",
+    "xAI Priority Processing cost",
+    "Grok Batch API pricing",
+    "xAI server-side tools pricing",
   ],
-
   alternates: {
     canonical: "https://beeija.com/tools/grok-api-cost-calculator",
   },
-
   openGraph: {
-    title: "Grok API Cost Calculator",
-    description:
-      "Estimate xAI Grok API costs from input tokens, cached input, output tokens, requests, and monthly usage.",
+    title,
+    description,
     url: "https://beeija.com/tools/grok-api-cost-calculator",
     siteName: "Beeija",
     type: "website",
   },
-
   twitter: {
     card: "summary_large_image",
-    title: "Grok API Cost Calculator",
-    description:
-      "Estimate Grok API token costs using your own request and token usage.",
+    title,
+    description,
   },
 };
 
-const faqs = [
-  {
-    question: "How is Grok API cost calculated?",
-    answer:
-      "The calculator multiplies uncached input, cached input, and output tokens by the selected xAI model rates. It then shows the estimated cost per request, day, month, and year.",
-  },
-  {
-    question: "What are cached input tokens?",
-    answer:
-      "Cached input tokens are repeated input tokens that qualify for a lower cached-token rate. The real amount depends on how your prompts and API requests are structured.",
-  },
-  {
-    question: "Can I compare Grok models?",
-    answer:
-      "Yes. Keep the same request and token values, then switch models to compare their estimated costs.",
-  },
-  {
-    question: "Does this calculator include tool charges?",
-    answer:
-      "No. It estimates text token costs only. Agent tools, web search, voice, images, video, storage, and other services may have separate charges.",
-  },
-  {
-    question: "Are the results exact?",
-    answer:
-      "No. They are planning estimates. Your final bill may change because of price updates, retries, taxes, discounts, tool use, or other paid services.",
-  },
-  {
-    question: "Can I enter my own xAI prices?",
-    answer:
-      "Yes. Turn on custom pricing and enter your own input, cached input, and output rates per million tokens.",
-  },
-];
+const referenceClass =
+  "font-medium text-[var(--green)] underline decoration-[var(--yellow)] decoration-2 underline-offset-4";
 
 export default function GrokApiCostCalculatorPage() {
   return (
     <ToolShell
       category="AI Cost Calculators"
-      title="Grok API Cost Calculator"
-      description="Estimate xAI Grok API costs using requests, input tokens, cached input tokens, output tokens, and monthly usage."
+      title={title}
+      description="Estimate a Grok workload using the xAI pricing rules that actually change the bill: context length, cache hits, service tier, regional processing, and server-side tools."
     >
       <ToolClient />
 
-      <div className="mt-16">
-        <ToolContent
-          intro={
-            <p>
-              Grok API costs can change with the model, prompt size, answer
-              length, request count, and cached input use. This calculator helps
-              you test a small launch, a normal month, and a higher-usage case
-              before you build.
+      <div className="mt-14 space-y-12">
+        <section className="max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            The 200K prompt boundary can double the token rate
+          </h2>
+          <p className="mt-5 leading-8 text-gray-600">
+            xAI publishes separate short- and long-context prices for the current Grok text models. Once a request reaches the 200,000-token prompt threshold, the long-context rate applies to all input, cached input, and output tokens in that request—not only the tokens above the boundary.
+          </p>
+          <p className="mt-4 leading-8 text-gray-600">
+            That makes average prompt size more important than a monthly token total alone. Two workloads can consume the same number of tokens in a month while landing in different pricing bands because one sends many smaller prompts and the other sends fewer very large prompts.
+          </p>
+        </section>
+
+        <section className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-950">
+              Cached tokens are visible in the API response
+            </h2>
+            <p className="mt-5 leading-8 text-gray-600">
+              xAI automatically caches matching prompt prefixes. A planning percentage is useful before launch, but production budgets should come from the returned <code className="font-mono text-sm text-gray-800">cached_tokens</code> value. If cache hits stay at zero across a continuing conversation, xAI recommends checking the conversation or prompt-cache key and whether earlier messages are changing.
             </p>
-          }
-          sections={[
-            {
-              title: "How the Grok API Cost Calculator Works",
-              content: (
-                <>
-                  <p>
-                    Choose an xAI model and enter the expected requests per
-                    month. Then add the average input and output tokens used by
-                    one request.
-                  </p>
+            <p className="mt-4 leading-8 text-gray-600">
+              Reasoning tokens are different: they are billed at the output-token rate. For reasoning models, use billed output usage rather than estimating cost from visible answer length alone.
+            </p>
+          </div>
 
-                  <p>
-                    You can also enter the share of input tokens that may use
-                    cached pricing. The calculator separates uncached input,
-                    cached input, and output costs.
-                  </p>
+          <div className="border-l-4 border-[var(--yellow)] pl-6 self-start">
+            <h3 className="text-lg font-semibold text-gray-950">
+              Priority and Batch solve different problems
+            </h3>
+            <p className="mt-3 leading-8 text-gray-600">
+              Priority Processing is for latency-sensitive real-time requests and costs 2× the standard token rates when the response confirms the priority tier. Batch is asynchronous, normally completes within 24 hours, and currently gives a 20% token discount only on Grok 4.3 and the Grok 4.20 variants listed by xAI.
+            </p>
+          </div>
+        </section>
 
-                  <p>
-                    The result shows the estimated cost per request, day, month,
-                    and year.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "What to Enter for a Useful Estimate",
-              content: (
-                <>
-                  <p>
-                    Include the system message, prompt, chat history, retrieved
-                    text, and other content sent to the model in your input
-                    estimate.
-                  </p>
+        <section className="max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Agentic Grok requests can spend outside the token line item
+          </h2>
+          <p className="mt-5 leading-8 text-gray-600">
+            Web Search, X Search, code execution, attachment search, and collection search have their own invocation charges. The model can also make more than one server-side tool call while answering a single user request, so request count is not a safe substitute for tool usage. xAI exposes successful billable usage separately; that is the number to use when you have production data.
+          </p>
+          <p className="mt-4 leading-8 text-gray-600">
+            X Search changed on September 21, 2026: posts fetched are billed at $5 per 1,000 and user profiles at $10 per 1,000. The calculator therefore asks for those fetched-item counts rather than pretending X Search still has one flat per-call price.
+          </p>
+        </section>
 
-                  <p>
-                    Use the average answer length you expect in real use. Longer
-                    outputs can increase the monthly cost.
-                  </p>
+        <section className="max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            What this estimate deliberately keeps separate
+          </h2>
+          <p className="mt-5 leading-8 text-gray-600">
+            Image and video generation, voice APIs, xAI file and collection storage, download charges, client-side tools, taxes, credits, negotiated pricing, and retries that are not already represented in the entered workload are outside this estimate. Multi-agent work also needs aggregate billed token usage because leader and sub-agent activity is chargeable even when only the leader's final answer is returned.
+          </p>
+          <p className="mt-4 leading-8 text-gray-600">
+            The arithmetic runs in your browser. Beeija does not send the workload values entered here to xAI. Following an official documentation link opens xAI's site separately.
+          </p>
+        </section>
 
-                  <p>
-                    Test a normal case and a busy case so you can see how the
-                    cost may change as usage grows.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "Common Ways to Use This Calculator",
-              content: (
-                <ul className="list-disc space-y-2 pl-6">
-                  <li>Estimate the monthly cost of a Grok chatbot.</li>
-                  <li>Compare Grok models using the same workload.</li>
-                  <li>Test the possible saving from cached input.</li>
-                  <li>Estimate cost per request, day, month, and year.</li>
-                  <li>Review the effect of longer prompts and answers.</li>
-                  <li>Prepare an early xAI API budget.</li>
-                </ul>
-              ),
-            },
-            {
-              title: "Simple Grok API Cost Example",
-              content: (
-                <>
-                  <p>
-                    Imagine an AI assistant with 70,000 requests per month. Each
-                    request uses 1,200 input tokens and 350 output tokens. If
-                    20% of the input may use cached pricing, enter those values
-                    and choose a Grok model.
-                  </p>
+        <section className="max-w-6xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            xAI documentation behind the calculation
+          </h2>
+          <p className="mt-5 leading-8 text-gray-600">
+            Built-in rates were checked on <strong>September 22, 2026</strong> against xAI's <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noreferrer" className={referenceClass}>API pricing</a> and <a href="https://docs.x.ai/developers/models" target="_blank" rel="noreferrer" className={referenceClass}>model reference</a>. Cache accounting follows the <a href="https://docs.x.ai/developers/advanced-api-usage/prompt-caching/usage-and-pricing" target="_blank" rel="noreferrer" className={referenceClass}>prompt-caching usage guide</a>. The processing choices come from the <a href="https://docs.x.ai/developers/advanced-api-usage/priority-processing" target="_blank" rel="noreferrer" className={referenceClass}>Priority Processing</a> and <a href="https://docs.x.ai/developers/advanced-api-usage/batch-api" target="_blank" rel="noreferrer" className={referenceClass}>Batch API</a> documentation, while optional tool costs follow xAI's current <a href="https://docs.x.ai/developers/pricing#tools-pricing" target="_blank" rel="noreferrer" className={referenceClass}>server-side tool pricing</a>.
+          </p>
+        </section>
 
-                  <p>
-                    The calculator will show the separate input, cached input,
-                    and output costs. You can then switch models without
-                    changing the workload.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "Pricing and Estimate Notes",
-              content: (
-                <>
-                  <p>
-                    Built-in prices were checked against xAI's official model
-                    and pricing pages on June 18, 2026. xAI may change models,
-                    prices, limits, or billing rules at any time.
-                  </p>
-
-                  <p>
-                    Built-in text rates are for standard-context requests up to 200K tokens. This calculator covers text token charges only. Agent tools,
-                    voice, images, video, storage, taxes, and other services may
-                    add separate costs.
-                  </p>
-
-                  <p>
-                    Always check the{" "}
-                    <a
-                      href="https://docs.x.ai/developers/pricing"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium text-[var(--yellow-dark)]"
-                    >
-                      official xAI pricing page
-                    </a>{" "}
-                    before making a final budget or purchase decision.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "Frequently Asked Questions",
-              content: (
-                <div className="space-y-6">
-                  {faqs.map((faq) => (
-                    <div key={faq.question}>
-                      <h3 className="font-semibold text-gray-900">
-                        {faq.question}
-                      </h3>
-                      <p className="mt-2">{faq.answer}</p>
-                    </div>
-                  ))}
-                </div>
-              ),
-            },
-            {
-              title: "Explore Related AI Cost Tools",
-              content: (
-                <BeeijaRelatedTools
-                  currentHref="/tools/grok-api-cost-calculator"
-                />
-              ),
-            },
-          ]}
-        />
+        <section className="max-w-6xl">
+          <h2 className="text-2xl font-semibold text-gray-950">Explore related AI cost tools</h2>
+          <div className="mt-4 [&>*:first-child]:mt-0">
+            <BeeijaRelatedTools currentHref="/tools/grok-api-cost-calculator" />
+          </div>
+        </section>
       </div>
     </ToolShell>
   );
