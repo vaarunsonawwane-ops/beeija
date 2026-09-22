@@ -863,6 +863,7 @@ export default function ToolClient() {
             onChange={setRequestsPerMonth}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -871,6 +872,7 @@ export default function ToolClient() {
             onChange={setInputTokensPerRequest}
             min="0"
             step="1"
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -880,6 +882,7 @@ export default function ToolClient() {
             min="0"
             step="1"
             helper="Include billed thinking tokens, not only visible answer text."
+            sanitizeDecimal
           />
 
           <BeeijaNumberField
@@ -930,6 +933,7 @@ export default function ToolClient() {
               min="0"
               step="1"
               helper="Enter only units that remain billable after the applicable free/shared allowance."
+              sanitizeDecimal
             />
 
             {mapsSupported ? (
@@ -940,6 +944,7 @@ export default function ToolClient() {
                 min="0"
                 step="1"
                 helper="Enter only units that remain billable after the applicable allowance."
+                sanitizeDecimal
               />
             ) : (
               <div className="self-start rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm leading-6 text-gray-700">
@@ -1071,14 +1076,14 @@ export default function ToolClient() {
         </div>
 
         {result.error ? (
-          <div className="mt-5 self-start rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800">
+          <div className="mt-6 self-start border-l-4 border-red-500 bg-red-50 px-5 py-4 text-sm leading-relaxed text-red-800">
             <span className="font-semibold text-red-900">Check the estimate:</span>{" "}
             {result.error}
           </div>
         ) : null}
 
         {warnings.length > 0 ? (
-          <div className="mt-5 self-start rounded-xl border-l-4 border-[#F2C94C] bg-[#FFFBEA] px-4 py-3 text-sm leading-6 text-gray-700">
+          <div className="mt-6 self-start border-l-4 border-[#F2C94C] bg-white px-5 py-4 text-sm leading-relaxed text-gray-700">
             <p className="font-semibold text-gray-950">Worth checking before budgeting</p>
             <ul className="mt-2 space-y-2">
               {warnings.map((warning) => (

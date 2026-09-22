@@ -144,7 +144,7 @@ export default function GeminiApiCostCalculatorPage() {
             </div>
           </div>
 
-          <div className="self-start rounded-xl border-l-4 border-[#F2C94C] bg-[#FFFBEA] p-5">
+          <div className="self-start border-l-4 border-[#F2C94C] bg-white px-5 py-4">
             <h3 className="font-semibold text-gray-950">
               Do not carry the introductory rate into a 2027 budget
             </h3>
