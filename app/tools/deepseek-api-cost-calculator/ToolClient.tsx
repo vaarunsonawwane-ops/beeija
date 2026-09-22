@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
-import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaResultLine from "@/app/components/BeeijaResultLine";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
@@ -374,36 +373,18 @@ export default function ToolClient() {
             outside DeepSeek&apos;s weekday peak windows.
           </p>
 
-          <div className="mt-7 max-w-md">
-            <BeeijaSelect
-              label="DeepSeek model"
+          <div className="mt-7 grid items-start gap-5 md:grid-cols-2">
+            <CompactModelSelect
               value={model}
-              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                updateModel(event.target.value)
-              }
-              options={modelOptions}
+              onChange={updateModel}
             />
-          </div>
 
-          <div className="mt-6 grid items-start gap-5 md:grid-cols-2">
             <BeeijaNumberField
               label="Requests per month"
               value={requestsPerMonth}
               onChange={setRequestsPerMonth}
               min="0"
               step="1"
-              sanitizeDecimal
-            />
-
-            <BeeijaNumberField
-              label="Cache-hit input share"
-              value={cacheHitPercent}
-              onChange={setCacheHitPercent}
-              min="0"
-              max="100"
-              step="0.1"
-              suffix="%"
-              helper="Use measured cache hit/miss tokens when available."
               sanitizeDecimal
             />
 
@@ -426,9 +407,19 @@ export default function ToolClient() {
               helper="Include billed reasoning tokens."
               sanitizeDecimal
             />
-          </div>
 
-          <div className="mt-6 grid gap-5 md:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] md:items-start">
+            <BeeijaNumberField
+              label="Cache-hit input share"
+              value={cacheHitPercent}
+              onChange={setCacheHitPercent}
+              min="0"
+              max="100"
+              step="0.1"
+              suffix="%"
+              helper="Use measured cache hit/miss tokens when available."
+              sanitizeDecimal
+            />
+
             <BeeijaNumberField
               label="Off-peak workload share"
               value={offPeakPercent}
@@ -440,7 +431,9 @@ export default function ToolClient() {
               helper="0 = all peak; 100 = all off-peak."
               sanitizeDecimal
             />
+          </div>
 
+          <div className="mt-5">
             <PricingClock />
           </div>
 
@@ -529,71 +522,72 @@ export default function ToolClient() {
         </div>
       </div>
 
-      <section className="mt-8 min-w-0">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
+      <section className="mt-8 max-w-4xl overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="border-l-4 border-[var(--yellow)] px-5 py-4 sm:flex sm:items-end sm:justify-between sm:gap-6">
+          <div className="min-w-0">
             <h2 className="text-xl font-semibold text-gray-950">Current token rates</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              {selectedModel.label} · USD per 1 million tokens. The estimate blends
-              these rates using your off-peak workload share.
+              {selectedModel.label} · USD per 1 million tokens. Peak and off-peak
+              rates are shown separately before the workload mix is blended.
             </p>
           </div>
-          <span className="text-sm font-medium text-[var(--green)]">
-            {selectedModel.apiName}
-          </span>
+          <p className="mt-2 shrink-0 text-sm font-medium text-[var(--green)] sm:mt-0">
+            API: {selectedModel.apiName}
+          </p>
         </div>
 
-        <div className="mt-4 max-w-3xl overflow-x-auto">
-          <div className="grid min-w-[28rem] grid-cols-[minmax(0,1fr)_auto_auto] gap-x-8 gap-y-2 text-sm">
-            <span className="font-medium text-gray-700">Token path</span>
-            <span className="text-right font-medium text-gray-700">Peak</span>
-            <span className="text-right font-medium text-gray-700">Off-peak</span>
+        <div className="px-5 pb-5">
+          <div className="overflow-x-auto">
+            <div className="grid min-w-[28rem] grid-cols-[minmax(0,1fr)_minmax(6rem,auto)_minmax(6rem,auto)] gap-x-6 gap-y-3 text-sm">
+              <span className="font-semibold text-gray-700">Token path</span>
+              <span className="text-right font-semibold text-[var(--green)]">Peak</span>
+              <span className="text-right font-semibold text-[var(--green)]">Off-peak</span>
 
-            <span className="text-gray-600">Cache-hit input</span>
-            <span className="text-right font-medium text-gray-950">
-              {formatVisibleMoney(priceSets.peak.cacheHitInput)}
-            </span>
-            <span className="text-right font-medium text-gray-950">
-              {formatVisibleMoney(priceSets.offPeak.cacheHitInput)}
-            </span>
+              <span className="text-gray-700">Cache-hit input</span>
+              <span className="text-right font-semibold tabular-nums text-gray-950">
+                {formatVisibleMoney(priceSets.peak.cacheHitInput)}
+              </span>
+              <span className="text-right font-semibold tabular-nums text-gray-950">
+                {formatVisibleMoney(priceSets.offPeak.cacheHitInput)}
+              </span>
 
-            <span className="text-gray-600">Cache-miss input</span>
-            <span className="text-right font-medium text-gray-950">
-              {formatVisibleMoney(priceSets.peak.cacheMissInput)}
-            </span>
-            <span className="text-right font-medium text-gray-950">
-              {formatVisibleMoney(priceSets.offPeak.cacheMissInput)}
-            </span>
+              <span className="text-gray-700">Cache-miss input</span>
+              <span className="text-right font-semibold tabular-nums text-gray-950">
+                {formatVisibleMoney(priceSets.peak.cacheMissInput)}
+              </span>
+              <span className="text-right font-semibold tabular-nums text-gray-950">
+                {formatVisibleMoney(priceSets.offPeak.cacheMissInput)}
+              </span>
 
-            <span className="text-gray-600">Output</span>
-            <span className="text-right font-medium text-gray-950">
-              {formatVisibleMoney(priceSets.peak.output)}
-            </span>
-            <span className="text-right font-medium text-gray-950">
-              {formatVisibleMoney(priceSets.offPeak.output)}
-            </span>
+              <span className="text-gray-700">Output</span>
+              <span className="text-right font-semibold tabular-nums text-gray-950">
+                {formatVisibleMoney(priceSets.peak.output)}
+              </span>
+              <span className="text-right font-semibold tabular-nums text-gray-950">
+                {formatVisibleMoney(priceSets.offPeak.output)}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <label className="mt-5 flex max-w-3xl cursor-pointer items-start gap-3">
-          <input
-            type="checkbox"
-            checked={customPricing}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              setCustomPricing(event.target.checked)
-            }
-            className="mt-1 h-4 w-4 accent-[var(--green)]"
-          />
-          <span>
-            <span className="block font-medium text-gray-900">
-              Use custom peak and off-peak prices
+          <label className="mt-5 flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={customPricing}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setCustomPricing(event.target.checked)
+              }
+              className="mt-1 h-4 w-4 accent-[var(--green)]"
+            />
+            <span>
+              <span className="block font-medium text-gray-900">
+                Use custom peak and off-peak prices
+              </span>
+              <span className="mt-1 block text-sm leading-6 text-gray-600">
+                Replace the published rates while keeping the same workload and
+                scheduling assumptions.
+              </span>
             </span>
-            <span className="mt-1 block text-sm leading-6 text-gray-600">
-              Replace the published rates while keeping the same workload and
-              scheduling assumptions.
-            </span>
-          </span>
-        </label>
+          </label>
 
         {customPricing ? (
           <div className="mt-5 grid max-w-4xl items-start gap-x-8 gap-y-5 md:grid-cols-2">
@@ -664,8 +658,57 @@ export default function ToolClient() {
             </div>
           </div>
         ) : null}
+        </div>
       </section>
     </div>
+  );
+}
+
+function CompactModelSelect({
+  value,
+  onChange,
+}: {
+  value: ModelKey;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block min-w-0">
+      <span className="mb-1 block text-[11.5px] font-semibold leading-5 text-slate-800">
+        DeepSeek model
+      </span>
+      <span className="relative block min-w-0">
+        <select
+          value={value}
+          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+            onChange(event.target.value)
+          }
+          className="min-h-[38px] w-full min-w-0 appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 pr-9 text-[13.5px] text-slate-900 outline-none transition hover:border-slate-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
+        >
+          {modelOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 20 20"
+          fill="none"
+          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--green)]"
+        >
+          <path
+            d="m6 8 4 4 4-4"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <span className="mt-1 block min-h-5 text-[11.5px] leading-5 text-slate-500">
+        {" "}
+      </span>
+    </label>
   );
 }
 
