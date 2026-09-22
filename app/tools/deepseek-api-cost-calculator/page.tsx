@@ -242,7 +242,7 @@ export default function DeepSeekApiCostCalculatorPage() {
                 href={source.href}
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-[var(--green)] hover:underline"
+                className="font-medium text-[var(--green)] underline decoration-[var(--yellow)] decoration-2 underline-offset-4 transition-colors hover:text-[var(--green)]"
               >
                 {source.label}
               </a>

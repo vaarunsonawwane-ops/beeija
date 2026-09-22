@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
+import BeeijaSelect from "@/app/components/BeeijaSelect";
 import BeeijaNumberField from "@/app/components/BeeijaNumberField";
 import BeeijaResultLine from "@/app/components/BeeijaResultLine";
 import BeeijaCalculatorResultPanel from "@/app/components/BeeijaCalculatorResultPanel";
@@ -363,7 +364,8 @@ export default function ToolClient() {
   return (
     <div className="min-w-0">
       <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] xl:items-start">
-        <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <div className="min-w-0 space-y-6">
+          <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
           <h2 className="text-2xl font-semibold text-gray-950">
             Estimate your DeepSeek workload
           </h2>
@@ -374,10 +376,18 @@ export default function ToolClient() {
           </p>
 
           <div className="mt-7 grid items-start gap-5 md:grid-cols-2">
-            <CompactModelSelect
-              value={model}
-              onChange={updateModel}
-            />
+            <div className="min-w-0
+              [&>div>label]:!mb-1 [&>div>label]:!text-[11.5px] [&>div>label]:!font-semibold [&>div>label]:!leading-5 [&>div>label]:!text-slate-800
+              [&>div>button]:!min-h-[38px] [&>div>button]:!rounded-lg [&>div>button]:!px-3 [&>div>button]:!py-2 [&>div>button]:!text-[13.5px]">
+              <BeeijaSelect
+                label="DeepSeek model"
+                value={model}
+                onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                  updateModel(event.target.value)
+                }
+                options={modelOptions}
+              />
+            </div>
 
             <BeeijaNumberField
               label="Requests per month"
@@ -447,7 +457,84 @@ export default function ToolClient() {
           <button type="button" onClick={reset} className="beeija-btn-outline mt-6">
             Reset values
           </button>
-        </section>
+          </section>
+
+          <section className="min-w-0">
+            <h2 className="text-xl font-semibold text-gray-950">Current token rates</h2>
+            <p className="mt-2 text-sm leading-6 text-gray-600">
+              {selectedModel.label} · API <span className="font-medium text-gray-800">{selectedModel.apiName}</span> · USD per 1 million tokens.
+            </p>
+
+            <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200 bg-white">
+              <div className="min-w-[30rem] px-4 py-4 sm:px-5">
+                <div className="grid grid-cols-[minmax(0,1fr)_7rem_7rem] items-center gap-x-5 text-sm">
+                  <span className="font-semibold text-gray-700">Token path</span>
+                  <span className="text-right font-semibold text-gray-700">Peak</span>
+                  <span className="text-right font-semibold text-gray-700">Off-peak</span>
+                </div>
+
+                <div className="mt-3 space-y-3 text-sm">
+                  <RateRow
+                    label="Cache-hit input"
+                    peak={formatVisibleMoney(priceSets.peak.cacheHitInput)}
+                    offPeak={formatVisibleMoney(priceSets.offPeak.cacheHitInput)}
+                  />
+                  <RateRow
+                    label="Cache-miss input"
+                    peak={formatVisibleMoney(priceSets.peak.cacheMissInput)}
+                    offPeak={formatVisibleMoney(priceSets.offPeak.cacheMissInput)}
+                  />
+                  <RateRow
+                    label="Output"
+                    peak={formatVisibleMoney(priceSets.peak.output)}
+                    offPeak={formatVisibleMoney(priceSets.offPeak.output)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <label className="mt-4 flex max-w-3xl cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={customPricing}
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  setCustomPricing(event.target.checked)
+                }
+                className="mt-1 h-4 w-4 accent-[var(--green)]"
+              />
+              <span>
+                <span className="block font-medium text-gray-900">
+                  Use custom peak and off-peak prices
+                </span>
+                <span className="mt-1 block text-sm leading-6 text-gray-600">
+                  Replace the published rates while keeping the same workload and scheduling assumptions.
+                </span>
+              </span>
+            </label>
+
+            {customPricing ? (
+              <div className="mt-5 grid max-w-3xl items-start gap-x-8 gap-y-5 md:grid-cols-2">
+                <div className="min-w-0">
+                  <h3 className="mb-3 font-semibold text-gray-950">Peak rates</h3>
+                  <div className="space-y-4">
+                    <BeeijaNumberField label="Cache-hit input rate" value={peakHitPrice} onChange={setPeakHitPrice} min="0" step="0.000001" prefix="$" sanitizeDecimal />
+                    <BeeijaNumberField label="Cache-miss input rate" value={peakMissPrice} onChange={setPeakMissPrice} min="0" step="0.000001" prefix="$" sanitizeDecimal />
+                    <BeeijaNumberField label="Output rate" value={peakOutputPrice} onChange={setPeakOutputPrice} min="0" step="0.000001" prefix="$" sanitizeDecimal />
+                  </div>
+                </div>
+
+                <div className="min-w-0">
+                  <h3 className="mb-3 font-semibold text-gray-950">Off-peak rates</h3>
+                  <div className="space-y-4">
+                    <BeeijaNumberField label="Cache-hit input rate" value={offPeakHitPrice} onChange={setOffPeakHitPrice} min="0" step="0.000001" prefix="$" sanitizeDecimal />
+                    <BeeijaNumberField label="Cache-miss input rate" value={offPeakMissPrice} onChange={setOffPeakMissPrice} min="0" step="0.000001" prefix="$" sanitizeDecimal />
+                    <BeeijaNumberField label="Output rate" value={offPeakOutputPrice} onChange={setOffPeakOutputPrice} min="0" step="0.000001" prefix="$" sanitizeDecimal />
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </section>
+        </div>
 
         <div className="min-w-0 xl:sticky xl:top-6">
           <BeeijaCalculatorResultPanel
@@ -522,193 +609,26 @@ export default function ToolClient() {
         </div>
       </div>
 
-      <section className="mt-8 max-w-4xl overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="border-l-4 border-[var(--yellow)] px-5 py-4 sm:flex sm:items-end sm:justify-between sm:gap-6">
-          <div className="min-w-0">
-            <h2 className="text-xl font-semibold text-gray-950">Current token rates</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              {selectedModel.label} · USD per 1 million tokens. Peak and off-peak
-              rates are shown separately before the workload mix is blended.
-            </p>
-          </div>
-          <p className="mt-2 shrink-0 text-sm font-medium text-[var(--green)] sm:mt-0">
-            API: {selectedModel.apiName}
-          </p>
-        </div>
 
-        <div className="px-5 pb-5">
-          <div className="overflow-x-auto">
-            <div className="grid min-w-[28rem] grid-cols-[minmax(0,1fr)_minmax(6rem,auto)_minmax(6rem,auto)] gap-x-6 gap-y-3 text-sm">
-              <span className="font-semibold text-gray-700">Token path</span>
-              <span className="text-right font-semibold text-[var(--green)]">Peak</span>
-              <span className="text-right font-semibold text-[var(--green)]">Off-peak</span>
-
-              <span className="text-gray-700">Cache-hit input</span>
-              <span className="text-right font-semibold tabular-nums text-gray-950">
-                {formatVisibleMoney(priceSets.peak.cacheHitInput)}
-              </span>
-              <span className="text-right font-semibold tabular-nums text-gray-950">
-                {formatVisibleMoney(priceSets.offPeak.cacheHitInput)}
-              </span>
-
-              <span className="text-gray-700">Cache-miss input</span>
-              <span className="text-right font-semibold tabular-nums text-gray-950">
-                {formatVisibleMoney(priceSets.peak.cacheMissInput)}
-              </span>
-              <span className="text-right font-semibold tabular-nums text-gray-950">
-                {formatVisibleMoney(priceSets.offPeak.cacheMissInput)}
-              </span>
-
-              <span className="text-gray-700">Output</span>
-              <span className="text-right font-semibold tabular-nums text-gray-950">
-                {formatVisibleMoney(priceSets.peak.output)}
-              </span>
-              <span className="text-right font-semibold tabular-nums text-gray-950">
-                {formatVisibleMoney(priceSets.offPeak.output)}
-              </span>
-            </div>
-          </div>
-
-          <label className="mt-5 flex cursor-pointer items-start gap-3">
-            <input
-              type="checkbox"
-              checked={customPricing}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setCustomPricing(event.target.checked)
-              }
-              className="mt-1 h-4 w-4 accent-[var(--green)]"
-            />
-            <span>
-              <span className="block font-medium text-gray-900">
-                Use custom peak and off-peak prices
-              </span>
-              <span className="mt-1 block text-sm leading-6 text-gray-600">
-                Replace the published rates while keeping the same workload and
-                scheduling assumptions.
-              </span>
-            </span>
-          </label>
-
-        {customPricing ? (
-          <div className="mt-5 grid max-w-4xl items-start gap-x-8 gap-y-5 md:grid-cols-2">
-            <div className="min-w-0">
-              <h3 className="mb-3 font-semibold text-gray-950">Peak rates</h3>
-              <div className="space-y-4">
-                <BeeijaNumberField
-                  label="Cache-hit input rate"
-                  value={peakHitPrice}
-                  onChange={setPeakHitPrice}
-                  min="0"
-                  step="0.000001"
-                  prefix="$"
-                  sanitizeDecimal
-                />
-                <BeeijaNumberField
-                  label="Cache-miss input rate"
-                  value={peakMissPrice}
-                  onChange={setPeakMissPrice}
-                  min="0"
-                  step="0.000001"
-                  prefix="$"
-                  sanitizeDecimal
-                />
-                <BeeijaNumberField
-                  label="Output rate"
-                  value={peakOutputPrice}
-                  onChange={setPeakOutputPrice}
-                  min="0"
-                  step="0.000001"
-                  prefix="$"
-                  sanitizeDecimal
-                />
-              </div>
-            </div>
-
-            <div className="min-w-0">
-              <h3 className="mb-3 font-semibold text-gray-950">Off-peak rates</h3>
-              <div className="space-y-4">
-                <BeeijaNumberField
-                  label="Cache-hit input rate"
-                  value={offPeakHitPrice}
-                  onChange={setOffPeakHitPrice}
-                  min="0"
-                  step="0.000001"
-                  prefix="$"
-                  sanitizeDecimal
-                />
-                <BeeijaNumberField
-                  label="Cache-miss input rate"
-                  value={offPeakMissPrice}
-                  onChange={setOffPeakMissPrice}
-                  min="0"
-                  step="0.000001"
-                  prefix="$"
-                  sanitizeDecimal
-                />
-                <BeeijaNumberField
-                  label="Output rate"
-                  value={offPeakOutputPrice}
-                  onChange={setOffPeakOutputPrice}
-                  min="0"
-                  step="0.000001"
-                  prefix="$"
-                  sanitizeDecimal
-                />
-              </div>
-            </div>
-          </div>
-        ) : null}
-        </div>
-      </section>
     </div>
   );
 }
 
-function CompactModelSelect({
-  value,
-  onChange,
+function RateRow({
+  label,
+  peak,
+  offPeak,
 }: {
-  value: ModelKey;
-  onChange: (value: string) => void;
+  label: string;
+  peak: string;
+  offPeak: string;
 }) {
   return (
-    <label className="block min-w-0">
-      <span className="mb-1 block text-[11.5px] font-semibold leading-5 text-slate-800">
-        DeepSeek model
-      </span>
-      <span className="relative block min-w-0">
-        <select
-          value={value}
-          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-            onChange(event.target.value)
-          }
-          className="min-h-[38px] w-full min-w-0 appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 pr-9 text-[13.5px] text-slate-900 outline-none transition hover:border-slate-400 focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)]"
-        >
-          {modelOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 20 20"
-          fill="none"
-          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--green)]"
-        >
-          <path
-            d="m6 8 4 4 4-4"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <span className="mt-1 block min-h-5 text-[11.5px] leading-5 text-slate-500">
-        {" "}
-      </span>
-    </label>
+    <div className="grid grid-cols-[minmax(0,1fr)_7rem_7rem] items-center gap-x-5">
+      <span className="text-gray-700">{label}</span>
+      <span className="text-right font-semibold tabular-nums text-gray-950">{peak}</span>
+      <span className="text-right font-semibold tabular-nums text-gray-950">{offPeak}</span>
+    </div>
   );
 }
 
