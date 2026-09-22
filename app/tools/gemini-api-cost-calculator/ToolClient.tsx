@@ -818,88 +818,84 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-7 space-y-5">
-          <div className="grid items-start gap-5 md:grid-cols-2">
-            <BeeijaSelect
-              label="Gemini model"
-              value={model}
-              onChange={(event: { target: { value: string } }) => updateModel(event.target.value)}
-              options={modelOptions}
-            />
+        <div className="mt-7 grid items-start gap-5 md:grid-cols-2">
+          <BeeijaSelect
+            label="Gemini model"
+            value={model}
+            onChange={(event: { target: { value: string } }) => updateModel(event.target.value)}
+            options={modelOptions}
+          />
 
+          <BeeijaSelect
+            label="Consumption mode"
+            value={pricingMode}
+            onChange={(event: { target: { value: string } }) =>
+              setPricingMode(event.target.value as PricingMode)
+            }
+            options={pricingModeOptions}
+          />
+
+          {selectedModel.scheduled2027Pricing && !customPricing ? (
             <BeeijaSelect
-              label="Consumption mode"
-              value={pricingMode}
+              label="Google pricing period"
+              value={pricingPeriod}
               onChange={(event: { target: { value: string } }) =>
-                setPricingMode(event.target.value as PricingMode)
+                setPricingPeriod(event.target.value as PricingPeriod)
               }
-              options={pricingModeOptions}
+              options={pricingPeriodOptions}
             />
+          ) : null}
 
-            {selectedModel.scheduled2027Pricing && !customPricing ? (
-              <BeeijaSelect
-                label="Google pricing period"
-                value={pricingPeriod}
-                onChange={(event: { target: { value: string } }) =>
-                  setPricingPeriod(event.target.value as PricingPeriod)
-                }
-                options={pricingPeriodOptions}
-              />
-            ) : null}
-
-            {selectedModel.audioRateDiffers && !customPricing ? (
-              <BeeijaSelect
-                label="Input price basis"
-                value={inputModality}
-                onChange={(event: { target: { value: string } }) =>
-                  setInputModality(event.target.value as InputModality)
-                }
-                options={modalityOptions}
-              />
-            ) : null}
-          </div>
-
-          <div className="grid items-start gap-5 md:grid-cols-2">
-            <BeeijaNumberField
-              label="Requests per month"
-              value={requestsPerMonth}
-              onChange={setRequestsPerMonth}
-              min="0"
-              step="1"
-              sanitizeDecimal
+          {selectedModel.audioRateDiffers && !customPricing ? (
+            <BeeijaSelect
+              label="Input price basis"
+              value={inputModality}
+              onChange={(event: { target: { value: string } }) =>
+                setInputModality(event.target.value as InputModality)
+              }
+              options={modalityOptions}
             />
+          ) : null}
 
-            <BeeijaNumberField
-              label="Average input tokens per request"
-              value={inputTokensPerRequest}
-              onChange={setInputTokensPerRequest}
-              min="0"
-              step="1"
-              sanitizeDecimal
-            />
+          <BeeijaNumberField
+            label="Requests per month"
+            value={requestsPerMonth}
+            onChange={setRequestsPerMonth}
+            min="0"
+            step="1"
+            sanitizeDecimal
+          />
 
-            <BeeijaNumberField
-              label="Average output tokens per request"
-              value={outputTokensPerRequest}
-              onChange={setOutputTokensPerRequest}
-              min="0"
-              step="1"
-              helper="Include billed thinking tokens, not only visible answer text."
-              sanitizeDecimal
-            />
+          <BeeijaNumberField
+            label="Average input tokens per request"
+            value={inputTokensPerRequest}
+            onChange={setInputTokensPerRequest}
+            min="0"
+            step="1"
+            sanitizeDecimal
+          />
 
-            <BeeijaNumberField
-              label="Cached input share"
-              value={cachedInputPercent}
-              onChange={setCachedInputPercent}
-              min="0"
-              max="100"
-              step="0.1"
-              suffix="%"
-              helper="Use observed cache hits when available; implicit savings are not guaranteed."
-              sanitizeDecimal
-            />
-          </div>
+          <BeeijaNumberField
+            label="Average output tokens per request"
+            value={outputTokensPerRequest}
+            onChange={setOutputTokensPerRequest}
+            min="0"
+            step="1"
+            helper="Include billed thinking tokens, not only visible answer text."
+            sanitizeDecimal
+          />
+
+          <BeeijaNumberField
+            label="Cached input share"
+            value={cachedInputPercent}
+            onChange={setCachedInputPercent}
+            min="0"
+            max="100"
+            step="0.1"
+            suffix="%"
+            helper="Use observed cache hits when available; implicit savings are not guaranteed."
+            sanitizeDecimal
+          />
         </div>
 
         {selectedModel.longPromptPricing && !customPricing ? (
@@ -1087,7 +1083,7 @@ export default function ToolClient() {
         ) : null}
 
         {warnings.length > 0 ? (
-          <div className="mt-6 self-start border-l-4 border-[#F2C94C] bg-white px-5 py-4 text-sm leading-relaxed text-gray-700">
+          <div className="mt-6 self-start border-l-4 border-[var(--yellow)] bg-white px-5 py-4 text-sm leading-relaxed text-gray-700">
             <p className="font-semibold text-gray-950">Worth checking before budgeting</p>
             <ul className="mt-2 space-y-2">
               {warnings.map((warning) => (
