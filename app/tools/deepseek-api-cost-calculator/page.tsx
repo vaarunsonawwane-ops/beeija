@@ -67,198 +67,236 @@ export default function DeepSeekApiCostCalculatorPage() {
     <ToolShell
       category="AI Cost Calculators"
       title={title}
-      description="Price a DeepSeek workload across current models, cache behavior, and the API's peak/off-peak schedule."
+      description="Estimate current DeepSeek API spend by combining token usage, cache behavior, and the provider's time-of-day pricing windows."
     >
       <ToolClient />
 
-      <div className="mt-14 space-y-12 text-gray-700">
-        <section className="max-w-5xl">
+      <section className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-start">
+        <div className="max-w-4xl">
           <h2 className="text-2xl font-semibold text-gray-950">
-            DeepSeek pricing changes with the clock
+            The clock is part of the DeepSeek price
           </h2>
-          <div className="mt-5 space-y-4 leading-8 text-gray-600">
-            <p>
-              DeepSeek currently publishes two token prices for the same model:
-              peak and off-peak. Peak hours are 01:00–04:00 and 06:00–10:00 UTC
-              from Monday through Friday; every other time is off-peak. The
-              off-peak rates are half the peak rates.
-            </p>
-            <p>
-              A monthly estimate based on only one of those rates can be
-              misleading when traffic runs all day. The off-peak workload share
-              lets the calculator blend the two schedules. If your overnight jobs
-              also have much longer prompts than daytime requests, calculate those
-              workloads separately rather than relying on one percentage.
-            </p>
-          </div>
-
-          <div className="mt-6 max-w-4xl self-start border-l-4 border-[var(--yellow)] bg-white px-5 py-2">
-            <h3 className="font-semibold text-gray-950">
-              Scheduling can change cost without changing the model
-            </h3>
-            <p className="mt-2 leading-7 text-gray-700">
-              Flexible indexing, evaluation, summarization, and other delayed
-              jobs can be candidates for off-peak execution. Interactive traffic
-              should be budgeted around when users actually send requests rather
-              than assuming the discount is always available.
-            </p>
-          </div>
-        </section>
-
-        <section className="max-w-5xl">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Cache hits are measured in tokens, not requests
-          </h2>
-          <div className="mt-5 space-y-4 leading-8 text-gray-600">
-            <p>
-              DeepSeek&apos;s disk-based context cache is enabled by default. A
-              repeated request does not automatically mean the entire prompt is a
-              cache hit: the matching prefix must already have been persisted and
-              must match a cache prefix unit. The cache also works on a
-              best-effort basis.
-            </p>
-            <p>
-              The API reports <code>prompt_cache_hit_tokens</code> and
-              <code> prompt_cache_miss_tokens</code>. Those fields are the best
-              basis for a production estimate. The percentage input here is a
-              planning shortcut when you know the average total prompt size but
-              do not yet have enough real traffic to enter measured hit and miss
-              counts directly.
-            </p>
-            <p>
-              A high request-level hit rate can still produce a different token
-              hit rate if some prompts are much larger than others. When that
-              difference matters, derive the percentage from token totals rather
-              than counting how many requests hit the cache.
-            </p>
-          </div>
-        </section>
-
-        <section className="max-w-5xl">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            V4.1 Flash changed both the model name and the rate
-          </h2>
-          <div className="mt-5 space-y-4 leading-8 text-gray-600">
-            <p>
-              The current Flash API model is <code>deepseek-flash</code>, which
-              DeepSeek identifies as V4.1 Flash. The older
-              <code> deepseek-v4-flash</code> alias is still accepted for
-              compatibility, but it is routed to V4.1 Flash and billed at the
-              current Flash price.
-            </p>
-            <p>
-              DeepSeek&apos;s current pricing page also continues to list
-              <code> deepseek-v4-pro</code> as a separately priced API model.
-              That current table is the basis used here. This matters because an
-              earlier V4.1 Flash launch notice described a temporary routing plan
-              for V4 Pro, while the later/current pricing documentation states
-              that V4 Pro service continues with its existing billing method.
-            </p>
-            <p>
-              Both models are documented with a 1 million-token context window
-              and a maximum output of 384,000 tokens. The calculator rejects an
-              average request that already exceeds those published per-request
-              boundaries, but an average below the limit does not prove that
-              every individual request in production will fit.
-            </p>
-          </div>
-        </section>
-
-        <section className="max-w-5xl">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Thinking can make output usage larger than the visible answer
-          </h2>
-          <div className="mt-5 space-y-4 leading-8 text-gray-600">
-            <p>
-              Thinking mode is enabled by default in the current DeepSeek model
-              family unless it is disabled. The APIs expose reasoning separately
-              for observability, but it still sits inside billed output usage.
-              In the Responses API, for example,
-              <code> output_tokens_details.reasoning_tokens</code> breaks out the
-              reasoning portion while <code>output_tokens</code> remains the
-              output total.
-            </p>
-            <p>
-              For a real service, use returned usage data instead of estimating
-              output from the final visible answer. DeepSeek also provides token
-              usage guidance and an offline tokenizer, but the API&apos;s returned
-              usage remains the source of truth for what was processed.
-            </p>
-          </div>
-        </section>
-
-        <section className="max-w-5xl">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Cost is not the only production limit
-          </h2>
-          <div className="mt-5 space-y-4 leading-8 text-gray-600">
-            <p>
-              DeepSeek currently documents an account-level concurrency limit of
-              2,500 for <code>deepseek-flash</code> and 500 for
-              <code> deepseek-v4-pro</code>. Going beyond the applicable limit can
-              return HTTP 429 even when the token budget itself is acceptable.
-              Capacity expansion can be requested separately.
-            </p>
-            <p>
-              The optional <code>user_id</code> mechanism also affects KV-cache
-              isolation and scheduling isolation. DeepSeek explicitly says not
-              to put private user information in that identifier. That is an
-              operational/privacy boundary rather than a token-price input, so it
-              belongs in deployment planning but not in the calculator math.
-            </p>
-            <p>
-              Taxes, granted balance, account credits, retries, application-side
-              tool costs, network or hosting costs, and future pricing changes
-              are outside the result. Custom prices can model different token
-              rates, but they do not turn this planning estimate into a provider
-              invoice.
-            </p>
-            <p>
-              All arithmetic runs locally in the browser from the numeric values
-              entered on this page. There is no API-key or prompt field, and
-              changing a workload value does not send it to DeepSeek. Opening one
-              of the documentation links below is a separate browser request to
-              DeepSeek&apos;s site.
-            </p>
-          </div>
-        </section>
-
-        <section className="max-w-5xl">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Official DeepSeek documentation
-          </h2>
-          <p className="mt-4 max-w-4xl leading-7 text-gray-600">
-            <strong>Pricing checked: September 22, 2026.</strong> The calculator
-            uses the current public USD rates and current model limits. Recheck
-            the provider documentation before a launch or budget approval because
-            DeepSeek states that product prices may change.
+          <p className="mt-4 leading-8 text-gray-600">
+            DeepSeek does not publish one token rate that applies all day. The
+            same model has peak and off-peak prices, so a monthly budget depends
+            on when traffic actually runs as well as how many tokens it uses.
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {sources.map((source) => (
-              <a
-                key={source.href}
-                href={source.href}
-                target="_blank"
-                rel="noreferrer"
-                className="beeija-btn-outline"
-              >
-                {source.label}
-              </a>
-            ))}
-          </div>
-        </section>
+          <p className="mt-4 leading-8 text-gray-600">
+            Peak windows are 01:00–04:00 and 06:00–10:00 UTC from Monday through
+            Friday. Traffic outside those windows uses the lower off-peak rates.
+            The calculator therefore asks for an off-peak workload share rather
+            than pretending every request is billed at one schedule.
+          </p>
 
-        <section className="max-w-5xl">
-          <h2 className="text-2xl font-semibold text-gray-950">
-            Explore related AI cost tools
-          </h2>
-          <div className="mt-4 [&>*]:!mt-0">
-            <BeeijaRelatedTools
-              currentHref="/tools/deepseek-api-cost-calculator"
-            />
+          <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-4 px-4 py-3 text-sm font-semibold text-gray-950">
+              <span>Pricing window</span>
+              <span>UTC schedule</span>
+            </div>
+            <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-4 border-t border-gray-200 px-4 py-3 text-sm leading-6 text-gray-600">
+              <span className="font-medium text-gray-900">Peak</span>
+              <span>01:00–04:00 and 06:00–10:00, Monday–Friday</span>
+            </div>
+            <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-4 border-t border-gray-200 px-4 py-3 text-sm leading-6 text-gray-600">
+              <span className="font-medium text-gray-900">Off-peak</span>
+              <span>Every other time</span>
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+
+        <aside className="self-start border-l-4 border-[var(--yellow)] bg-white pl-5 py-1">
+          <h3 className="text-lg font-semibold text-gray-950">
+            Do not move interactive traffic just to chase the lower rate
+          </h3>
+          <p className="mt-2 leading-7 text-gray-600">
+            Delayed evaluation, indexing, summarization, or other background jobs
+            can often be scheduled around off-peak windows. User-facing requests
+            still need to be budgeted around the hours in which users actually
+            send them.
+          </p>
+          <p className="mt-3 leading-7 text-gray-600">
+            If the off-peak jobs also have much larger prompts or outputs, run
+            them as a separate estimate instead of blending two very different
+            workloads into one percentage.
+          </p>
+        </aside>
+      </section>
+
+      <section className="mt-12 max-w-6xl">
+        <h2 className="text-2xl font-semibold text-gray-950">
+          Cache savings should come from token usage, not request counts
+        </h2>
+        <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] lg:items-start">
+          <div className="space-y-4 leading-8 text-gray-600">
+            <p>
+              DeepSeek&apos;s context cache is enabled by default, but a repeated
+              request does not mean the whole prompt is billed as a cache hit.
+              The matching prefix must already be available to the cache, and the
+              cache operates on a best-effort basis.
+            </p>
+            <p>
+              For live traffic, the useful measurements are the token counters
+              returned by the API. A request-level hit rate can distort the
+              budget when some prompts are much larger than others, so the
+              calculator&apos;s cache percentage is intended to represent the
+              share of <em>input tokens</em> billed at the cache-hit rate.
+            </p>
+          </div>
+
+          <dl className="space-y-5 text-sm leading-6">
+            <div>
+              <dt className="font-semibold text-gray-950">
+                <code>prompt_cache_hit_tokens</code>
+              </dt>
+              <dd className="mt-1 text-gray-600">
+                Input tokens billed at the cache-hit price.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-gray-950">
+                <code>prompt_cache_miss_tokens</code>
+              </dt>
+              <dd className="mt-1 text-gray-600">
+                Input tokens that missed the cache and use the higher input rate.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-gray-950">
+                Cache-hit share in this calculator
+              </dt>
+              <dd className="mt-1 text-gray-600">
+                A planning shortcut when measured token totals are not available
+                yet; replace it with observed usage as soon as you have it.
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section className="mt-12 max-w-6xl">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-950">
+              What V4.1 Flash changes for an existing integration
+            </h2>
+            <div className="mt-4 space-y-4 leading-8 text-gray-600">
+              <p>
+                The current Flash model is <code>deepseek-flash</code>, which
+                DeepSeek identifies as V4.1 Flash. The older
+                <code> deepseek-v4-flash</code> alias remains accepted for
+                compatibility, but routes to V4.1 Flash and uses the current
+                Flash pricing.
+              </p>
+              <p>
+                <code>deepseek-v4-pro</code> remains separately priced in the
+                current public table. Both models are documented with a 1
+                million-token context window and maximum output of 384,000
+                tokens, so this calculator rejects an average request that is
+                already beyond those published boundaries.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-950">
+              Output usage can exceed the text a user sees
+            </h2>
+            <div className="mt-4 space-y-4 leading-8 text-gray-600">
+              <p>
+                Thinking is enabled by default in the current model family unless
+                it is disabled. Reasoning can be exposed separately for
+                observability while still contributing to billed output usage.
+              </p>
+              <p>
+                For a production budget, use the API&apos;s returned output-token
+                usage rather than estimating cost from the visible answer alone.
+                In Responses API usage, reasoning can be broken out through
+                <code> output_tokens_details.reasoning_tokens</code> while the
+                total output count remains the number relevant to billing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-12 max-w-6xl">
+        <h2 className="text-2xl font-semibold text-gray-950">
+          Three production boundaries worth watching after launch
+        </h2>
+        <div className="mt-5 grid gap-x-10 gap-y-6 md:grid-cols-3">
+          <div>
+            <h3 className="font-semibold text-gray-950">Concurrency</h3>
+            <p className="mt-2 leading-7 text-gray-600">
+              DeepSeek currently documents account-level concurrency limits of
+              2,500 for <code>deepseek-flash</code> and 500 for
+              <code> deepseek-v4-pro</code>. Exceeding the applicable limit can
+              return HTTP 429 even when the token budget is acceptable.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-950">User isolation</h3>
+            <p className="mt-2 leading-7 text-gray-600">
+              The optional <code>user_id</code> mechanism affects cache and
+              scheduling isolation. DeepSeek says not to place private user
+              information in that identifier, so use an internal non-sensitive
+              identifier when the feature is needed.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-950">What this total omits</h3>
+            <p className="mt-2 leading-7 text-gray-600">
+              Taxes, granted balance, credits, retries, surrounding tool calls,
+              hosting, network costs, account-specific terms, and future price
+              changes are outside the token estimate. Custom rates change the
+              arithmetic, not the status of the result as a planning estimate.
+            </p>
+          </div>
+        </div>
+
+        <p className="mt-6 max-w-5xl leading-8 text-gray-600">
+          The calculator arithmetic runs locally in the browser. There is no
+          prompt or API-key field, and changing a workload value does not send it
+          to DeepSeek. Opening an official documentation link below is a separate
+          browser request to DeepSeek&apos;s site.
+        </p>
+      </section>
+
+      <section className="mt-12 max-w-5xl">
+        <h2 className="text-2xl font-semibold text-gray-950">
+          Official DeepSeek documentation
+        </h2>
+        <p className="mt-4 max-w-4xl leading-7 text-gray-600">
+          <strong>Pricing checked: September 22, 2026.</strong> The built-in USD
+          rates, current model names, published request limits, cache behavior,
+          and operational notes above were checked against DeepSeek&apos;s own API
+          documentation. Recheck the provider pages before a launch or budget
+          approval because pricing and limits can change.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {sources.map((source) => (
+            <a
+              key={source.href}
+              href={source.href}
+              target="_blank"
+              rel="noreferrer"
+              className="beeija-btn-outline"
+            >
+              {source.label}
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-12 max-w-5xl">
+        <h2 className="text-2xl font-semibold text-gray-950">
+          Explore related AI cost tools
+        </h2>
+        <div className="mt-4 [&>*]:!mt-0">
+          <BeeijaRelatedTools currentHref="/tools/deepseek-api-cost-calculator" />
+        </div>
+      </section>
     </ToolShell>
   );
 }
