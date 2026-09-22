@@ -364,151 +364,225 @@ export default function ToolClient() {
 
   return (
     <div className="min-w-0">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] xl:items-start">
-          <div className="min-w-0">
-            <h2 className="text-2xl font-semibold text-gray-950">
-              Plan the DeepSeek traffic you expect to run
-            </h2>
-            <p className="mt-3 max-w-3xl leading-relaxed text-gray-600">
-              Start with a representative request and monthly volume. Cache-hit
-              tokens and the share of traffic that actually lands off-peak then
-              determine which published rates are blended into the estimate.
-            </p>
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] xl:items-start">
+        <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Estimate your DeepSeek workload
+          </h2>
+          <p className="mt-3 max-w-3xl leading-relaxed text-gray-600">
+            Choose the model, enter a representative request, then describe how
+            much input is served from cache and how much traffic runs off-peak.
+          </p>
 
-            <div className="mt-7 max-w-md">
-              <BeeijaSelect
-                label="DeepSeek model"
-                value={model}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                  updateModel(event.target.value)
-                }
-                options={modelOptions}
-              />
-            </div>
-
-            <div className="mt-6 grid items-start gap-5 md:grid-cols-2">
-              <BeeijaNumberField
-                label="Requests per month"
-                value={requestsPerMonth}
-                onChange={setRequestsPerMonth}
-                min="0"
-                step="1"
-                sanitizeDecimal
-              />
-
-              <BeeijaNumberField
-                label="Average input tokens per request"
-                value={inputTokensPerRequest}
-                onChange={setInputTokensPerRequest}
-                min="0"
-                step="1"
-                helper="Use API usage data when available."
-                sanitizeDecimal
-              />
-
-              <BeeijaNumberField
-                label="Average output tokens per request"
-                value={outputTokensPerRequest}
-                onChange={setOutputTokensPerRequest}
-                min="0"
-                step="1"
-                helper="Include billed reasoning tokens."
-                sanitizeDecimal
-              />
-
-              <BeeijaNumberField
-                label="Cache-hit input share"
-                value={cacheHitPercent}
-                onChange={setCacheHitPercent}
-                min="0"
-                max="100"
-                step="0.1"
-                suffix="%"
-                helper="Derive this from cache hit/miss token usage when measured."
-                sanitizeDecimal
-              />
-            </div>
+          <div className="mt-7 max-w-md">
+            <BeeijaSelect
+              label="DeepSeek model"
+              value={model}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                updateModel(event.target.value)
+              }
+              options={modelOptions}
+            />
           </div>
 
-          <aside className="self-start border-l-4 border-[var(--yellow)] bg-white pl-5 pr-1 py-1">
-            <h3 className="text-lg font-semibold text-gray-950">
-              When will those requests run?
-            </h3>
-            <p className="mt-2 text-sm leading-6 text-gray-600">
-              DeepSeek publishes peak windows at 01:00–04:00 and 06:00–10:00
-              UTC, Monday through Friday. All other times use the lower
-              off-peak rates.
-            </p>
+          <div className="mt-6 grid items-start gap-5 md:grid-cols-2">
+            <BeeijaNumberField
+              label="Requests per month"
+              value={requestsPerMonth}
+              onChange={setRequestsPerMonth}
+              min="0"
+              step="1"
+              sanitizeDecimal
+            />
 
-            <div className="mt-5">
-              <BeeijaNumberField
-                label="Off-peak workload share"
-                value={offPeakPercent}
-                onChange={setOffPeakPercent}
-                min="0"
-                max="100"
-                step="0.1"
-                suffix="%"
-                helper="0 = all peak; 100 = all off-peak."
-                sanitizeDecimal
-              />
-            </div>
+            <BeeijaNumberField
+              label="Cache-hit input share"
+              value={cacheHitPercent}
+              onChange={setCacheHitPercent}
+              min="0"
+              max="100"
+              step="0.1"
+              suffix="%"
+              helper="Use measured cache hit/miss tokens when available."
+              sanitizeDecimal
+            />
 
-            <p className="mt-3 text-sm leading-6 text-gray-600">
-              This blend assumes the same average prompt and output shape in
-              both windows. If scheduled jobs are materially larger than
-              interactive traffic, calculate the two workloads separately.
-            </p>
-          </aside>
-        </div>
+            <BeeijaNumberField
+              label="Average input tokens per request"
+              value={inputTokensPerRequest}
+              onChange={setInputTokensPerRequest}
+              min="0"
+              step="1"
+              helper="Use API usage data when available."
+              sanitizeDecimal
+            />
 
-        <div className="mt-8 rounded-lg border border-gray-200 bg-white p-4 sm:p-5">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h3 className="font-semibold text-gray-950">
-                {customPricing ? "Custom rates" : "Published rates"} for {selectedModel.label}
-              </h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                USD per 1 million tokens. The right-hand column shows the
-                off-peak rate used by the workload-share blend above.
+            <BeeijaNumberField
+              label="Average output tokens per request"
+              value={outputTokensPerRequest}
+              onChange={setOutputTokensPerRequest}
+              min="0"
+              step="1"
+              helper="Include billed reasoning tokens."
+              sanitizeDecimal
+            />
+          </div>
+
+          <div className="mt-6 grid gap-5 md:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] md:items-start">
+            <BeeijaNumberField
+              label="Off-peak workload share"
+              value={offPeakPercent}
+              onChange={setOffPeakPercent}
+              min="0"
+              max="100"
+              step="0.1"
+              suffix="%"
+              helper="0 = all peak; 100 = all off-peak."
+              sanitizeDecimal
+            />
+
+            <div className="self-start border-l-4 border-[var(--yellow)] bg-white pl-4 py-1 text-sm leading-6 text-gray-600">
+              <p className="font-semibold text-gray-950">
+                DeepSeek prices by time of day
+              </p>
+              <p className="mt-1">
+                Peak windows are 01:00–04:00 and 06:00–10:00 UTC, Monday–Friday.
+                Everything else uses the lower off-peak rates.
               </p>
             </div>
-            <p className="text-sm font-medium text-[var(--green)]">
-              {selectedModel.apiName}
-            </p>
           </div>
 
-          <div className="mt-4 overflow-x-auto">
-            <div className="grid min-w-[28rem] grid-cols-[minmax(0,1fr)_auto_auto] gap-x-5 gap-y-2 text-sm">
-              <span className="font-medium text-gray-700">Token path</span>
-              <span className="text-right font-medium text-gray-700">Peak</span>
-              <span className="text-right font-medium text-gray-700">Off-peak</span>
-
-              <span className="text-gray-600">Cache-hit input</span>
-              <span className="text-right font-medium text-gray-950">
-                {formatVisibleMoney(priceSets.peak.cacheHitInput)}
-              </span>
-              <span className="text-right font-medium text-gray-950">
-                {formatVisibleMoney(priceSets.offPeak.cacheHitInput)}
-              </span>
-
-              <span className="text-gray-600">Cache-miss input</span>
-              <span className="text-right font-medium text-gray-950">
-                {formatVisibleMoney(priceSets.peak.cacheMissInput)}
-              </span>
-              <span className="text-right font-medium text-gray-950">
-                {formatVisibleMoney(priceSets.offPeak.cacheMissInput)}
-              </span>
-
-              <span className="text-gray-600">Output</span>
-              <span className="text-right font-medium text-gray-950">
-                {formatVisibleMoney(priceSets.peak.output)}
-              </span>
-              <span className="text-right font-medium text-gray-950">
-                {formatVisibleMoney(priceSets.offPeak.output)}
-              </span>
+          {errorMessage ? (
+            <div className="mt-6 self-start border-l-4 border-red-600 bg-white px-4 py-3 text-sm leading-6 text-gray-700">
+              <span className="font-semibold text-red-700">Check the estimate:</span>{" "}
+              {errorMessage}
             </div>
+          ) : null}
+
+          <button type="button" onClick={reset} className="beeija-btn-outline mt-6">
+            Reset values
+          </button>
+        </section>
+
+        <div className="min-w-0 xl:sticky xl:top-6">
+          <BeeijaCalculatorResultPanel
+            title="Monthly DeepSeek estimate"
+            description="Cache-hit input, cache-miss input, and output are priced separately, then blended using the off-peak share you entered."
+            primaryLabel="Estimated monthly cost"
+            primaryValue={
+              cannotCalculate
+                ? "Check entered values"
+                : formatVisibleMoney(result.monthlyCost)
+            }
+            stats={
+              cannotCalculate ? undefined : (
+                <div className="grid min-w-0 gap-4 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
+                  <Stat label="Per request" value={formatVisibleMoney(result.costPerRequest)} />
+                  <Stat label="Daily average" value={formatVisibleMoney(result.dailyCost)} />
+                  <Stat
+                    label="12 months at this mix"
+                    value={formatVisibleMoney(result.annualizedCost)}
+                  />
+                </div>
+              )
+            }
+            breakdown={
+              cannotCalculate ? undefined : (
+                <div className="space-y-2">
+                  <BeeijaResultLine
+                    label="Cache-hit input"
+                    value={formatVisibleMoney(result.cacheHitCost)}
+                  />
+                  <BeeijaResultLine
+                    label="Cache-miss input"
+                    value={formatVisibleMoney(result.cacheMissCost)}
+                  />
+                  <BeeijaResultLine
+                    label="Output"
+                    value={formatVisibleMoney(result.outputCost)}
+                  />
+                </div>
+              )
+            }
+            totals={
+              cannotCalculate ? undefined : (
+                <div className="min-w-0 text-sm leading-7 text-gray-600">
+                  <p>
+                    Input tokens: {formatNumber(result.totalInputTokens)} · cache hit{" "}
+                    {formatNumber(result.cacheHitTokens)} · cache miss{" "}
+                    {formatNumber(result.cacheMissTokens)}
+                  </p>
+                  <p>
+                    Output tokens: {formatNumber(result.totalOutputTokens)} · off-peak share{" "}
+                    {formatNumber(result.offPeakShare, 1)}%
+                  </p>
+                  <p>
+                    Effective rates / 1M tokens: hit{" "}
+                    {formatVisibleMoney(result.effectiveHitRate)}, miss{" "}
+                    {formatVisibleMoney(result.effectiveMissRate)}, output{" "}
+                    {formatVisibleMoney(result.effectiveOutputRate)}
+                  </p>
+                  <p>
+                    API model: <span className="font-medium text-gray-900">{selectedModel.apiName}</span>{" "}
+                    · published account concurrency limit{" "}
+                    {formatNumber(selectedModel.concurrencyLimit)}
+                  </p>
+                </div>
+              )
+            }
+            provider="DeepSeek"
+            pricingCheckedDate="September 22, 2026"
+            excludedCosts="taxes, credits, retries, tool-side services, account-specific terms, and usage outside the token rates entered here"
+          />
+        </div>
+      </div>
+
+      <section className="mt-6 min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-950">
+              Rates used in this estimate
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-gray-600">
+              USD per 1 million tokens for {selectedModel.label}. Peak and
+              off-peak prices are kept separate because the workload share above
+              blends them.
+            </p>
+          </div>
+          <p className="text-sm font-medium text-[var(--green)]">
+            {selectedModel.apiName}
+          </p>
+        </div>
+
+        <div className="mt-5 overflow-x-auto">
+          <div className="grid min-w-[28rem] grid-cols-[minmax(0,1fr)_auto_auto] gap-x-6 gap-y-2 text-sm">
+            <span className="font-medium text-gray-700">Token path</span>
+            <span className="text-right font-medium text-gray-700">Peak</span>
+            <span className="text-right font-medium text-gray-700">Off-peak</span>
+
+            <span className="text-gray-600">Cache-hit input</span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.peak.cacheHitInput)}
+            </span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.offPeak.cacheHitInput)}
+            </span>
+
+            <span className="text-gray-600">Cache-miss input</span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.peak.cacheMissInput)}
+            </span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.offPeak.cacheMissInput)}
+            </span>
+
+            <span className="text-gray-600">Output</span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.peak.output)}
+            </span>
+            <span className="text-right font-medium text-gray-950">
+              {formatVisibleMoney(priceSets.offPeak.output)}
+            </span>
           </div>
         </div>
 
@@ -526,8 +600,8 @@ export default function ToolClient() {
               Use custom peak and off-peak prices
             </span>
             <span className="mt-1 block text-sm leading-6 text-gray-600">
-              Replace the published token rates without changing the workload
-              or schedule assumptions.
+              Replace the published rates while keeping the same workload and
+              scheduling assumptions.
             </span>
           </span>
         </label>
@@ -538,7 +612,7 @@ export default function ToolClient() {
               <h3 className="mb-3 font-semibold text-gray-950">Peak rates</h3>
               <div className="space-y-4">
                 <BeeijaNumberField
-                  label="Peak cache-hit input rate"
+                  label="Cache-hit input rate"
                   value={peakHitPrice}
                   onChange={setPeakHitPrice}
                   min="0"
@@ -547,7 +621,7 @@ export default function ToolClient() {
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
-                  label="Peak cache-miss input rate"
+                  label="Cache-miss input rate"
                   value={peakMissPrice}
                   onChange={setPeakMissPrice}
                   min="0"
@@ -556,7 +630,7 @@ export default function ToolClient() {
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
-                  label="Peak output rate"
+                  label="Output rate"
                   value={peakOutputPrice}
                   onChange={setPeakOutputPrice}
                   min="0"
@@ -568,12 +642,10 @@ export default function ToolClient() {
             </div>
 
             <div className="min-w-0">
-              <h3 className="mb-3 font-semibold text-gray-950">
-                Off-peak rates
-              </h3>
+              <h3 className="mb-3 font-semibold text-gray-950">Off-peak rates</h3>
               <div className="space-y-4">
                 <BeeijaNumberField
-                  label="Off-peak cache-hit input rate"
+                  label="Cache-hit input rate"
                   value={offPeakHitPrice}
                   onChange={setOffPeakHitPrice}
                   min="0"
@@ -582,7 +654,7 @@ export default function ToolClient() {
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
-                  label="Off-peak cache-miss input rate"
+                  label="Cache-miss input rate"
                   value={offPeakMissPrice}
                   onChange={setOffPeakMissPrice}
                   min="0"
@@ -591,7 +663,7 @@ export default function ToolClient() {
                   sanitizeDecimal
                 />
                 <BeeijaNumberField
-                  label="Off-peak output rate"
+                  label="Output rate"
                   value={offPeakOutputPrice}
                   onChange={setOffPeakOutputPrice}
                   min="0"
@@ -603,89 +675,7 @@ export default function ToolClient() {
             </div>
           </div>
         ) : null}
-
-        {errorMessage ? (
-          <div className="mt-6 self-start border-l-4 border-red-600 bg-white px-4 py-3 text-sm leading-6 text-gray-700">
-            <span className="font-semibold text-red-700">Check the estimate:</span>{" "}
-            {errorMessage}
-          </div>
-        ) : null}
-
-        <button type="button" onClick={reset} className="beeija-btn-outline mt-6">
-          Reset values
-        </button>
       </section>
-
-      <BeeijaCalculatorResultPanel
-        className="mt-6"
-        title="Monthly DeepSeek estimate"
-        description="The result keeps cache-hit input, cache-miss input, and output separate, then blends peak and off-peak rates using the schedule share you entered."
-        primaryLabel="Estimated monthly cost"
-        primaryValue={
-          cannotCalculate
-            ? "Check entered values"
-            : formatVisibleMoney(result.monthlyCost)
-        }
-        stats={
-          cannotCalculate ? undefined : (
-            <div className="grid min-w-0 gap-4 sm:grid-cols-3">
-              <Stat label="Per request" value={formatVisibleMoney(result.costPerRequest)} />
-              <Stat label="Daily average" value={formatVisibleMoney(result.dailyCost)} />
-              <Stat
-                label="12 months at this mix"
-                value={formatVisibleMoney(result.annualizedCost)}
-              />
-            </div>
-          )
-        }
-        breakdown={
-          cannotCalculate ? undefined : (
-            <div className="space-y-2">
-              <BeeijaResultLine
-                label="Cache-hit input"
-                value={formatVisibleMoney(result.cacheHitCost)}
-              />
-              <BeeijaResultLine
-                label="Cache-miss input"
-                value={formatVisibleMoney(result.cacheMissCost)}
-              />
-              <BeeijaResultLine
-                label="Output"
-                value={formatVisibleMoney(result.outputCost)}
-              />
-            </div>
-          )
-        }
-        totals={
-          cannotCalculate ? undefined : (
-            <div className="min-w-0 text-sm leading-7 text-gray-600">
-              <p>
-                Input tokens: {formatNumber(result.totalInputTokens)} · cache hit{" "}
-                {formatNumber(result.cacheHitTokens)} · cache miss{" "}
-                {formatNumber(result.cacheMissTokens)}
-              </p>
-              <p>
-                Output tokens: {formatNumber(result.totalOutputTokens)} · off-peak share{" "}
-                {formatNumber(result.offPeakShare, 1)}%
-              </p>
-              <p>
-                Effective rates / 1M tokens: hit{" "}
-                {formatVisibleMoney(result.effectiveHitRate)}, miss{" "}
-                {formatVisibleMoney(result.effectiveMissRate)}, output{" "}
-                {formatVisibleMoney(result.effectiveOutputRate)}
-              </p>
-              <p>
-                API model: <span className="font-medium text-gray-900">{selectedModel.apiName}</span>{" "}
-                · published account concurrency limit{" "}
-                {formatNumber(selectedModel.concurrencyLimit)}
-              </p>
-            </div>
-          )
-        }
-        provider="DeepSeek"
-        pricingCheckedDate="September 22, 2026"
-        excludedCosts="taxes, credits, retries, tool-side services, account-specific terms, and usage outside the token rates entered here"
-      />
     </div>
   );
 }
