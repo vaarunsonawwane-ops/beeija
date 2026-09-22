@@ -103,6 +103,265 @@ function isValidNonNegativeDecimal(value: string) {
 
   const parsed = Number(trimmed);
   return (
+    Number.isFinite(parsed) &&
+    parsed >= 0 &&
+    parsed <= Number.MAX_SAFE_INTEGER
+  );
+}
+
+function formatMoney(value: number) {
+  if (!Number.isFinite(value)) return "$0.00";
+
+  if (value > 0 && value < 0.01) {
+    return `$${value.toFixed(6)}`;
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  }).format(value);
+}
+
+function formatVisibleMoney(value: number) {
+  return formatMoney(value).replace(/,/g, ",\u200B");
+}
+
+function formatNumber(value: number, maximumFractionDigits = 2) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits,
+  }).format(value);
+}
+
+function blendRate(peak: number, offPeak: number, offPeakShare: number) {
+  const share = offPeakShare / 100;
+  return peak * (1 - share) + offPeak * share;
+}
+
+export default function ToolClient() {
+  const [model, setModel] = useState<ModelKey>("deepseek-flash");
+  const [requestsPerMonth, setRequestsPerMonth] = useState("80000");
+  const [inputTokensPerRequest, setInputTokensPerRequest] = useState("1500");
+  const [outputTokensPerRequest, setOutputTokensPerRequest] = useState("450");
+  const [cacheHitPercent, setCacheHitPercent] = useState("30");
+  const [offPeakPercent, setOffPeakPercent] = useState("0");
+
+  const [customPricing, setCustomPricing] = useState(false);
+  const [peakHitPrice, setPeakHitPrice] = useState("0.006");
+  const [peakMissPrice, setPeakMissPrice] = useState("0.3");
+  const [peakOutputPrice, setPeakOutputPrice] = useState("1.2");
+  const [offPeakHitPrice, setOffPeakHitPrice] = useState("0.003");
+  const [offPeakMissPrice, setOffPeakMissPrice] = useState("0.15");
+  const [offPeakOutputPrice, setOffPeakOutputPrice] = useState("0.6");
+
+  const selectedModel = MODEL_PRICES[model];
+
+  const hasInvalidInput = useMemo(() => {
+    const wholeNumberValues = [
+      requestsPerMonth,
+      inputTokensPerRequest,
+      outputTokensPerRequest,
+    ];
+
+    if (
+      wholeNumberValues.some((value) => !isValidNonNegativeInteger(value)) ||
+      !isValidPercentage(cacheHitPercent) ||
+      !isValidPercentage(offPeakPercent)
+    ) {
+      return true;
+    }
+
+    if (!customPricing) {
+      return false;
+    }
+
+    return [
+      peakHitPrice,
+      peakMissPrice,
+      peakOutputPrice,
+      offPeakHitPrice,
+      offPeakMissPrice,
+      offPeakOutputPrice,
+    ].some((value) => !isValidNonNegativeDecimal(value));
+  }, [
+    cacheHitPercent,
+    customPricing,
+    inputTokensPerRequest,
+    offPeakHitPrice,
+    offPeakMissPrice,
+    offPeakOutputPrice,
+    offPeakPercent,
+    outputTokensPerRequest,
+    peakHitPrice,
+    peakMissPrice,
+    peakOutputPrice,
+    requestsPerMonth,
+  ]);
+
+  const priceSets = useMemo(() => {
+    if (!customPricing) {
+      return {
+        peak: selectedModel.peak,
+        offPeak: selectedModel.offPeak,
+      };
+    }
+
+    return {
+      peak: {
+        cacheHitInput: toNumber(peakHitPrice),
+        cacheMissInput: toNumber(peakMissPrice),
+        output: toNumber(peakOutputPrice),
+      },
+      offPeak: {
+        cacheHitInput: toNumber(offPeakHitPrice),
+        cacheMissInput: toNumber(offPeakMissPrice),
+        output: toNumber(offPeakOutputPrice),
+      },
+    };
+  }, [
+    customPricing,
+    offPeakHitPrice,
+    offPeakMissPrice,
+    offPeakOutputPrice,
+    peakHitPrice,
+    peakMissPrice,
+    peakOutputPrice,
+    selectedModel.offPeak,
+    selectedModel.peak,
+  ]);
+
+  const result = useMemo(() => {
+    const requests = toNumber(requestsPerMonth);
+    const inputPerRequest = toNumber(inputTokensPerRequest);
+    const outputPerRequest = toNumber(outputTokensPerRequest);
+    const cacheShare = toNumber(cacheHitPercent);
+    const offPeakShare = toNumber(offPeakPercent);
+
+    const totalInputTokens = requests * inputPerRequest;
+    const cacheHitTokens = totalInputTokens * (cacheShare / 100);
+    const cacheMissTokens = totalInputTokens - cacheHitTokens;
+    const totalOutputTokens = requests * outputPerRequest;
+
+    const effectiveHitRate = blendRate(
+      priceSets.peak.cacheHitInput,
+      priceSets.offPeak.cacheHitInput,
+      offPeakShare,
+    );
+    const effectiveMissRate = blendRate(
+      priceSets.peak.cacheMissInput,
+      priceSets.offPeak.cacheMissInput,
+      offPeakShare,
+    );
+    const effectiveOutputRate = blendRate(
+      priceSets.peak.output,
+      priceSets.offPeak.output,
+      offPeakShare,
+    );
+
+    const cacheHitCost = (cacheHitTokens / 1_000_000) * effectiveHitRate;
+    const cacheMissCost = (cacheMissTokens / 1_000_000) * effectiveMissRate;
+    const outputCost = (totalOutputTokens / 1_000_000) * effectiveOutputRate;
+    const monthlyCost = cacheHitCost + cacheMissCost + outputCost;
+
+    return {
+      requests,
+      inputPerRequest,
+      outputPerRequest,
+      cacheShare,
+      offPeakShare,
+      totalInputTokens,
+      cacheHitTokens,
+      cacheMissTokens,
+      totalOutputTokens,
+      effectiveHitRate,
+      effectiveMissRate,
+      effectiveOutputRate,
+      cacheHitCost,
+      cacheMissCost,
+      outputCost,
+      monthlyCost,
+      costPerRequest: requests > 0 ? monthlyCost / requests : 0,
+      dailyCost: monthlyCost / 30,
+      annualizedCost: monthlyCost * 12,
+    };
+  }, [
+    cacheHitPercent,
+    inputTokensPerRequest,
+    offPeakPercent,
+    outputTokensPerRequest,
+    priceSets,
+    requestsPerMonth,
+  ]);
+
+  const hasUnsafeResult = useMemo(() => {
+    const values = [
+      result.totalInputTokens,
+      result.cacheHitTokens,
+      result.cacheMissTokens,
+      result.totalOutputTokens,
+      result.cacheHitCost,
+      result.cacheMissCost,
+      result.outputCost,
+      result.monthlyCost,
+      result.annualizedCost,
+    ];
+
+    return values.some(
+      (value) =>
+        !Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER,
+    );
+  }, [result]);
+
+  const contextError =
+    !hasInvalidInput && result.inputPerRequest > selectedModel.contextWindow;
+  const outputError =
+    !hasInvalidInput && result.outputPerRequest > selectedModel.maxOutput;
+  const cannotCalculate =
+    hasInvalidInput || hasUnsafeResult || contextError || outputError;
+
+  const updateModel = (value: string) => {
+    const nextModel = value as ModelKey;
+    const next = MODEL_PRICES[nextModel];
+    setModel(nextModel);
+
+    if (!customPricing) {
+      setPeakHitPrice(String(next.peak.cacheHitInput));
+      setPeakMissPrice(String(next.peak.cacheMissInput));
+      setPeakOutputPrice(String(next.peak.output));
+      setOffPeakHitPrice(String(next.offPeak.cacheHitInput));
+      setOffPeakMissPrice(String(next.offPeak.cacheMissInput));
+      setOffPeakOutputPrice(String(next.offPeak.output));
+    }
+  };
+
+  const reset = () => {
+    const next = MODEL_PRICES["deepseek-flash"];
+    setModel("deepseek-flash");
+    setRequestsPerMonth("80000");
+    setInputTokensPerRequest("1500");
+    setOutputTokensPerRequest("450");
+    setCacheHitPercent("30");
+    setOffPeakPercent("0");
+    setCustomPricing(false);
+    setPeakHitPrice(String(next.peak.cacheHitInput));
+    setPeakMissPrice(String(next.peak.cacheMissInput));
+    setPeakOutputPrice(String(next.peak.output));
+    setOffPeakHitPrice(String(next.offPeak.cacheHitInput));
+    setOffPeakMissPrice(String(next.offPeak.cacheMissInput));
+    setOffPeakOutputPrice(String(next.offPeak.output));
+  };
+
+  const errorMessage = hasInvalidInput
+    ? "Enter whole numbers for requests and token counts, percentages from 0 to 100, and non-negative decimal prices."
+    : hasUnsafeResult
+      ? "The entered workload is too large to calculate safely in the browser. Use smaller planning values or split the workload into parts."
+      : contextError
+        ? `${selectedModel.label} has a published 1,000,000-token context window. The average input entered here is above that limit.`
+        : outputError
+          ? `${selectedModel.label} has a published maximum output of 384,000 tokens. The average output entered here is above that limit.`
+          : "";
+  return (
     <div className="min-w-0">
       <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] xl:items-start">
         <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
