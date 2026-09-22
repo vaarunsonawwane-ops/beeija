@@ -460,7 +460,7 @@ export default function ToolClient() {
 
   return (
     <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+      <section className="min-w-0 self-start rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <h2 className="text-2xl font-semibold text-gray-950">Shape the Grok request you expect to run</h2>
         <p className="mt-3 leading-relaxed text-gray-600">
           Start with the model and service path, then use average billed token counts from one representative request.
@@ -516,7 +516,7 @@ export default function ToolClient() {
             helper={`Published context window: ${formatNumber(selectedModel.contextWindow)} tokens.`}
           />
           <BeeijaNumberField
-            label="Average billed output tokens per request"
+            label="Average output tokens per request"
             value={outputTokensPerRequest}
             onChange={setOutputTokensPerRequest}
             min="0"

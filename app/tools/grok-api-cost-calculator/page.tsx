@@ -120,7 +120,7 @@ export default function GrokApiCostCalculatorPage() {
 
         <section className="max-w-6xl">
           <h2 className="text-2xl font-semibold text-gray-950">Explore related AI cost tools</h2>
-          <div className="mt-4 [&>*:first-child]:mt-0">
+          <div className="mt-4 [&>*]:!mt-0">
             <BeeijaRelatedTools currentHref="/tools/grok-api-cost-calculator" />
           </div>
         </section>
