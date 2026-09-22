@@ -103,266 +103,6 @@ function isValidNonNegativeDecimal(value: string) {
 
   const parsed = Number(trimmed);
   return (
-    Number.isFinite(parsed) &&
-    parsed >= 0 &&
-    parsed <= Number.MAX_SAFE_INTEGER
-  );
-}
-
-function formatMoney(value: number) {
-  if (!Number.isFinite(value)) return "$0.00";
-
-  if (value > 0 && value < 0.01) {
-    return `$${value.toFixed(6)}`;
-  }
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 4,
-  }).format(value);
-}
-
-function formatVisibleMoney(value: number) {
-  return formatMoney(value).replace(/,/g, ",\u200B");
-}
-
-function formatNumber(value: number, maximumFractionDigits = 2) {
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits,
-  }).format(value);
-}
-
-function blendRate(peak: number, offPeak: number, offPeakShare: number) {
-  const share = offPeakShare / 100;
-  return peak * (1 - share) + offPeak * share;
-}
-
-export default function ToolClient() {
-  const [model, setModel] = useState<ModelKey>("deepseek-flash");
-  const [requestsPerMonth, setRequestsPerMonth] = useState("80000");
-  const [inputTokensPerRequest, setInputTokensPerRequest] = useState("1500");
-  const [outputTokensPerRequest, setOutputTokensPerRequest] = useState("450");
-  const [cacheHitPercent, setCacheHitPercent] = useState("30");
-  const [offPeakPercent, setOffPeakPercent] = useState("0");
-
-  const [customPricing, setCustomPricing] = useState(false);
-  const [peakHitPrice, setPeakHitPrice] = useState("0.006");
-  const [peakMissPrice, setPeakMissPrice] = useState("0.3");
-  const [peakOutputPrice, setPeakOutputPrice] = useState("1.2");
-  const [offPeakHitPrice, setOffPeakHitPrice] = useState("0.003");
-  const [offPeakMissPrice, setOffPeakMissPrice] = useState("0.15");
-  const [offPeakOutputPrice, setOffPeakOutputPrice] = useState("0.6");
-
-  const selectedModel = MODEL_PRICES[model];
-
-  const hasInvalidInput = useMemo(() => {
-    const wholeNumberValues = [
-      requestsPerMonth,
-      inputTokensPerRequest,
-      outputTokensPerRequest,
-    ];
-
-    if (
-      wholeNumberValues.some((value) => !isValidNonNegativeInteger(value)) ||
-      !isValidPercentage(cacheHitPercent) ||
-      !isValidPercentage(offPeakPercent)
-    ) {
-      return true;
-    }
-
-    if (!customPricing) {
-      return false;
-    }
-
-    return [
-      peakHitPrice,
-      peakMissPrice,
-      peakOutputPrice,
-      offPeakHitPrice,
-      offPeakMissPrice,
-      offPeakOutputPrice,
-    ].some((value) => !isValidNonNegativeDecimal(value));
-  }, [
-    cacheHitPercent,
-    customPricing,
-    inputTokensPerRequest,
-    offPeakHitPrice,
-    offPeakMissPrice,
-    offPeakOutputPrice,
-    offPeakPercent,
-    outputTokensPerRequest,
-    peakHitPrice,
-    peakMissPrice,
-    peakOutputPrice,
-    requestsPerMonth,
-  ]);
-
-  const priceSets = useMemo(() => {
-    if (!customPricing) {
-      return {
-        peak: selectedModel.peak,
-        offPeak: selectedModel.offPeak,
-      };
-    }
-
-    return {
-      peak: {
-        cacheHitInput: toNumber(peakHitPrice),
-        cacheMissInput: toNumber(peakMissPrice),
-        output: toNumber(peakOutputPrice),
-      },
-      offPeak: {
-        cacheHitInput: toNumber(offPeakHitPrice),
-        cacheMissInput: toNumber(offPeakMissPrice),
-        output: toNumber(offPeakOutputPrice),
-      },
-    };
-  }, [
-    customPricing,
-    offPeakHitPrice,
-    offPeakMissPrice,
-    offPeakOutputPrice,
-    peakHitPrice,
-    peakMissPrice,
-    peakOutputPrice,
-    selectedModel.offPeak,
-    selectedModel.peak,
-  ]);
-
-  const result = useMemo(() => {
-    const requests = toNumber(requestsPerMonth);
-    const inputPerRequest = toNumber(inputTokensPerRequest);
-    const outputPerRequest = toNumber(outputTokensPerRequest);
-    const cacheShare = toNumber(cacheHitPercent);
-    const offPeakShare = toNumber(offPeakPercent);
-
-    const totalInputTokens = requests * inputPerRequest;
-    const cacheHitTokens = totalInputTokens * (cacheShare / 100);
-    const cacheMissTokens = totalInputTokens - cacheHitTokens;
-    const totalOutputTokens = requests * outputPerRequest;
-
-    const effectiveHitRate = blendRate(
-      priceSets.peak.cacheHitInput,
-      priceSets.offPeak.cacheHitInput,
-      offPeakShare,
-    );
-    const effectiveMissRate = blendRate(
-      priceSets.peak.cacheMissInput,
-      priceSets.offPeak.cacheMissInput,
-      offPeakShare,
-    );
-    const effectiveOutputRate = blendRate(
-      priceSets.peak.output,
-      priceSets.offPeak.output,
-      offPeakShare,
-    );
-
-    const cacheHitCost = (cacheHitTokens / 1_000_000) * effectiveHitRate;
-    const cacheMissCost = (cacheMissTokens / 1_000_000) * effectiveMissRate;
-    const outputCost = (totalOutputTokens / 1_000_000) * effectiveOutputRate;
-    const monthlyCost = cacheHitCost + cacheMissCost + outputCost;
-
-    return {
-      requests,
-      inputPerRequest,
-      outputPerRequest,
-      cacheShare,
-      offPeakShare,
-      totalInputTokens,
-      cacheHitTokens,
-      cacheMissTokens,
-      totalOutputTokens,
-      effectiveHitRate,
-      effectiveMissRate,
-      effectiveOutputRate,
-      cacheHitCost,
-      cacheMissCost,
-      outputCost,
-      monthlyCost,
-      costPerRequest: requests > 0 ? monthlyCost / requests : 0,
-      dailyCost: monthlyCost / 30,
-      annualizedCost: monthlyCost * 12,
-    };
-  }, [
-    cacheHitPercent,
-    inputTokensPerRequest,
-    offPeakPercent,
-    outputTokensPerRequest,
-    priceSets,
-    requestsPerMonth,
-  ]);
-
-  const hasUnsafeResult = useMemo(() => {
-    const values = [
-      result.totalInputTokens,
-      result.cacheHitTokens,
-      result.cacheMissTokens,
-      result.totalOutputTokens,
-      result.cacheHitCost,
-      result.cacheMissCost,
-      result.outputCost,
-      result.monthlyCost,
-      result.annualizedCost,
-    ];
-
-    return values.some(
-      (value) =>
-        !Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER,
-    );
-  }, [result]);
-
-  const contextError =
-    !hasInvalidInput && result.inputPerRequest > selectedModel.contextWindow;
-  const outputError =
-    !hasInvalidInput && result.outputPerRequest > selectedModel.maxOutput;
-  const cannotCalculate =
-    hasInvalidInput || hasUnsafeResult || contextError || outputError;
-
-  const updateModel = (value: string) => {
-    const nextModel = value as ModelKey;
-    const next = MODEL_PRICES[nextModel];
-    setModel(nextModel);
-
-    if (!customPricing) {
-      setPeakHitPrice(String(next.peak.cacheHitInput));
-      setPeakMissPrice(String(next.peak.cacheMissInput));
-      setPeakOutputPrice(String(next.peak.output));
-      setOffPeakHitPrice(String(next.offPeak.cacheHitInput));
-      setOffPeakMissPrice(String(next.offPeak.cacheMissInput));
-      setOffPeakOutputPrice(String(next.offPeak.output));
-    }
-  };
-
-  const reset = () => {
-    const next = MODEL_PRICES["deepseek-flash"];
-    setModel("deepseek-flash");
-    setRequestsPerMonth("80000");
-    setInputTokensPerRequest("1500");
-    setOutputTokensPerRequest("450");
-    setCacheHitPercent("30");
-    setOffPeakPercent("0");
-    setCustomPricing(false);
-    setPeakHitPrice(String(next.peak.cacheHitInput));
-    setPeakMissPrice(String(next.peak.cacheMissInput));
-    setPeakOutputPrice(String(next.peak.output));
-    setOffPeakHitPrice(String(next.offPeak.cacheHitInput));
-    setOffPeakMissPrice(String(next.offPeak.cacheMissInput));
-    setOffPeakOutputPrice(String(next.offPeak.output));
-  };
-
-  const errorMessage = hasInvalidInput
-    ? "Enter whole numbers for requests and token counts, percentages from 0 to 100, and non-negative decimal prices."
-    : hasUnsafeResult
-      ? "The entered workload is too large to calculate safely in the browser. Use smaller planning values or split the workload into parts."
-      : contextError
-        ? `${selectedModel.label} has a published 1,000,000-token context window. The average input entered here is above that limit.`
-        : outputError
-          ? `${selectedModel.label} has a published maximum output of 384,000 tokens. The average output entered here is above that limit.`
-          : "";
-
-  return (
     <div className="min-w-0">
       <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] xl:items-start">
         <section className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
@@ -370,8 +110,9 @@ export default function ToolClient() {
             Estimate your DeepSeek workload
           </h2>
           <p className="mt-3 max-w-3xl leading-relaxed text-gray-600">
-            Choose the model, enter a representative request, then describe how
-            much input is served from cache and how much traffic runs off-peak.
+            Choose the model, enter one representative request, then describe
+            how much input is served from cache and how much traffic runs
+            outside DeepSeek&apos;s weekday peak windows.
           </p>
 
           <div className="mt-7 max-w-md">
@@ -441,15 +182,7 @@ export default function ToolClient() {
               sanitizeDecimal
             />
 
-            <div className="self-start border-l-4 border-[var(--yellow)] bg-white pl-4 py-1 text-sm leading-6 text-gray-600">
-              <p className="font-semibold text-gray-950">
-                DeepSeek prices by time of day
-              </p>
-              <p className="mt-1">
-                Peak windows are 01:00–04:00 and 06:00–10:00 UTC, Monday–Friday.
-                Everything else uses the lower off-peak rates.
-              </p>
-            </div>
+            <PricingClock />
           </div>
 
           {errorMessage ? (
@@ -537,25 +270,22 @@ export default function ToolClient() {
         </div>
       </div>
 
-      <section className="mt-6 min-w-0 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <section className="mt-8 min-w-0">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-950">
-              Rates used in this estimate
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-gray-600">
-              USD per 1 million tokens for {selectedModel.label}. Peak and
-              off-peak prices are kept separate because the workload share above
-              blends them.
+            <h2 className="text-xl font-semibold text-gray-950">Current token rates</h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              {selectedModel.label} · USD per 1 million tokens. The estimate blends
+              these rates using your off-peak workload share.
             </p>
           </div>
-          <p className="text-sm font-medium text-[var(--green)]">
+          <span className="text-sm font-medium text-[var(--green)]">
             {selectedModel.apiName}
-          </p>
+          </span>
         </div>
 
-        <div className="mt-5 overflow-x-auto">
-          <div className="grid min-w-[28rem] grid-cols-[minmax(0,1fr)_auto_auto] gap-x-6 gap-y-2 text-sm">
+        <div className="mt-4 max-w-3xl overflow-x-auto">
+          <div className="grid min-w-[28rem] grid-cols-[minmax(0,1fr)_auto_auto] gap-x-8 gap-y-2 text-sm">
             <span className="font-medium text-gray-700">Token path</span>
             <span className="text-right font-medium text-gray-700">Peak</span>
             <span className="text-right font-medium text-gray-700">Off-peak</span>
@@ -586,7 +316,7 @@ export default function ToolClient() {
           </div>
         </div>
 
-        <label className="mt-6 flex cursor-pointer items-start gap-3">
+        <label className="mt-5 flex max-w-3xl cursor-pointer items-start gap-3">
           <input
             type="checkbox"
             checked={customPricing}
@@ -607,7 +337,7 @@ export default function ToolClient() {
         </label>
 
         {customPricing ? (
-          <div className="mt-5 grid items-start gap-x-6 gap-y-5 md:grid-cols-2">
+          <div className="mt-5 grid max-w-4xl items-start gap-x-8 gap-y-5 md:grid-cols-2">
             <div className="min-w-0">
               <h3 className="mb-3 font-semibold text-gray-950">Peak rates</h3>
               <div className="space-y-4">
@@ -676,6 +406,42 @@ export default function ToolClient() {
           </div>
         ) : null}
       </section>
+    </div>
+  );
+}
+
+function PricingClock() {
+  return (
+    <div className="min-w-0 pt-1">
+      <div className="flex items-center justify-between gap-3 text-xs font-semibold text-gray-700">
+        <span>Weekday UTC pricing clock</span>
+        <span className="font-medium text-gray-500">Weekends: off-peak all day</span>
+      </div>
+
+      <div
+        className="mt-2 flex h-3 overflow-hidden rounded-full"
+        role="img"
+        aria-label="DeepSeek weekday pricing schedule: off-peak from midnight to 01:00 UTC, peak from 01:00 to 04:00, off-peak from 04:00 to 06:00, peak from 06:00 to 10:00, and off-peak from 10:00 to midnight."
+      >
+        <span className="bg-[var(--green)]" style={{ width: "4.1667%" }} />
+        <span className="bg-[var(--yellow)]" style={{ width: "12.5%" }} />
+        <span className="bg-[var(--green)]" style={{ width: "8.3333%" }} />
+        <span className="bg-[var(--yellow)]" style={{ width: "16.6667%" }} />
+        <span className="bg-[var(--green)]" style={{ width: "58.3333%" }} />
+      </div>
+
+      <div className="relative mt-1 h-4 text-[10.5px] leading-4 text-gray-500">
+        <span className="absolute left-0">00</span>
+        <span className="absolute left-[4.1667%] -translate-x-1/2">01</span>
+        <span className="absolute left-[16.6667%] -translate-x-1/2">04</span>
+        <span className="absolute left-[25%] -translate-x-1/2">06</span>
+        <span className="absolute left-[41.6667%] -translate-x-1/2">10</span>
+        <span className="absolute right-0">24</span>
+      </div>
+
+      <p className="mt-1 text-xs leading-5 text-gray-600">
+        Yellow marks DeepSeek&apos;s weekday peak windows; green marks off-peak.
+      </p>
     </div>
   );
 }
