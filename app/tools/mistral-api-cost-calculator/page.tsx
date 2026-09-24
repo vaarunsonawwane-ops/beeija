@@ -1,221 +1,358 @@
 import type { Metadata } from "next";
 import ToolShell from "@/app/components/ToolShell";
-import ToolContent from "@/app/components/ToolContent";
 import BeeijaRelatedTools from "@/app/components/BeeijaRelatedTools";
 import ToolClient from "./ToolClient";
 
+const title = "Mistral API Cost Calculator";
+const description =
+  "Estimate Mistral API text-token costs across Standard, Batch, or Priority service, prompt caching, and optional EU or US regional inference.";
+const href = "/tools/mistral-api-cost-calculator";
+
 export const metadata: Metadata = {
-  title: "Mistral API Cost Calculator",
-  description:
-    "Estimate Mistral API costs for Mistral Small, Large, Medium, and Codestral using input tokens, output tokens, Batch API, requests, and monthly usage.",
+  title,
+  description,
   keywords: [
     "Mistral API cost calculator",
     "Mistral AI pricing calculator",
-    "Mistral token cost calculator",
-    "Mistral Small 4 cost calculator",
-    "Mistral Large cost calculator",
-    "Mistral Medium cost calculator",
-    "Codestral cost calculator",
+    "Mistral Small 4 pricing",
+    "Mistral Medium 3.5 pricing",
+    "Mistral Large 3 pricing",
+    "Ministral 3 pricing",
+    "Codestral API pricing",
     "Mistral Batch API cost",
-    "Mistral API pricing",
-    "Mistral monthly cost calculator",
-    "LLM API cost calculator",
+    "Mistral Priority Tier pricing",
+    "Mistral regional inference pricing",
+    "Mistral prompt caching cost",
   ],
   alternates: {
-    canonical: "https://beeija.com/tools/mistral-api-cost-calculator",
+    canonical: `https://beeija.com${href}`,
   },
   openGraph: {
-    title: "Mistral API Cost Calculator",
-    description:
-      "Estimate Mistral API costs from input tokens, output tokens, Batch API, requests, and monthly usage.",
-    url: "https://beeija.com/tools/mistral-api-cost-calculator",
+    title,
+    description,
+    url: `https://beeija.com${href}`,
     siteName: "Beeija",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mistral API Cost Calculator",
-    description:
-      "Estimate Mistral Small, Large, Medium, and Codestral API costs using your own token usage.",
+    title,
+    description,
   },
 };
 
-const faqs = [
-  {
-    question: "How is Mistral API cost calculated?",
-    answer:
-      "The calculator multiplies total input and output tokens by the selected model rates. It then shows the estimated cost per request, day, month, and year.",
-  },
-  {
-    question: "Does Mistral Batch API cost less?",
-    answer:
-      "Yes. Mistral says Batch API processing can cost 50% less than standard synchronous API calls. Choose Batch API in the calculator to apply that reduction.",
-  },
-  {
-    question: "Can I compare Mistral models?",
-    answer:
-      "Yes. Keep the same request and token values, then switch models to compare their estimated costs.",
-  },
-  {
-    question: "Does this include every Mistral service?",
-    answer:
-      "No. It covers text token charges only. OCR, transcription, text-to-speech, fine-tuning, agents, tools, storage, and other services may have separate prices.",
-  },
-  {
-    question: "Are the results exact?",
-    answer:
-      "No. They are planning estimates. Your final bill may change because of price updates, retries, discounts, taxes, or other paid services.",
-  },
-  {
-    question: "Can I enter my own Mistral prices?",
-    answer:
-      "Yes. Turn on custom pricing and enter your own input and output rates per million tokens.",
-  },
-];
+const referenceClass =
+  "font-medium text-[var(--green)] underline decoration-[var(--yellow)] decoration-2 underline-offset-4";
 
 export default function MistralApiCostCalculatorPage() {
   return (
     <ToolShell
       category="AI Cost Calculators"
-      title="Mistral API Cost Calculator"
-      description="Estimate Mistral API costs using input tokens, output tokens, Batch API, requests, and monthly usage."
+      title={title}
+      description="Budget Mistral text inference using the service tier, region, cache behavior, and workload shape that will actually be deployed."
     >
       <ToolClient />
 
-      <div className="mt-16">
-        <ToolContent
-          intro={
-            <p>
-              Mistral API costs can change with the model, prompt size, answer
-              length, request count, and pricing mode. This calculator helps you
-              test a small launch, a normal month, and a higher-usage case
-              before you build.
+      <div className="mt-14">
+        <section className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-start">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-950">
+              Mistral&apos;s service tiers change more than the token rate
+            </h2>
+
+            <p className="mt-4 leading-8 text-gray-600">
+              Standard is the ordinary synchronous path. Batch is for work
+              that can wait in an asynchronous queue and is published at a 50%
+              discount. Priority is intended for real-time or
+              business-critical traffic, costs 1.75× Standard list pricing,
+              and requires Mistral to configure Priority capacity for the
+              organization.
             </p>
-          }
-          sections={[
-            {
-              title: "How the Mistral API Cost Calculator Works",
-              content: (
-                <>
-                  <p>
-                    Choose a Mistral model and enter the expected requests per
-                    month. Then add the average input and output tokens used by
-                    one request.
-                  </p>
-                  <p>
-                    The calculator separates input and output costs. It also
-                    lets you compare standard API pricing with the lower Batch
-                    API estimate.
-                  </p>
-                  <p>
-                    The result shows the estimated cost per request, day, month,
-                    and year.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "What to Enter for a Useful Estimate",
-              content: (
-                <>
-                  <p>
-                    Include the system message, prompt, chat history, retrieved
-                    text, and other content sent to the model in your input
-                    estimate.
-                  </p>
-                  <p>
-                    Use the average answer length expected in real use. Longer
-                    answers can increase the monthly bill.
-                  </p>
-                  <p>
-                    Test a normal case and a busy case so you can see how cost
-                    may change as users and requests grow.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "Common Ways to Use This Calculator",
-              content: (
-                <ul className="list-disc space-y-2 pl-6">
-                  <li>Estimate the monthly cost of a Mistral chatbot.</li>
-                  <li>Compare Mistral Small, Large, Medium, and Codestral.</li>
-                  <li>Compare Standard API and Batch API pricing.</li>
-                  <li>Estimate cost per request, day, month, and year.</li>
-                  <li>Review the effect of longer prompts and answers.</li>
-                  <li>Prepare an early Mistral API budget.</li>
-                </ul>
-              ),
-            },
-            {
-              title: "Simple Mistral API Cost Example",
-              content: (
-                <>
-                  <p>
-                    Imagine an AI assistant with 60,000 requests per month. Each
-                    request uses 1,100 input tokens and 350 output tokens. Enter
-                    those values and choose Mistral Small 4.
-                  </p>
-                  <p>
-                    You can then switch to Mistral Large 3, Mistral Medium 3.5, or Codestral
-                    without changing the workload.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "Pricing and Estimate Notes",
-              content: (
-                <>
-                  <p>
-                    Built-in prices were checked against Mistral&apos;s official
-                    pricing and model pages on June 19, 2026.
-                  </p>
-                  <p>
-                    This calculator covers text token charges only. OCR,
-                    transcription, speech, fine-tuning, agents, tools, storage,
-                    taxes, and other services may add separate costs.
-                  </p>
-                  <p>
-                    Always check the{" "}
-                    <a
-                      href="https://mistral.ai/pricing/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium text-[var(--yellow-dark)]"
-                    >
-                      official Mistral pricing page
-                    </a>{" "}
-                    before making a final budget or purchase decision.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "Frequently Asked Questions",
-              content: (
-                <div className="space-y-6">
-                  {faqs.map((faq) => (
-                    <div key={faq.question}>
-                      <h3 className="font-semibold text-gray-900">
-                        {faq.question}
-                      </h3>
-                      <p className="mt-2">{faq.answer}</p>
-                    </div>
-                  ))}
-                </div>
-              ),
-            },
-            {
-              title: "Explore Related AI Cost Tools",
-              content: (
-                <BeeijaRelatedTools
-                  currentHref="/tools/mistral-api-cost-calculator"
-                />
-              ),
-            },
-          ]}
-        />
+
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full min-w-[620px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 text-gray-700">
+                    <th className="py-3 pr-5 font-semibold">Path</th>
+                    <th className="py-3 pr-5 font-semibold">Cost treatment</th>
+                    <th className="py-3 font-semibold">Operational trade-off</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600">
+                  <tr className="border-b border-gray-100">
+                    <td className="py-3 pr-5 font-medium text-gray-900">
+                      Standard
+                    </td>
+                    <td className="py-3 pr-5">Published list rate</td>
+                    <td className="py-3">
+                      Best-effort synchronous processing
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-3 pr-5 font-medium text-gray-900">
+                      Batch
+                    </td>
+                    <td className="py-3 pr-5">50% lower</td>
+                    <td className="py-3">
+                      Asynchronous; queued for processing over a 24-hour period
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 pr-5 font-medium text-gray-900">
+                      Priority
+                    </td>
+                    <td className="py-3 pr-5">1.75× Standard</td>
+                    <td className="py-3">
+                      Priority queue; can fall back to Standard when configured
+                      Priority capacity is unavailable
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <aside className="self-start border-l-4 border-[var(--yellow)] pl-5">
+            <h3 className="text-lg font-semibold text-gray-950">
+              Do not budget Priority from the request flag alone
+            </h3>
+            <p className="mt-3 leading-7 text-gray-600">
+              Mistral reports the tier that actually served the request in the
+              usage object. A request sent with <code>service_tier="auto"</code>{" "}
+              can be billed as Standard if Priority capacity is not used. For
+              production forecasts, compare the calculator with observed
+              service-tier usage rather than assuming every request receives
+              Priority treatment.
+            </p>
+          </aside>
+        </section>
+
+        <section className="mt-12 max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Cache-hit input is a separate billing path
+          </h2>
+
+          <p className="mt-4 leading-8 text-gray-600">
+            Mistral prompt caching reuses a compatible prompt prefix. Cached
+            prompt tokens are billed at 10% of the Standard input rate, which
+            is why the calculator asks for a cache-hit share instead of
+            applying one input price to every prompt token. The API exposes
+            measured cache usage in{" "}
+            <code>usage.prompt_tokens_details.cached_tokens</code>; ordinary
+            billable input is the remaining prompt-token count.
+          </p>
+
+          <p className="mt-4 leading-8 text-gray-600">
+            A cache key can improve the chance of reuse, but it does not
+            guarantee a hit. Mistral also notes that cache blocks contain 64
+            tokens, so very short prompts will not produce cache hits. For an
+            existing application, measured cached-token usage is a better
+            budgeting input than a guessed percentage.
+          </p>
+        </section>
+
+        <section className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-start">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-950">
+              Regional inference is a deployment decision, not just a 10%
+              surcharge
+            </h2>
+
+            <p className="mt-4 leading-8 text-gray-600">
+              Mistral offers Global, EU, and US inference endpoints. EU and US
+              regional inference add 10% to input, cached-input, and output
+              token pricing, but they also change where eligible inference is
+              processed. That can matter for data-location requirements and
+              latency.
+            </p>
+
+            <p className="mt-4 leading-8 text-gray-600">
+              Regional processing does not make the entire Mistral control
+              plane regional. Account settings, API keys, billing, access
+              management, analytics, and other operational metadata can still
+              be handled outside the selected inference geography. Regional
+              inference and Zero Data Retention are also separate controls:
+              one governs where eligible inference runs, while the other
+              governs whether eligible request and response content is retained
+              after processing.
+            </p>
+          </div>
+
+          <div className="self-start">
+            <h3 className="text-lg font-semibold text-gray-950">
+              Regional endpoints also narrow feature choices
+            </h3>
+            <p className="mt-3 leading-7 text-gray-600">
+              Batch, Agents, and the Files API are not available on regional
+              endpoints, and model availability varies by region. Function
+              calling is currently the supported regional tool path. That is
+              why choosing Batch in the calculator returns the inference
+              location to Global instead of pretending those options can be
+              combined.
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-12 max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Reasoning can increase the output side of the bill
+          </h2>
+
+          <p className="mt-4 leading-8 text-gray-600">
+            Mistral Small 4 and Mistral Medium 3.5 support adjustable
+            <code> reasoning_effort</code>. Higher reasoning can generate a
+            thinking chunk before the final answer and uses more generated
+            tokens. When reasoning is enabled, budget from measured completion
+            usage rather than counting only the final visible answer.
+          </p>
+        </section>
+
+        <section className="mt-12 max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Context limits are a hard request boundary
+          </h2>
+
+          <p className="mt-4 leading-8 text-gray-600">
+            Mistral counts both input and generated output tokens toward each
+            request&apos;s context limit. Requests that exceed the model limit
+            return a 400 error. The calculator checks the representative
+            input-plus-output request entered above, but an average cannot
+            guarantee that every production request fits; validate each real
+            prompt together with its allowed generation budget.
+          </p>
+
+          <div className="mt-5 grid gap-x-10 gap-y-3 text-sm text-gray-600 sm:grid-cols-2">
+            <p>
+              <span className="font-medium text-gray-900">
+                256,000 tokens:
+              </span>{" "}
+              Mistral Large 3, Medium 3.5, Small 4, and Ministral 3
+            </p>
+            <p>
+              <span className="font-medium text-gray-900">
+                128,000 tokens:
+              </span>{" "}
+              Codestral
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-12 max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            A <code>-latest</code> model ID can move underneath a budget
+          </h2>
+
+          <p className="mt-4 leading-8 text-gray-600">
+            Mistral&apos;s <code>-latest</code> aliases automatically move to
+            newer General Availability versions. That is convenient during
+            development, but Mistral warns that an alias can expose an
+            application to changes in model behavior and pricing. For a
+            production budget that must stay reproducible, pin the specific
+            major.minor model identifier you actually intend to deploy and
+            revisit the estimate when you migrate.
+          </p>
+        </section>
+
+        <section className="mt-12 max-w-5xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            What this text-token estimate intentionally leaves out
+          </h2>
+
+          <p className="mt-4 leading-8 text-gray-600">
+            The calculation stops at hosted text-token inference. OCR,
+            transcription, text-to-speech, fine-tuning, Agents, built-in
+            tools, Files, storage, retries, taxes, credits, negotiated terms,
+            and products billed by pages, minutes, characters, or another unit
+            need their own cost model. Keeping those units separate is more
+            useful than hiding them inside a generic miscellaneous charge.
+          </p>
+        </section>
+
+        <section className="mt-12 max-w-6xl">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Mistral documentation behind the calculation
+          </h2>
+
+          <p className="mt-4 leading-8 text-gray-600">
+            Built-in rates were checked on{" "}
+            <strong className="font-semibold text-gray-900">
+              September 24, 2026
+            </strong>
+            . Current model prices and cached-input rates come from Mistral&apos;s{" "}
+            <a
+              href="https://docs.mistral.ai/inference/pricing"
+              target="_blank"
+              rel="noreferrer"
+              className={referenceClass}
+            >
+              pricing documentation
+            </a>
+            . Delivery behavior and the 1.75× premium follow the{" "}
+            <a
+              href="https://docs.mistral.ai/inference/priority-tier"
+              target="_blank"
+              rel="noreferrer"
+              className={referenceClass}
+            >
+              Priority Tier documentation
+            </a>
+            , while the 50% asynchronous discount follows the{" "}
+            <a
+              href="https://docs.mistral.ai/studio/batch-processing"
+              target="_blank"
+              rel="noreferrer"
+              className={referenceClass}
+            >
+              Batch processing documentation
+            </a>
+            . Regional limits and the 10% surcharge are described in the{" "}
+            <a
+              href="https://docs.mistral.ai/inference/regional-inference"
+              target="_blank"
+              rel="noreferrer"
+              className={referenceClass}
+            >
+              regional inference documentation
+            </a>
+            , cache-hit accounting follows Mistral&apos;s{" "}
+            <a
+              href="https://docs.mistral.ai/studio/conversations/advanced/prompt-caching"
+              target="_blank"
+              rel="noreferrer"
+              className={referenceClass}
+            >
+              prompt caching documentation
+            </a>
+            , reasoning behavior follows the{" "}
+            <a
+              href="https://docs.mistral.ai/studio/conversations/reasoning"
+              target="_blank"
+              rel="noreferrer"
+              className={referenceClass}
+            >
+              reasoning documentation
+            </a>
+            , and alias stability follows the{" "}
+            <a
+              href="https://docs.mistral.ai/inference/model-lifecycle"
+              target="_blank"
+              rel="noreferrer"
+              className={referenceClass}
+            >
+              model lifecycle policy
+            </a>
+            .
+          </p>
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold text-gray-950">
+            Explore related AI cost tools
+          </h2>
+          <div className="mt-4 [&>*]:!mt-0">
+            <BeeijaRelatedTools currentHref={href} />
+          </div>
+        </section>
       </div>
     </ToolShell>
   );
