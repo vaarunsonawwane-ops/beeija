@@ -397,7 +397,7 @@ export default function ToolClient() {
           </p>
         </div>
 
-        <div className="mt-7 grid gap-5 md:grid-cols-3">
+        <div className="mt-7 grid gap-5 md:grid-cols-3 [&>div>button]:h-12 [&>div>button]:min-h-12 [&>div>button]:py-0 [&>div>button>span]:min-w-0 [&>div>button>span]:truncate [&>div>button>span]:whitespace-nowrap">
           <BeeijaSelect
             label="Mistral model"
             value={model}
